@@ -62,6 +62,7 @@ public final class IconManager
     public static final String KEYBOARD_MAGNIFY = "keyboard_magnify.png";
     public static final String LIGHTBULB = "lightbulb.png";
     public static final String LOCK = "lock.png";
+    public static final String MAIL_TRASH = "mail-trash.png";
     public static final String PAGE_ADD = "page_add.png";
     public static final String RESULTSET_FIRST = "resultset_first.png";
     public static final String RESULTSET_LAST = "resultset_last.png";

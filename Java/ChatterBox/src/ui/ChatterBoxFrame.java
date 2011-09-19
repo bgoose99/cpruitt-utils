@@ -5,6 +5,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.UnknownHostException;
@@ -22,6 +23,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
 
 import data.ChatUser;
 
@@ -33,6 +35,7 @@ public class ChatterBoxFrame extends JFrame
     private JToolBar toolbar;
     private JButton connectButton;
     private JButton disconnectButton;
+    private JButton trashButton;
     private ChatPanel chatPanel;
     private UserPanel userPanel;
     private MessagePanel messagePanel;
@@ -72,7 +75,12 @@ public class ChatterBoxFrame extends JFrame
     {
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu( "File" );
-        JMenuItem exitMenuItem = new JMenuItem( "Exit" );
+        JMenuItem exitMenuItem = new JMenuItem( "Exit", IconManager.getIcon(
+                IconManager.DOOR_IN, IconSize.X16 ) );
+        exitMenuItem.setMnemonic( 'x' );
+        exitMenuItem.setAccelerator( KeyStroke.getKeyStroke( KeyEvent.VK_Q,
+                java.awt.event.InputEvent.CTRL_DOWN_MASK ) );
+        exitMenuItem.addActionListener( new ExitActionListener() );
 
         JMenu editMenu = new JMenu( "Edit" );
         JMenuItem preferencesMenuItem = new JMenuItem( "Preferences" );
@@ -103,16 +111,28 @@ public class ChatterBoxFrame extends JFrame
                 IconSize.X16 ) );
         connectButton.setFocusable( false );
         connectButton.addActionListener( new ConnectListener() );
+        connectButton.setToolTipText( "Connect to the address specified"
+                + " by your preferences" );
+
         disconnectButton = new JButton( IconManager.getIcon(
                 IconManager.DISCONNECT, IconSize.X16 ) );
         disconnectButton.setFocusable( false );
         disconnectButton.addActionListener( new DisconnectListener() );
+        disconnectButton.setToolTipText( "Disconnect from the current address" );
+
+        trashButton = new JButton( IconManager.getIcon( IconManager.MAIL_TRASH,
+                IconSize.X16 ) );
+        trashButton.setFocusable( false );
+        trashButton.addActionListener( new TrashListener() );
+        trashButton.setToolTipText( "Clear the current conversation" );
 
         toolbar = new JToolBar();
         toolbar.setFloatable( false );
         toolbar.setBorderPainted( false );
         toolbar.add( connectButton );
         toolbar.add( disconnectButton );
+        toolbar.addSeparator();
+        toolbar.add( trashButton );
     }
 
     /***************************************************************************
@@ -273,6 +293,30 @@ public class ChatterBoxFrame extends JFrame
         public void actionPerformed( ActionEvent e )
         {
             disconnect();
+        }
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private class TrashListener implements ActionListener
+    {
+        @Override
+        public void actionPerformed( ActionEvent e )
+        {
+            chatPanel.clear();
+        }
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private class ExitActionListener implements ActionListener
+    {
+        @Override
+        public void actionPerformed( ActionEvent e )
+        {
+            exit();
         }
     }
 }
