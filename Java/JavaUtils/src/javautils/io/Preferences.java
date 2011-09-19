@@ -53,6 +53,25 @@ public final class Preferences
     }
 
     /***************************************************************************
+     * Returns true if the preference file exists, false otherwise.
+     * 
+     * @return
+     **************************************************************************/
+    public static boolean exists()
+    {
+        if( !isInitialized )
+        {
+            JOptionPane.showMessageDialog( null,
+                    "Preferences are un-initialized.\n"
+                            + "Cannot determine if preference file exists.",
+                    "Error", JOptionPane.ERROR_MESSAGE );
+            return false;
+        }
+
+        return prefFile.exists();
+    }
+
+    /***************************************************************************
      * Reads the preference file, if it exists. It should be noted that if
      * values are found in the preference file that are not in the preference
      * map, they will simply be added.
