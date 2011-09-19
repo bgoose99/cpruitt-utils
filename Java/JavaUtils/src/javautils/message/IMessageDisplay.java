@@ -11,4 +11,9 @@ public interface IMessageDisplay
      * @param msg
      **************************************************************************/
     public void addMessage( IMessage msg );
+
+    /***************************************************************************
+     * Clears the content of the display.
+     **************************************************************************/
+    public void clear();
 }

@@ -17,7 +17,7 @@ import javax.swing.JOptionPane;
  * {@link MessageProcessor} upon receipt. Messages can be sent using the
  * {@link #sendMessage(IMessage)} method.
  ******************************************************************************/
-public class MessageHandler extends Thread
+public class MessageHandler extends Thread implements IMessageHandler
 {
     private static final int BUFFER_SIZE = 10000;
 
@@ -29,7 +29,8 @@ public class MessageHandler extends Thread
     private short timeToLive;
     private int largestMessage;
     private boolean running;
-    MessageProcessor processor;
+    private IMessageDisplay display;
+    private MessageProcessor processor;
 
     /***************************************************************************
      * Constructor
@@ -44,6 +45,7 @@ public class MessageHandler extends Thread
     {
         multicastAddress = InetAddress.getByName( hostName );
         this.port = port;
+        this.display = display;
         connected = false;
         msSocketTimeout = 1000;
         timeToLive = 20;
@@ -135,6 +137,7 @@ public class MessageHandler extends Thread
      * @param msg
      * @throws Exception
      **************************************************************************/
+    @Override
     public synchronized void sendMessage( IMessage msg ) throws Exception
     {
         if( connect() )
@@ -143,6 +146,7 @@ public class MessageHandler extends Thread
             packet.setAddress( multicastAddress );
             packet.setPort( port );
             socket.send( packet );
+            display.addMessage( msg );
         }
     }
 

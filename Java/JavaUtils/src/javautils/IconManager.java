@@ -67,6 +67,8 @@ public final class IconManager
     public static final String RESULTSET_PREVIOUS = "resultset_previous.png";
     public static final String STOP = "stop.png";
     public static final String UNIVERSAL_BINARY = "universal_binary.png";
+    public static final String USER = "user.png";
+    public static final String USER_SILHOUETTE = "user_silhouette.png";
     public static final String YINYANG = "yinyang.png";
 
     // Base path to all images
