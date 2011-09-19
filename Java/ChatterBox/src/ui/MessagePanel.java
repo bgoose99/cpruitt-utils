@@ -17,10 +17,8 @@ public class MessagePanel extends JPanel
     private JScrollPane scrollPane;
     private IMessageHandler messageHandler;
 
-    public MessagePanel( IMessageHandler messageHandler )
+    public MessagePanel()
     {
-        this.messageHandler = messageHandler;
-
         textArea = new JTextArea();
         textArea.addKeyListener( new MessagePanelKeyAdapter() );
         scrollPane = new JScrollPane( textArea );
@@ -58,6 +56,11 @@ public class MessagePanel extends JPanel
                 e.printStackTrace();
             }
         }
+    }
+
+    public void setMessageHandler( IMessageHandler handler )
+    {
+        this.messageHandler = handler;
     }
 
     private class MessagePanelKeyAdapter extends KeyAdapter
