@@ -28,9 +28,22 @@ public final class MessageUtils
                 packet.getData(), 0, packet.getLength() );
         DataInputStream dataStream = new DataInputStream( byteStream );
 
-        DefaultMessage msg = new DefaultMessage();
+        // read header
+        MessageHeader header = new MessageHeader();
+        header.binaryStreamToHeader( dataStream );
 
-        return msg.binaryStreamToMessage( dataStream );
+        switch( header.getMessageType() )
+        {
+        case CHAT:
+            DefaultChatMessage msg = new DefaultChatMessage( header );
+            return msg.binaryStreamToMessage( dataStream );
+        case HEARTBEAT:
+            // TODO: create heartbeat message
+            return null;
+        default:
+            throw new Exception( "Invalid message type: "
+                    + header.getMessageType() );
+        }
     }
 
     /***************************************************************************
@@ -47,6 +60,7 @@ public final class MessageUtils
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         DataOutputStream dataStream = new DataOutputStream( byteStream );
 
+        msg.getMessageHeader().headerToBinaryStream( dataStream );
         msg.messageToBinaryStream( dataStream );
 
         return new DatagramPacket( byteStream.toByteArray(), byteStream.size() );

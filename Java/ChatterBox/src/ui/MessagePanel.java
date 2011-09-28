@@ -4,7 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-import javautils.message.DefaultMessage;
+import javautils.message.DefaultChatMessage;
 import javautils.message.IMessageHandler;
 
 import javax.swing.JPanel;
@@ -53,9 +53,9 @@ public class MessagePanel extends JPanel
         {
             try
             {
-                DefaultMessage msg = new DefaultMessage(
-                        localUser.getDisplayName(), s,
-                        localUser.getDisplayColor() );
+                DefaultChatMessage msg = new DefaultChatMessage(
+                        localUser.getName(), localUser.getDisplayName(),
+                        localUser.getDisplayColor(), s );
                 messageHandler.sendMessage( msg );
             } catch( Exception e )
             {

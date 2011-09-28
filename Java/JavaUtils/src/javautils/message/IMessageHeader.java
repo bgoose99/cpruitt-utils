@@ -1,57 +1,59 @@
 package javautils.message;
 
-import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.util.Date;
 
-/*******************************************************************************
- * Message interface.
- ******************************************************************************/
-public interface IMessage
+public interface IMessageHeader
 {
     /***************************************************************************
-     * Returns the message header.
+     * Returns a hash of the sender.
      * 
      * @return
      **************************************************************************/
-    public IMessageHeader getMessageHeader();
+    public int getSenderHash();
 
     /***************************************************************************
-     * Returns a string representation of this message.
+     * Sets the hash of the sender.
+     * 
+     * @param hash
+     **************************************************************************/
+    public void setSenderHash( int hash );
+
+    /***************************************************************************
+     * Returns the message type.
      * 
      * @return
      **************************************************************************/
-    public String getMessage();
+    public MessageType getMessageType();
 
     /***************************************************************************
-     * Returns the sender of this message.
+     * Sets the message type.
+     * 
+     * @param type
+     **************************************************************************/
+    public void setMessageType( MessageType type );
+
+    /***************************************************************************
+     * Returns the message length (including the length of the header).
      * 
      * @return
      **************************************************************************/
-    public String getSender();
+    public long getMessageLength();
 
     /***************************************************************************
-     * Returns the time this message was created.
+     * Sets the message length.
      * 
-     * @return
+     * @param length
      **************************************************************************/
-    public Date getDate();
+    public void setMessageLength( long length );
 
     /***************************************************************************
-     * Returns the color associated with this message.
-     * 
-     * @return
-     **************************************************************************/
-    public Color getDisplayColor();
-
-    /***************************************************************************
-     * Writes this message to a {@link DataOutputStream}.
+     * Writes this header to a {@link DataOutputStream}.
      * 
      * @param stream
      * @throws Exception
      **************************************************************************/
-    public void messageToBinaryStream( DataOutputStream stream )
+    public void headerToBinaryStream( DataOutputStream stream )
             throws Exception;
 
     /***************************************************************************
@@ -61,6 +63,6 @@ public interface IMessage
      * @return
      * @throws Exception
      **************************************************************************/
-    public IMessage binaryStreamToMessage( DataInputStream stream )
+    public IMessageHeader binaryStreamToHeader( DataInputStream stream )
             throws Exception;
 }

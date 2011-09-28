@@ -1,9 +1,11 @@
 package data;
 
 import java.awt.Color;
+import java.net.InetAddress;
 
 public class ChatUser implements IUser
 {
+    private String name;
     private String displayName;
     private Color displayColor;
     private boolean available;
@@ -15,6 +17,15 @@ public class ChatUser implements IUser
 
     public ChatUser( String name, String colorRGB, boolean isAvailable )
     {
+        try
+        {
+            this.name = System.getProperty( "user.name" )
+                    + InetAddress.getLocalHost().getHostName() + "@";
+        } catch( Exception e )
+        {
+            this.name = System.getProperty( "user.name" ) + "@unknown.host";
+        }
+
         this.displayName = name;
         this.available = isAvailable;
         try
@@ -24,6 +35,12 @@ public class ChatUser implements IUser
         {
             displayColor = Color.black;
         }
+    }
+
+    @Override
+    public String getName()
+    {
+        return name;
     }
 
     @Override
