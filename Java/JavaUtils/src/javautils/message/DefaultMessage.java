@@ -2,10 +2,12 @@ package javautils.message;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.util.Date;
 
 public class DefaultMessage implements IMessage
 {
     private String sender;
+    private Date date;
     private String message;
 
     /***************************************************************************
@@ -36,6 +38,7 @@ public class DefaultMessage implements IMessage
 
         this.sender = sender;
         this.message = message;
+        date = new Date();
     }
 
     /*
@@ -63,6 +66,17 @@ public class DefaultMessage implements IMessage
     /*
      * (non-Javadoc)
      * 
+     * @see javautils.message.IMessage#getDate()
+     */
+    @Override
+    public Date getDate()
+    {
+        return date;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see
      * javautils.chat.IMessage#messageToBinaryStream(java.io.DataOutputStream)
      */
@@ -70,8 +84,14 @@ public class DefaultMessage implements IMessage
     public void messageToBinaryStream( DataOutputStream stream )
             throws Exception
     {
+        // sender
         stream.writeInt( sender.length() );
         stream.writeBytes( sender );
+
+        // date
+        stream.writeLong( date.getTime() );
+
+        // message
         stream.writeInt( message.length() );
         stream.writeBytes( message );
     }
@@ -86,12 +106,17 @@ public class DefaultMessage implements IMessage
     public IMessage binaryStreamToMessage( DataInputStream stream )
             throws Exception
     {
+        // sender
         int len = stream.readInt();
 
         byte[] msg = new byte[len];
         stream.read( msg, 0, len );
         sender = new String( msg );
 
+        // date
+        date = new Date( stream.readLong() );
+
+        // message
         len = stream.readInt();
 
         msg = new byte[len];

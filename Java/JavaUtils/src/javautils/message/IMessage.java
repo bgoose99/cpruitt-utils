@@ -2,6 +2,7 @@ package javautils.message;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.util.Date;
 
 /*******************************************************************************
  * Message interface.
@@ -21,6 +22,13 @@ public interface IMessage
      * @return
      **************************************************************************/
     public String getSender();
+
+    /***************************************************************************
+     * Returns the time this message was created.
+     * 
+     * @return
+     **************************************************************************/
+    public Date getDate();
 
     /***************************************************************************
      * Writes this message to a {@link DataOutputStream}.

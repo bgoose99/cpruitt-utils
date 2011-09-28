@@ -29,7 +29,6 @@ public class MessageHandler extends Thread implements IMessageHandler
     private short timeToLive;
     private int largestMessage;
     private boolean running;
-    private IMessageDisplay display;
     private MessageProcessor processor;
 
     /***************************************************************************
@@ -45,7 +44,6 @@ public class MessageHandler extends Thread implements IMessageHandler
     {
         multicastAddress = InetAddress.getByName( hostName );
         this.port = port;
-        this.display = display;
         connected = false;
         msSocketTimeout = 1000;
         timeToLive = 20;
@@ -146,7 +144,6 @@ public class MessageHandler extends Thread implements IMessageHandler
             packet.setAddress( multicastAddress );
             packet.setPort( port );
             socket.send( packet );
-            display.addMessage( msg );
         }
     }
 
