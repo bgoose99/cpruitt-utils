@@ -1,5 +1,6 @@
 package ui;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -17,6 +18,7 @@ import javautils.message.MessageHandler;
 import javautils.task.ICompletable;
 
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -26,6 +28,7 @@ import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
 import data.ChatUser;
+import data.IUser;
 
 /*******************************************************************************
  * This class contains the main UI elements of the ChatterBox application.
@@ -36,10 +39,12 @@ public class ChatterBoxFrame extends JFrame
     private JButton connectButton;
     private JButton disconnectButton;
     private JButton trashButton;
+    private JButton colorButton;
     private ChatPanel chatPanel;
     private UserPanel userPanel;
     private MessagePanel messagePanel;
     private MessageHandler messageHandler = null;
+    private IUser user;
 
     /***************************************************************************
      * Constructor
@@ -48,16 +53,18 @@ public class ChatterBoxFrame extends JFrame
     {
         chatPanel = new ChatPanel();
         userPanel = new UserPanel();
-
         Preferences.initialize( System.getProperty( "user.home" )
-                + "/.ChatterBoxPrefs", "user", "autoconnect", "host", "port" );
+                + "/.ChatterBoxPrefs", "user", "autoconnect", "host", "port",
+                "color" );
         if( !Preferences.exists() )
         {
             showPreferenceDialog();
         }
         Preferences.readPreferences();
+        user = new ChatUser( Preferences.getPreference( "user" ),
+                Preferences.getPreference( "color" ), true );
 
-        messagePanel = new MessagePanel();
+        messagePanel = new MessagePanel( user );
 
         userPanel.addUser( new ChatUser( "Big Long Name", true ) );
         userPanel.addUser( new ChatUser( "User 2", false ) );
@@ -126,6 +133,12 @@ public class ChatterBoxFrame extends JFrame
         trashButton.addActionListener( new TrashListener() );
         trashButton.setToolTipText( "Clear the current conversation" );
 
+        colorButton = new JButton( IconManager.getIcon(
+                IconManager.COLOR_WHEEL, IconSize.X16 ) );
+        colorButton.setFocusable( false );
+        colorButton.addActionListener( new ColorListener() );
+        colorButton.setToolTipText( "Choose a display color for your messages" );
+
         toolbar = new JToolBar();
         toolbar.setFloatable( false );
         toolbar.setBorderPainted( false );
@@ -133,6 +146,8 @@ public class ChatterBoxFrame extends JFrame
         toolbar.add( disconnectButton );
         toolbar.addSeparator();
         toolbar.add( trashButton );
+        toolbar.addSeparator();
+        toolbar.add( colorButton );
     }
 
     /***************************************************************************
@@ -227,11 +242,26 @@ public class ChatterBoxFrame extends JFrame
     }
 
     /***************************************************************************
+     * Presents the user with a dialog allowing them to select a custom color.
+     **************************************************************************/
+    private void chooseDisplayColor()
+    {
+        Color c = JColorChooser.showDialog( this, "Choose custom color",
+                user.getDisplayColor() );
+        if( c != null )
+        {
+            user.setDisplayColor( c );
+            Preferences.setPreference( "color", new String( "" + c.getRGB() ) );
+        }
+    }
+
+    /***************************************************************************
      * Exits this application.
      **************************************************************************/
     private void exit()
     {
         disconnect();
+        Preferences.writePreferences();
         System.out.println( "Exiting" );
         System.exit( 0 );
     }
@@ -305,6 +335,18 @@ public class ChatterBoxFrame extends JFrame
         public void actionPerformed( ActionEvent e )
         {
             chatPanel.clear();
+        }
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private class ColorListener implements ActionListener
+    {
+        @Override
+        public void actionPerformed( ActionEvent e )
+        {
+            chooseDisplayColor();
         }
     }
 

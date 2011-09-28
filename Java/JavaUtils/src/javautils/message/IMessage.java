@@ -1,5 +1,6 @@
 package javautils.message;
 
+import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.Date;
@@ -29,6 +30,13 @@ public interface IMessage
      * @return
      **************************************************************************/
     public Date getDate();
+
+    /***************************************************************************
+     * Returns the color associated with this message.
+     * 
+     * @return
+     **************************************************************************/
+    public Color getColor();
 
     /***************************************************************************
      * Writes this message to a {@link DataOutputStream}.

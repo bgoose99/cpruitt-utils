@@ -11,14 +11,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import data.IUser;
+
 public class MessagePanel extends JPanel
 {
     private JTextArea textArea;
     private JScrollPane scrollPane;
     private IMessageHandler messageHandler;
+    private IUser localUser;
 
-    public MessagePanel()
+    public MessagePanel( IUser localUser )
     {
+        this.localUser = localUser;
         textArea = new JTextArea();
         textArea.addKeyListener( new MessagePanelKeyAdapter() );
         scrollPane = new JScrollPane( textArea );
@@ -49,7 +53,9 @@ public class MessagePanel extends JPanel
         {
             try
             {
-                DefaultMessage msg = new DefaultMessage( "Dummy", s );
+                DefaultMessage msg = new DefaultMessage(
+                        localUser.getDisplayName(), s,
+                        localUser.getDisplayColor() );
                 messageHandler.sendMessage( msg );
             } catch( Exception e )
             {

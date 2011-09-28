@@ -38,6 +38,7 @@ public final class IconManager
     public static final String CANCEL = "cancel.png";
     public static final String CLOCK = "clock.png";
     public static final String COG = "cog.png";
+    public static final String COLOR_WHEEL = "color_wheel.png";
     public static final String CONNECT = "connect.png";
     public static final String CUT = "cut.png";
     public static final String DICE = "dice.png";

@@ -1,5 +1,6 @@
 package javautils.message;
 
+import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.Date;
@@ -9,6 +10,7 @@ public class DefaultMessage implements IMessage
     private String sender;
     private Date date;
     private String message;
+    private Color color;
 
     /***************************************************************************
      * Constructor
@@ -26,6 +28,20 @@ public class DefaultMessage implements IMessage
      **************************************************************************/
     public DefaultMessage( String sender, String message ) throws Exception
     {
+        this( sender, message, Color.black );
+    }
+
+    /***************************************************************************
+     * Constructor
+     * 
+     * @param sender
+     * @param message
+     * @param color
+     * @throws Exception
+     **************************************************************************/
+    public DefaultMessage( String sender, String message, Color color )
+            throws Exception
+    {
         if( sender.length() > MessageUtils.MAX_MESSAGE_SIZE )
         {
             throw new Exception( "Sender ID contains too many characters" );
@@ -39,6 +55,7 @@ public class DefaultMessage implements IMessage
         this.sender = sender;
         this.message = message;
         date = new Date();
+        this.color = color;
     }
 
     /*
@@ -77,6 +94,17 @@ public class DefaultMessage implements IMessage
     /*
      * (non-Javadoc)
      * 
+     * @see javautils.message.IMessage#getColor()
+     */
+    @Override
+    public Color getColor()
+    {
+        return color;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see
      * javautils.chat.IMessage#messageToBinaryStream(java.io.DataOutputStream)
      */
@@ -94,6 +122,9 @@ public class DefaultMessage implements IMessage
         // message
         stream.writeInt( message.length() );
         stream.writeBytes( message );
+
+        // color
+        stream.writeInt( color.getRGB() );
     }
 
     /*
@@ -122,6 +153,9 @@ public class DefaultMessage implements IMessage
         msg = new byte[len];
         stream.read( msg, 0, len );
         message = new String( msg );
+
+        // color
+        color = new Color( stream.readInt() );
 
         return this;
     }

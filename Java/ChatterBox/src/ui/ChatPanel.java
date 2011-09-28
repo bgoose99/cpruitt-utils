@@ -57,8 +57,7 @@ public class ChatPanel extends JPanel implements IMessageDisplay
     {
         SimpleAttributeSet attr = new SimpleAttributeSet();
 
-        // TODO: different colors for different users
-        Color fg = Color.blue;
+        Color fg = msg.getColor();
 
         StyleConstants.setFontFamily( attr, "Dialog" );
         StyleConstants.setFontSize( attr, 12 );
