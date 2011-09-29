@@ -1,19 +1,14 @@
 package javautils.message;
 
 /*******************************************************************************
- * Message display interface.
+ * Heartbeat listener interface.
  ******************************************************************************/
-public interface IMessageDisplay
+public interface IHeartbeatListener
 {
     /***************************************************************************
-     * Adds a message to this display.
+     * Receives a heartbeat message.
      * 
      * @param msg
      **************************************************************************/
-    public void addMessage( IChatMessage msg );
-
-    /***************************************************************************
-     * Clears the content of the display.
-     **************************************************************************/
-    public void clear();
+    public void receiveHeartbeat( IHeartbeatMessage msg );
 }

@@ -14,6 +14,7 @@ import java.net.UnknownHostException;
 import javautils.IconManager;
 import javautils.IconManager.IconSize;
 import javautils.io.Preferences;
+import javautils.message.IHeartbeatListener;
 import javautils.message.MessageHandler;
 import javautils.task.ICompletable;
 
@@ -28,6 +29,8 @@ import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
 import data.ChatUser;
+import data.HeartbeatListener;
+import data.HeartbeatTask;
 import data.IUser;
 
 /*******************************************************************************
@@ -38,12 +41,15 @@ public class ChatterBoxFrame extends JFrame
     private JToolBar toolbar;
     private JButton connectButton;
     private JButton disconnectButton;
+    private JButton availableButton;
     private JButton trashButton;
     private JButton colorButton;
     private ChatPanel chatPanel;
     private UserPanel userPanel;
     private MessagePanel messagePanel;
     private MessageHandler messageHandler = null;
+    private IHeartbeatListener heartbeatListener;
+    private HeartbeatTask heartbeatTask;
     private IUser user;
 
     /***************************************************************************
@@ -64,15 +70,30 @@ public class ChatterBoxFrame extends JFrame
         user = new ChatUser( Preferences.getPreference( "user" ),
                 Preferences.getPreference( "color" ), true );
 
-        messagePanel = new MessagePanel( user );
+        heartbeatListener = new HeartbeatListener( userPanel, user );
+        heartbeatTask = new HeartbeatTask( user );
 
-        userPanel.addUser( new ChatUser( "Big Long Name", true ) );
-        userPanel.addUser( new ChatUser( "User 2", false ) );
+        messagePanel = new MessagePanel( user );
 
         setupMenu();
         setupToolbar();
         setupFrame();
-        setupMessageHandler();
+
+        try
+        {
+            boolean autoConnect = Boolean.parseBoolean( Preferences
+                    .getPreference( "autoconnect" ) );
+            if( autoConnect )
+            {
+                connect();
+            } else
+            {
+                disconnect();
+            }
+        } catch( Exception e )
+        {
+            e.printStackTrace();
+        }
     }
 
     /***************************************************************************
@@ -127,6 +148,12 @@ public class ChatterBoxFrame extends JFrame
         disconnectButton.addActionListener( new DisconnectListener() );
         disconnectButton.setToolTipText( "Disconnect from the current address" );
 
+        availableButton = new JButton( IconManager.getIcon(
+                IconManager.USER_SILHOUETTE, IconSize.X16 ) );
+        availableButton.setFocusable( false );
+        availableButton.addActionListener( new AvailabilityListener() );
+        availableButton.setToolTipText( "Go unavailable" );
+
         trashButton = new JButton( IconManager.getIcon( IconManager.MAIL_TRASH,
                 IconSize.X16 ) );
         trashButton.setFocusable( false );
@@ -144,6 +171,7 @@ public class ChatterBoxFrame extends JFrame
         toolbar.setBorderPainted( false );
         toolbar.add( connectButton );
         toolbar.add( disconnectButton );
+        toolbar.add( availableButton );
         toolbar.addSeparator();
         toolbar.add( trashButton );
         toolbar.addSeparator();
@@ -183,16 +211,13 @@ public class ChatterBoxFrame extends JFrame
 
         String host = Preferences.getPreference( "host" );
         int port;
-        boolean autoConnect;
 
         try
         {
             port = Integer.parseInt( Preferences.getPreference( "port" ) );
-            autoConnect = Boolean.parseBoolean( Preferences
-                    .getPreference( "autoconnect" ) );
-            messageHandler = new MessageHandler( host, port, chatPanel );
-            if( autoConnect )
-                connect();
+
+            messageHandler = new MessageHandler( host, port, chatPanel,
+                    heartbeatListener );
         } catch( UnknownHostException e )
         {
             JOptionPane.showMessageDialog( this, "Unknown host: " + host,
@@ -208,6 +233,7 @@ public class ChatterBoxFrame extends JFrame
         }
 
         messagePanel.setMessageHandler( messageHandler );
+        heartbeatTask.setMessageHandler( messageHandler );
     }
 
     /***************************************************************************
@@ -215,10 +241,12 @@ public class ChatterBoxFrame extends JFrame
      **************************************************************************/
     private void connect()
     {
+        setupMessageHandler();
         if( messageHandler != null )
             messageHandler.start();
         connectButton.setEnabled( false );
         disconnectButton.setEnabled( true );
+        heartbeatTask.startTask();
     }
 
     /***************************************************************************
@@ -230,6 +258,27 @@ public class ChatterBoxFrame extends JFrame
             messageHandler.stopThread();
         connectButton.setEnabled( true );
         disconnectButton.setEnabled( false );
+        heartbeatTask.stopTask();
+    }
+
+    /***************************************************************************
+     * Switches the user's availability.
+     **************************************************************************/
+    private void switchAvailability()
+    {
+        user.setAvailable( !user.isAvailable() );
+        if( user.isAvailable() )
+        {
+            availableButton.setIcon( IconManager.getIcon(
+                    IconManager.USER_SILHOUETTE, IconSize.X16 ) );
+            availableButton.setToolTipText( "Go unavailable" );
+        } else
+        {
+            availableButton.setIcon( IconManager.getIcon( IconManager.USER,
+                    IconSize.X16 ) );
+            availableButton.setToolTipText( "Go available" );
+        }
+        userPanel.updateDisplay();
     }
 
     /***************************************************************************
@@ -294,6 +343,7 @@ public class ChatterBoxFrame extends JFrame
         {
             disconnect();
             setupMessageHandler();
+            user.setDisplayName( Preferences.getPreference( "user" ) );
         }
 
         @Override
@@ -323,6 +373,18 @@ public class ChatterBoxFrame extends JFrame
         public void actionPerformed( ActionEvent e )
         {
             disconnect();
+        }
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private class AvailabilityListener implements ActionListener
+    {
+        @Override
+        public void actionPerformed( ActionEvent e )
+        {
+            switchAvailability();
         }
     }
 

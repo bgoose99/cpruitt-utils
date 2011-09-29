@@ -1,36 +1,30 @@
 package javautils.message;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.util.Date;
 
 /*******************************************************************************
- * Message interface.
+ * Heartbeat message interface.
  ******************************************************************************/
-public interface IMessage
+public interface IHeartbeatMessage extends IMessage
 {
     /***************************************************************************
-     * Returns the message header.
+     * Returns the time this message was sent.
      * 
      * @return
      **************************************************************************/
-    public IMessageHeader getMessageHeader();
+    public Date getSendTime();
 
     /***************************************************************************
-     * Writes this message to a {@link DataOutputStream}.
+     * Returns the availability status of the user who sent this heartbeat.
      * 
-     * @param stream
-     * @throws Exception
-     **************************************************************************/
-    public void messageToBinaryStream( DataOutputStream stream )
-            throws Exception;
-
-    /***************************************************************************
-     * Reads this message from the supplied {@link DataInputStream}.
-     * 
-     * @param stream
      * @return
-     * @throws Exception
      **************************************************************************/
-    public IMessage binaryStreamToMessage( DataInputStream stream )
-            throws Exception;
+    public boolean isUserAvailable();
+
+    /***************************************************************************
+     * Returns the display name of the user who sent this heartbeat.
+     * 
+     * @return
+     **************************************************************************/
+    public String getUserDisplayName();
 }

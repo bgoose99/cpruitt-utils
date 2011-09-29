@@ -1,36 +1,39 @@
 package javautils.message;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.awt.Color;
+import java.util.Date;
 
 /*******************************************************************************
- * Message interface.
+ * Chat message interface.
  ******************************************************************************/
-public interface IMessage
+public interface IChatMessage extends IMessage
 {
     /***************************************************************************
-     * Returns the message header.
+     * Returns a string representation of this message.
      * 
      * @return
      **************************************************************************/
-    public IMessageHeader getMessageHeader();
+    public String getMessage();
 
     /***************************************************************************
-     * Writes this message to a {@link DataOutputStream}.
+     * Returns the sender of this message.
      * 
-     * @param stream
-     * @throws Exception
-     **************************************************************************/
-    public void messageToBinaryStream( DataOutputStream stream )
-            throws Exception;
-
-    /***************************************************************************
-     * Reads this message from the supplied {@link DataInputStream}.
-     * 
-     * @param stream
      * @return
-     * @throws Exception
      **************************************************************************/
-    public IMessage binaryStreamToMessage( DataInputStream stream )
-            throws Exception;
+    public String getSender();
+
+    /***************************************************************************
+     * Returns the time this message was created.
+     * 
+     * @return
+     **************************************************************************/
+    public Date getDate();
+
+    /***************************************************************************
+     * Returns the color associated with this message.
+     * 
+     * @return
+     **************************************************************************/
+    public Color getDisplayColor();
+
 }

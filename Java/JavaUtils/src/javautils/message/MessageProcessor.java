@@ -16,16 +16,19 @@ public class MessageProcessor extends Thread
     private List<DatagramPacket> messages;
     private boolean running = true;
     private IMessageDisplay display;
+    private IHeartbeatListener heartbeatListener;
 
     /***************************************************************************
      * Constructor
      * 
      * @param display
      **************************************************************************/
-    public MessageProcessor( IMessageDisplay display )
+    public MessageProcessor( IMessageDisplay display,
+            IHeartbeatListener listener )
     {
         messages = new ArrayList<DatagramPacket>();
         this.display = display;
+        this.heartbeatListener = listener;
     }
 
     /*
@@ -93,8 +96,7 @@ public class MessageProcessor extends Thread
     {
         if( msg != null )
         {
-            UpdateMessageDisplayRunnable runnable = new UpdateMessageDisplayRunnable(
-                    msg );
+            HandleMessageRunnable runnable = new HandleMessageRunnable( msg );
             SwingUtilities.invokeLater( runnable );
         }
     }
@@ -114,14 +116,14 @@ public class MessageProcessor extends Thread
     }
 
     /***************************************************************************
-     * Convenience class that allows us to update the display for messages out
-     * of the way of this thread's execution.
+     * Convenience class that allows us to handle the message out of the way of
+     * this thread's execution.
      **************************************************************************/
-    private class UpdateMessageDisplayRunnable implements Runnable
+    private class HandleMessageRunnable implements Runnable
     {
         private IMessage msg;
 
-        public UpdateMessageDisplayRunnable( IMessage msg )
+        public HandleMessageRunnable( IMessage msg )
         {
             this.msg = msg;
         }
@@ -129,9 +131,22 @@ public class MessageProcessor extends Thread
         @Override
         public void run()
         {
-            if( MessageProcessor.this.display != null )
+            switch( msg.getMessageHeader().getMessageType() )
             {
-                MessageProcessor.this.display.addMessage( msg );
+            case CHAT:
+                if( MessageProcessor.this.display != null )
+                {
+                    MessageProcessor.this.display
+                            .addMessage( (IChatMessage)msg );
+                }
+                break;
+            case HEARTBEAT:
+                if( MessageProcessor.this.heartbeatListener != null )
+                {
+                    MessageProcessor.this.heartbeatListener
+                            .receiveHeartbeat( (IHeartbeatMessage)msg );
+                }
+                break;
             }
         }
     }

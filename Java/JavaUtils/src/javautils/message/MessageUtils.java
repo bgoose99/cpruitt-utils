@@ -35,11 +35,12 @@ public final class MessageUtils
         switch( header.getMessageType() )
         {
         case CHAT:
-            DefaultChatMessage msg = new DefaultChatMessage( header );
-            return msg.binaryStreamToMessage( dataStream );
+            DefaultChatMessage chatMessage = new DefaultChatMessage( header );
+            return chatMessage.binaryStreamToMessage( dataStream );
         case HEARTBEAT:
-            // TODO: create heartbeat message
-            return null;
+            DefaultHeartbeatMessage heartbeatMessage = new DefaultHeartbeatMessage(
+                    header );
+            return heartbeatMessage.binaryStreamToMessage( dataStream );
         default:
             throw new Exception( "Invalid message type: "
                     + header.getMessageType() );

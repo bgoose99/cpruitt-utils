@@ -39,8 +39,8 @@ public class MessageHandler extends Thread implements IMessageHandler
      * @param display
      * @throws Exception
      **************************************************************************/
-    public MessageHandler( String hostName, int port, IMessageDisplay display )
-            throws Exception
+    public MessageHandler( String hostName, int port, IMessageDisplay display,
+            IHeartbeatListener listener ) throws Exception
     {
         multicastAddress = InetAddress.getByName( hostName );
         this.port = port;
@@ -49,7 +49,7 @@ public class MessageHandler extends Thread implements IMessageHandler
         timeToLive = 20;
         largestMessage = MessageUtils.MAX_MESSAGE_SIZE;
         running = true;
-        processor = new MessageProcessor( display );
+        processor = new MessageProcessor( display, listener );
     }
 
     /***************************************************************************

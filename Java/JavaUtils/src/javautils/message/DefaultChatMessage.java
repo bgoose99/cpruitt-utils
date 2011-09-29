@@ -5,7 +5,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.Date;
 
-public class DefaultChatMessage implements IMessage
+public class DefaultChatMessage implements IChatMessage
 {
     private IMessageHeader header;
 

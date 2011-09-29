@@ -13,6 +13,9 @@ import javax.swing.JTextArea;
 
 import data.IUser;
 
+/*******************************************************************************
+ * This panel provides a place for the user to type a message.
+ **************************************************************************/
 public class MessagePanel extends JPanel
 {
     private JTextArea textArea;
@@ -20,6 +23,11 @@ public class MessagePanel extends JPanel
     private IMessageHandler messageHandler;
     private IUser localUser;
 
+    /***************************************************************************
+     * Constructor
+     * 
+     * @param localUser
+     **************************************************************************/
     public MessagePanel( IUser localUser )
     {
         this.localUser = localUser;
@@ -29,22 +37,36 @@ public class MessagePanel extends JPanel
         setupPanel();
     }
 
+    /***************************************************************************
+     * Sets up this panel.
+     **************************************************************************/
     private void setupPanel()
     {
         setLayout( new BorderLayout() );
         add( scrollPane, BorderLayout.CENTER );
     }
 
+    /***************************************************************************
+     * Returns the user's message.
+     * 
+     * @return
+     **************************************************************************/
     public String getMessage()
     {
         return textArea.getText();
     }
 
+    /***************************************************************************
+     * Clears the message field.
+     **************************************************************************/
     public void clearMessage()
     {
         textArea.setText( "" );
     }
 
+    /***************************************************************************
+     * Sends the user's message.
+     **************************************************************************/
     private void sendMessage()
     {
         String s = getMessage();
@@ -64,11 +86,19 @@ public class MessagePanel extends JPanel
         }
     }
 
+    /***************************************************************************
+     * Sets the message handler associated with this panel.
+     * 
+     * @param handler
+     **************************************************************************/
     public void setMessageHandler( IMessageHandler handler )
     {
         this.messageHandler = handler;
     }
 
+    /***************************************************************************
+     * Custom {@link KeyAdapter} used to alter the behavior of the Enter key.
+     **************************************************************************/
     private class MessagePanelKeyAdapter extends KeyAdapter
     {
         @Override

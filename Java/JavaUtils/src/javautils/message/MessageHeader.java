@@ -135,10 +135,10 @@ public class MessageHeader implements IMessageHeader
     public IMessageHeader binaryStreamToHeader( DataInputStream stream )
             throws Exception
     {
-        int i = stream.readInt();
-        MessageType t = MessageType.fromValue( stream.readInt() );
-        long l = stream.readLong();
+        setSenderHash( stream.readInt() );
+        setMessageType( MessageType.fromValue( stream.readInt() ) );
+        setMessageLength( stream.readLong() );
 
-        return new MessageHeader( i, t, l );
+        return this;
     }
 }

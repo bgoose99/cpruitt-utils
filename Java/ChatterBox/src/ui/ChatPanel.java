@@ -5,7 +5,7 @@ import java.awt.Color;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-import javautils.message.IMessage;
+import javautils.message.IChatMessage;
 import javautils.message.IMessageDisplay;
 import javautils.swing.JAppendableTextPane;
 
@@ -53,7 +53,7 @@ public class ChatPanel extends JPanel implements IMessageDisplay
      * javautils.message.IMessageDisplay#addMessage(javautils.message.IMessage)
      */
     @Override
-    public void addMessage( IMessage msg )
+    public void addMessage( IChatMessage msg )
     {
         SimpleAttributeSet attr = new SimpleAttributeSet();
 

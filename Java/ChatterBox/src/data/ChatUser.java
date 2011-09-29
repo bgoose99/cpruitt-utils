@@ -10,12 +10,25 @@ public class ChatUser implements IUser
     private Color displayColor;
     private boolean available;
 
-    public ChatUser( String name, boolean isAvailable )
+    /***************************************************************************
+     * Constructor
+     * 
+     * @param displayName
+     * @param isAvailable
+     **************************************************************************/
+    public ChatUser( String displayName, boolean isAvailable )
     {
-        this( name, "255", isAvailable );
+        this( displayName, "255", isAvailable );
     }
 
-    public ChatUser( String name, String colorRGB, boolean isAvailable )
+    /***************************************************************************
+     * Constructor
+     * 
+     * @param displayName
+     * @param colorRGB
+     * @param isAvailable
+     **************************************************************************/
+    public ChatUser( String displayName, String colorRGB, boolean isAvailable )
     {
         try
         {
@@ -26,7 +39,7 @@ public class ChatUser implements IUser
             this.name = System.getProperty( "user.name" ) + "@unknown.host";
         }
 
-        this.displayName = name;
+        this.displayName = displayName;
         this.available = isAvailable;
         try
         {
@@ -37,42 +50,77 @@ public class ChatUser implements IUser
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see data.IUser#getName()
+     */
     @Override
     public String getName()
     {
         return name;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see data.IUser#getDisplayName()
+     */
     @Override
     public String getDisplayName()
     {
         return displayName;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see data.IUser#setDisplayName(java.lang.String)
+     */
     @Override
     public void setDisplayName( String displayName )
     {
         this.displayName = displayName;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see data.IUser#getDisplayColor()
+     */
     @Override
     public Color getDisplayColor()
     {
         return displayColor;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see data.IUser#setDisplayColor(java.awt.Color)
+     */
     @Override
     public void setDisplayColor( Color color )
     {
         displayColor = color;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see data.IUser#isAvailable()
+     */
     @Override
     public boolean isAvailable()
     {
         return available;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see data.IUser#setAvailable(boolean)
+     */
     @Override
     public void setAvailable( boolean available )
     {
