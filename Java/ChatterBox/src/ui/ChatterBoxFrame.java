@@ -189,13 +189,13 @@ public class ChatterBoxFrame extends JFrame
         add( toolbar, new GridBagConstraints( 0, 0, 2, 1, 1.0, 0.01,
                 GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
                 new Insets( 3, 3, 3, 3 ), 0, 0 ) );
-        add( chatPanel, new GridBagConstraints( 0, 1, 1, 1, 0.85, 0.80,
+        add( chatPanel, new GridBagConstraints( 0, 1, 1, 1, 0.90, 0.80,
                 GridBagConstraints.WEST, GridBagConstraints.BOTH, new Insets(
                         3, 3, 3, 3 ), 0, 0 ) );
-        add( userPanel, new GridBagConstraints( 1, 1, 1, 1, 0.15, 0.80,
+        add( userPanel, new GridBagConstraints( 1, 1, 1, 1, 0.10, 0.80,
                 GridBagConstraints.EAST, GridBagConstraints.BOTH, new Insets(
                         3, 3, 3, 3 ), 0, 0 ) );
-        add( messagePanel, new GridBagConstraints( 0, 2, 2, 1, 0.9, 0.20,
+        add( messagePanel, new GridBagConstraints( 0, 2, 2, 1, 1.0, 0.20,
                 GridBagConstraints.WEST, GridBagConstraints.BOTH, new Insets(
                         3, 3, 3, 3 ), 0, 0 ) );
 
