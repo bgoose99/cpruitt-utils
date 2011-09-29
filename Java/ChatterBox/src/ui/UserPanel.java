@@ -54,7 +54,7 @@ public class UserPanel extends JPanel implements IUserDisplay
         scrollPane.repaint();
 
         PopupMessage popup = new PopupMessage( user.getDisplayName()
-                + " has entered the conversation", 3000, getLocationOnScreen() );
+                + " has entered the conversation", 2000, getLocationOnScreen() );
         popup.showPopup();
     }
 

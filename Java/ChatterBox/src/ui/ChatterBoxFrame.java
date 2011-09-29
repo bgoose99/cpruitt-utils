@@ -1,6 +1,7 @@
 package ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -25,6 +26,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
@@ -46,6 +48,7 @@ public class ChatterBoxFrame extends JFrame
     private JButton colorButton;
     private ChatPanel chatPanel;
     private UserPanel userPanel;
+    private JSplitPane splitPane;
     private MessagePanel messagePanel;
     private MessageHandler messageHandler = null;
     private IHeartbeatListener heartbeatListener;
@@ -74,6 +77,9 @@ public class ChatterBoxFrame extends JFrame
         heartbeatTask = new HeartbeatTask( user );
 
         messagePanel = new MessagePanel( user );
+
+        splitPane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT, chatPanel,
+                userPanel );
 
         setupMenu();
         setupToolbar();
@@ -186,18 +192,17 @@ public class ChatterBoxFrame extends JFrame
         setTitle( "ChatterBox" );
         setSize( 800, 400 );
         setLayout( new GridBagLayout() );
-        add( toolbar, new GridBagConstraints( 0, 0, 2, 1, 1.0, 0.01,
+        add( toolbar, new GridBagConstraints( 0, 0, 1, 1, 1.0, 0.01,
                 GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
                 new Insets( 3, 3, 3, 3 ), 0, 0 ) );
-        add( chatPanel, new GridBagConstraints( 0, 1, 1, 1, 0.90, 0.80,
+        add( splitPane, new GridBagConstraints( 0, 1, 1, 1, 1.0, 0.80,
                 GridBagConstraints.WEST, GridBagConstraints.BOTH, new Insets(
                         3, 3, 3, 3 ), 0, 0 ) );
-        add( userPanel, new GridBagConstraints( 1, 1, 1, 1, 0.10, 0.80,
-                GridBagConstraints.EAST, GridBagConstraints.BOTH, new Insets(
-                        3, 3, 3, 3 ), 0, 0 ) );
-        add( messagePanel, new GridBagConstraints( 0, 2, 2, 1, 1.0, 0.20,
+        add( messagePanel, new GridBagConstraints( 0, 2, 1, 1, 1.0, 0.20,
                 GridBagConstraints.WEST, GridBagConstraints.BOTH, new Insets(
                         3, 3, 3, 3 ), 0, 0 ) );
+
+        chatPanel.setMinimumSize( new Dimension( 600, 100 ) );
 
         addWindowListener( new ChatterBoxWindowAdapter() );
     }
