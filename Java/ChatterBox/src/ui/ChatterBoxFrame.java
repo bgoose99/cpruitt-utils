@@ -34,6 +34,7 @@ import data.ChatUser;
 import data.HeartbeatListener;
 import data.HeartbeatTask;
 import data.IUser;
+import data.UserActivityMonitor;
 
 /*******************************************************************************
  * This class contains the main UI elements of the ChatterBox application.
@@ -54,6 +55,7 @@ public class ChatterBoxFrame extends JFrame
     private IHeartbeatListener heartbeatListener;
     private HeartbeatTask heartbeatTask;
     private IUser user;
+    private UserActivityMonitor activityMonitor;
 
     /***************************************************************************
      * Constructor
@@ -73,10 +75,13 @@ public class ChatterBoxFrame extends JFrame
         user = new ChatUser( Preferences.getPreference( "user" ),
                 Preferences.getPreference( "color" ), true );
 
+        activityMonitor = new UserActivityMonitor( user, this );
+
         heartbeatListener = new HeartbeatListener( userPanel, user );
         heartbeatTask = new HeartbeatTask( user );
 
         messagePanel = new MessagePanel( user );
+        messagePanel.setActivityMonitor( activityMonitor );
 
         splitPane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT, chatPanel,
                 userPanel );

@@ -12,6 +12,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import data.IUser;
+import data.IUserActivityMonitor;
 
 /*******************************************************************************
  * This panel provides a place for the user to type a message.
@@ -22,6 +23,7 @@ public class MessagePanel extends JPanel
     private JScrollPane scrollPane;
     private IMessageHandler messageHandler;
     private IUser localUser;
+    private IUserActivityMonitor activityMonitor = null;
 
     /***************************************************************************
      * Constructor
@@ -44,6 +46,16 @@ public class MessagePanel extends JPanel
     {
         setLayout( new BorderLayout() );
         add( scrollPane, BorderLayout.CENTER );
+    }
+
+    /***************************************************************************
+     * Sets the activity monitor for this panel.
+     * 
+     * @param monitor
+     **************************************************************************/
+    public void setActivityMonitor( IUserActivityMonitor monitor )
+    {
+        this.activityMonitor = monitor;
     }
 
     /***************************************************************************
@@ -104,6 +116,9 @@ public class MessagePanel extends JPanel
         @Override
         public void keyReleased( KeyEvent e )
         {
+            if( activityMonitor != null )
+                activityMonitor.updateActivity();
+
             if( e.getKeyCode() == KeyEvent.VK_ENTER )
             {
                 if( e.getModifiersEx() == KeyEvent.SHIFT_DOWN_MASK )

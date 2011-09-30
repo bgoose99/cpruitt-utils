@@ -9,11 +9,17 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.JList;
 
+/*******************************************************************************
+ * Custom list cell renderer for drawing the users.
+ ******************************************************************************/
 public class UserListCellRenderer extends DefaultListCellRenderer
 {
     private Icon userIcon;
     private Icon userAwayIcon;
 
+    /***************************************************************************
+     * Constructor
+     **************************************************************************/
     public UserListCellRenderer()
     {
         userIcon = IconManager.getIcon( IconManager.USER, IconSize.X32 );
@@ -21,6 +27,13 @@ public class UserListCellRenderer extends DefaultListCellRenderer
                 IconSize.X32 );
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * javax.swing.DefaultListCellRenderer#getListCellRendererComponent(javax
+     * .swing.JList, java.lang.Object, int, boolean, boolean)
+     */
     @Override
     public Component getListCellRendererComponent( JList list, Object value,
             int index, boolean isSelected, boolean cellHasFocus )
