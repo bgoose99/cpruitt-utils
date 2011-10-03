@@ -8,7 +8,8 @@ import java.io.DataOutputStream;
  * arbitrary message.
  ******************************************************************************/
 public class MessageFormatOption implements
-        IMessageSerializer<MessageFormatOption>
+        IMessageSerializer<MessageFormatOption>,
+        Comparable<MessageFormatOption>
 {
     public static final int SIZE = 4 + 4 + 4;
 
@@ -99,5 +100,16 @@ public class MessageFormatOption implements
         startIndex = stream.readInt();
         length = stream.readInt();
         return this;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo( MessageFormatOption o )
+    {
+        return this.startIndex - o.startIndex;
     }
 }

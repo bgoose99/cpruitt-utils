@@ -3,7 +3,7 @@ package javautils.message;
 public enum MessageFormatType
 {
     BOLD( 0 ), ITALIC( 1 ), UNDERLINE( 2 ), BOLD_AND_ITALIC( 3 ), BOLD_AND_UNDERLINE(
-            4 ), ITALIC_AND_UNDERLINE( 5 ), BOLD_ITALIC_AND_UNERLINE( 6 );
+            4 ), ITALIC_AND_UNDERLINE( 5 ), BOLD_ITALIC_AND_UNDERLINE( 6 );
 
     /** This value facilitates serialization. */
     private final int value;

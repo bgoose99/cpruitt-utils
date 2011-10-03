@@ -70,6 +70,11 @@ public final class IconManager
     public static final String RESULTSET_NEXT = "resultset_next.png";
     public static final String RESULTSET_PREVIOUS = "resultset_previous.png";
     public static final String STOP = "stop.png";
+    public static final String TEXT_BOLD = "text_bold.png";
+    public static final String TEXT_ITALIC = "text_italic.png";
+    public static final String TEXT_LOWERCASE = "text_lowercase.png";
+    public static final String TEXT_UNDERLINE = "text_underline.png";
+    public static final String TEXT_UPPERCASE = "text_uppercase.png";
     public static final String UNIVERSAL_BINARY = "universal_binary.png";
     public static final String USER = "user.png";
     public static final String USER_SILHOUETTE = "user_silhouette.png";

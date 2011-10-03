@@ -1,6 +1,7 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.awt.Point;
 
 import javautils.swing.PopupMessage;
 
@@ -53,8 +54,10 @@ public class UserPanel extends JPanel implements IUserDisplay
         listModel.addElement( user );
         scrollPane.repaint();
 
+        Point p = getLocationOnScreen();
+        p.y -= 20;
         PopupMessage popup = new PopupMessage( user.getDisplayName()
-                + " has entered the conversation", 2000, getLocationOnScreen() );
+                + " has joined the conversation", 2000, p );
         popup.showPopup();
     }
 
@@ -69,8 +72,10 @@ public class UserPanel extends JPanel implements IUserDisplay
         listModel.removeElement( user );
         scrollPane.repaint();
 
+        Point p = getLocationOnScreen();
+        p.y -= 20;
         PopupMessage popup = new PopupMessage( user.getDisplayName()
-                + " has left the conversation", 3000, getLocationOnScreen() );
+                + " has left the conversation", 2000, p );
         popup.showPopup();
     }
 

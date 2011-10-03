@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -158,6 +159,17 @@ public class DefaultChatMessage implements IChatMessage
     /*
      * (non-Javadoc)
      * 
+     * @see javautils.message.IChatMessage#getFormattingOptions()
+     */
+    @Override
+    public List<MessageFormatOption> getFormattingOptions()
+    {
+        return options;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see
      * javautils.message.IMessageSerializer#toBinaryStream(java.io.DataOutputStream
      * )
@@ -183,6 +195,7 @@ public class DefaultChatMessage implements IChatMessage
         if( options != null )
         {
             stream.writeInt( options.size() );
+            Collections.sort( options );
             for( MessageFormatOption o : options )
             {
                 o.toBinaryStream( stream );

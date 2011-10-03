@@ -4,9 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 import javautils.message.IChatMessage;
 import javautils.message.IMessageDisplay;
+import javautils.message.MessageFormatOption;
 import javautils.swing.JAppendableTextPane;
 
 import javax.swing.JPanel;
@@ -46,6 +48,83 @@ public class ChatPanel extends JPanel implements IMessageDisplay
         add( scrollPane, BorderLayout.CENTER );
     }
 
+    /***************************************************************************
+     * Adds a formatted message to the chat pane.
+     * 
+     * @param msg
+     **************************************************************************/
+    private void addFormattedMessage( IChatMessage msg )
+    {
+        List<MessageFormatOption> options = msg.getFormattingOptions();
+
+        // if there is no formatting, append regular text and return
+        if( options == null )
+        {
+            textPane.append( msg.getMessage() );
+            return;
+        }
+
+        SimpleAttributeSet attr = new SimpleAttributeSet();
+        StyleConstants.setFontFamily( attr, "Dialog" );
+        StyleConstants.setFontSize( attr, 12 );
+
+        int index = 0;
+        for( MessageFormatOption o : options )
+        {
+            if( index < o.getStartIndex() )
+            {
+                // append, no formatting
+                textPane.append( msg.getMessage().substring( index,
+                        o.getStartIndex() ) );
+                index = o.getStartIndex();
+            }
+
+            StyleConstants.setBold( attr, false );
+            StyleConstants.setItalic( attr, false );
+            StyleConstants.setUnderline( attr, false );
+
+            // append, with formatting
+            switch( o.getType() )
+            {
+            case BOLD:
+                StyleConstants.setBold( attr, true );
+                break;
+            case ITALIC:
+                StyleConstants.setItalic( attr, true );
+                break;
+            case UNDERLINE:
+                StyleConstants.setUnderline( attr, true );
+                break;
+            case BOLD_AND_ITALIC:
+                StyleConstants.setBold( attr, true );
+                StyleConstants.setItalic( attr, true );
+                break;
+            case BOLD_AND_UNDERLINE:
+                StyleConstants.setBold( attr, true );
+                StyleConstants.setUnderline( attr, true );
+                break;
+            case ITALIC_AND_UNDERLINE:
+                StyleConstants.setItalic( attr, true );
+                StyleConstants.setUnderline( attr, true );
+                break;
+            case BOLD_ITALIC_AND_UNDERLINE:
+                StyleConstants.setBold( attr, true );
+                StyleConstants.setItalic( attr, true );
+                StyleConstants.setUnderline( attr, true );
+                break;
+            }
+
+            textPane.append(
+                    msg.getMessage().substring( index, index + o.getLength() ),
+                    attr );
+            index += o.getLength();
+        }
+
+        // print the rest of the string, if necessary
+        if( index < msg.getMessage().length() )
+            textPane.append( msg.getMessage().substring( index ) );
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -66,8 +145,9 @@ public class ChatPanel extends JPanel implements IMessageDisplay
 
         StyleConstants.setBold( attr, true );
         textPane.append( msg.getSender(), attr );
+        textPane.append( ": " );
 
-        textPane.append( ": " + msg.getMessage() );
+        addFormattedMessage( msg );
     }
 
     /*

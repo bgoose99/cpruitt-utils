@@ -29,6 +29,7 @@ public class UserActivityMonitor implements IUserActivityMonitor
     public UserActivityMonitor( IUser localUser, Component parent )
     {
         this.localUser = localUser;
+        lastActive = new Date();
 
         // Create our timer to check activity every 5 seconds
         timer = new Timer( 5000, new TimerTask() );

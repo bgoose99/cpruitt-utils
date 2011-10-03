@@ -3,13 +3,21 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
 
+import javautils.IconManager;
+import javautils.IconManager.IconSize;
 import javautils.message.DefaultChatMessage;
 import javautils.message.IMessageHandler;
+import javautils.message.MessageFormatOption;
+import javautils.swing.JAppendableTextPane;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
 
 import data.IUser;
 import data.IUserActivityMonitor;
@@ -19,11 +27,18 @@ import data.IUserActivityMonitor;
  ******************************************************************************/
 public class MessagePanel extends JPanel
 {
-    private JTextArea textArea;
+    private JToolBar toolbar;
+    private JToggleButton boldButton;
+    private JToggleButton italicButton;
+    private JToggleButton underlineButton;
+    private JButton lowercaseButton;
+    private JButton uppercaseButton;
+    private JAppendableTextPane textArea;
     private JScrollPane scrollPane;
     private IMessageHandler messageHandler;
     private IUser localUser;
     private IUserActivityMonitor activityMonitor = null;
+    private List<MessageFormatOption> currentOptions;
 
     /***************************************************************************
      * Constructor
@@ -33,10 +48,48 @@ public class MessagePanel extends JPanel
     public MessagePanel( IUser localUser )
     {
         this.localUser = localUser;
-        textArea = new JTextArea();
+        currentOptions = new ArrayList<MessageFormatOption>();
+        textArea = new JAppendableTextPane();
         textArea.addKeyListener( new MessagePanelKeyAdapter() );
         scrollPane = new JScrollPane( textArea );
+        setupToolbar();
         setupPanel();
+    }
+
+    /***************************************************************************
+     * Sets up the toolbar for this panel.
+     **************************************************************************/
+    private void setupToolbar()
+    {
+        boldButton = new JToggleButton( IconManager.getIcon(
+                IconManager.TEXT_BOLD, IconSize.X16 ) );
+        boldButton.setFocusable( false );
+
+        italicButton = new JToggleButton( IconManager.getIcon(
+                IconManager.TEXT_ITALIC, IconSize.X16 ) );
+        italicButton.setFocusable( false );
+
+        underlineButton = new JToggleButton( IconManager.getIcon(
+                IconManager.TEXT_UNDERLINE, IconSize.X16 ) );
+        underlineButton.setFocusable( false );
+
+        lowercaseButton = new JButton( IconManager.getIcon(
+                IconManager.TEXT_LOWERCASE, IconSize.X16 ) );
+        lowercaseButton.setFocusable( false );
+
+        uppercaseButton = new JButton( IconManager.getIcon(
+                IconManager.TEXT_UPPERCASE, IconSize.X16 ) );
+        uppercaseButton.setFocusable( false );
+
+        toolbar = new JToolBar();
+        toolbar.setFloatable( false );
+        toolbar.setBorderPainted( false );
+        toolbar.add( boldButton );
+        toolbar.add( italicButton );
+        toolbar.add( underlineButton );
+        toolbar.addSeparator();
+        toolbar.add( lowercaseButton );
+        toolbar.add( uppercaseButton );
     }
 
     /***************************************************************************
@@ -45,6 +98,7 @@ public class MessagePanel extends JPanel
     private void setupPanel()
     {
         setLayout( new BorderLayout() );
+        add( toolbar, BorderLayout.PAGE_START );
         add( scrollPane, BorderLayout.CENTER );
     }
 
@@ -87,10 +141,9 @@ public class MessagePanel extends JPanel
         {
             try
             {
-                // TODO: pass options
                 DefaultChatMessage msg = new DefaultChatMessage(
                         localUser.getName(), localUser.getDisplayName(),
-                        localUser.getDisplayColor(), s, null );
+                        localUser.getDisplayColor(), s, currentOptions );
                 messageHandler.sendMessage( msg );
             } catch( Exception e )
             {

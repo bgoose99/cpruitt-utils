@@ -2,6 +2,7 @@ package javautils.message;
 
 import java.awt.Color;
 import java.util.Date;
+import java.util.List;
 
 /*******************************************************************************
  * Chat message interface.
@@ -36,4 +37,10 @@ public interface IChatMessage extends IMessage
      **************************************************************************/
     public Color getDisplayColor();
 
+    /***************************************************************************
+     * Returns the formatting options for this message.
+     * 
+     * @return
+     **************************************************************************/
+    public List<MessageFormatOption> getFormattingOptions();
 }
