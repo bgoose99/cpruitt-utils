@@ -63,7 +63,7 @@ public class DefaultHeartbeatMessage implements IHeartbeatMessage
      **************************************************************************/
     private void calculateMessageLength()
     {
-        messageLength = MessageHeader.LENGTH + 8 + 1 + 4 + displayName.length();
+        messageLength = MessageHeader.SIZE + 8 + 1 + 4 + displayName.length();
     }
 
     /*
@@ -114,12 +114,11 @@ public class DefaultHeartbeatMessage implements IHeartbeatMessage
      * (non-Javadoc)
      * 
      * @see
-     * javautils.message.IMessage#messageToBinaryStream(java.io.DataOutputStream
+     * javautils.message.IMessageSerializer#toBinaryStream(java.io.DataOutputStream
      * )
      */
     @Override
-    public void messageToBinaryStream( DataOutputStream stream )
-            throws Exception
+    public void toBinaryStream( DataOutputStream stream ) throws Exception
     {
         stream.writeLong( sendTime.getTime() );
 
@@ -133,11 +132,11 @@ public class DefaultHeartbeatMessage implements IHeartbeatMessage
      * (non-Javadoc)
      * 
      * @see
-     * javautils.message.IMessage#binaryStreamToMessage(java.io.DataInputStream)
+     * javautils.message.IMessageSerializer#fromBinaryStream(java.io.DataInputStream
+     * )
      */
     @Override
-    public IMessage binaryStreamToMessage( DataInputStream stream )
-            throws Exception
+    public IMessage fromBinaryStream( DataInputStream stream ) throws Exception
     {
         sendTime = new Date( stream.readLong() );
 

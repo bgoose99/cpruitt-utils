@@ -3,7 +3,9 @@ package javautils.message;
 import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class DefaultChatMessage implements IChatMessage
 {
@@ -13,6 +15,7 @@ public class DefaultChatMessage implements IChatMessage
     private Color displayColor;
     private Date sendTime;
     private String message;
+    private List<MessageFormatOption> options;
     private long messageLength;
 
     /***************************************************************************
@@ -36,7 +39,7 @@ public class DefaultChatMessage implements IChatMessage
     public DefaultChatMessage( String sender, String displayName, String message )
             throws Exception
     {
-        this( sender, displayName, Color.black, message );
+        this( sender, displayName, Color.black, message, null );
     }
 
     /***************************************************************************
@@ -49,13 +52,15 @@ public class DefaultChatMessage implements IChatMessage
      * @throws Exception
      **************************************************************************/
     public DefaultChatMessage( String sender, String displayName,
-            Color displayColor, String message ) throws Exception
+            Color displayColor, String message,
+            List<MessageFormatOption> options ) throws Exception
     {
 
         this.displayName = displayName;
         this.displayColor = displayColor;
         this.sendTime = new Date();
         this.message = message;
+        this.options = options;
 
         calculateMessageLength();
 
@@ -85,8 +90,14 @@ public class DefaultChatMessage implements IChatMessage
      **************************************************************************/
     private void calculateMessageLength()
     {
-        messageLength = MessageHeader.LENGTH + 4 + displayName.length() + 8 + 4
-                + message.length();
+
+        messageLength = MessageHeader.SIZE + 4 + displayName.length() + 8 + 4
+                + message.length() + 4;
+
+        if( options != null )
+        {
+            messageLength += options.size() * MessageFormatOption.SIZE;
+        }
     }
 
     /*
@@ -148,15 +159,18 @@ public class DefaultChatMessage implements IChatMessage
      * (non-Javadoc)
      * 
      * @see
-     * javautils.chat.IMessage#messageToBinaryStream(java.io.DataOutputStream)
+     * javautils.message.IMessageSerializer#toBinaryStream(java.io.DataOutputStream
+     * )
      */
     @Override
-    public void messageToBinaryStream( DataOutputStream stream )
-            throws Exception
+    public void toBinaryStream( DataOutputStream stream ) throws Exception
     {
         // sender
         stream.writeInt( displayName.length() );
         stream.writeBytes( displayName );
+
+        // color
+        stream.writeInt( displayColor.getRGB() );
 
         // date
         stream.writeLong( sendTime.getTime() );
@@ -165,19 +179,29 @@ public class DefaultChatMessage implements IChatMessage
         stream.writeInt( message.length() );
         stream.writeBytes( message );
 
-        // color
-        stream.writeInt( displayColor.getRGB() );
+        // options
+        if( options != null )
+        {
+            stream.writeInt( options.size() );
+            for( MessageFormatOption o : options )
+            {
+                o.toBinaryStream( stream );
+            }
+        } else
+        {
+            stream.writeInt( 0 );
+        }
     }
 
     /*
      * (non-Javadoc)
      * 
      * @see
-     * javautils.chat.IMessage#binaryStreamToMessage(java.io.DataInputStream)
+     * javautils.message.IMessageSerializer#fromBinaryStream(java.io.DataInputStream
+     * )
      */
     @Override
-    public IMessage binaryStreamToMessage( DataInputStream stream )
-            throws Exception
+    public IMessage fromBinaryStream( DataInputStream stream ) throws Exception
     {
         // sender
         int len = stream.readInt();
@@ -185,6 +209,9 @@ public class DefaultChatMessage implements IChatMessage
         byte[] msg = new byte[len];
         stream.read( msg, 0, len );
         displayName = new String( msg );
+
+        // color
+        displayColor = new Color( stream.readInt() );
 
         // date
         sendTime = new Date( stream.readLong() );
@@ -196,8 +223,15 @@ public class DefaultChatMessage implements IChatMessage
         stream.read( msg, 0, len );
         message = new String( msg );
 
-        // color
-        displayColor = new Color( stream.readInt() );
+        // options
+        options = new ArrayList<MessageFormatOption>();
+        int numOptions = stream.readInt();
+        for( int i = 0; i < numOptions; i++ )
+        {
+            MessageFormatOption o = new MessageFormatOption();
+            o.fromBinaryStream( stream );
+            options.add( o );
+        }
 
         // re-calculate message length and assign to header
         calculateMessageLength();

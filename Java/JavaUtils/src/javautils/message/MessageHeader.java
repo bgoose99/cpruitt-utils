@@ -8,7 +8,7 @@ import java.io.DataOutputStream;
  ******************************************************************************/
 public class MessageHeader implements IMessageHeader
 {
-    public static final long LENGTH = 16;
+    public static final long SIZE = 16;
 
     private int senderHash;
     private MessageType messageType;

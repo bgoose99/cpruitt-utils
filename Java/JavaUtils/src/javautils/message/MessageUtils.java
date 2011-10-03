@@ -36,11 +36,11 @@ public final class MessageUtils
         {
         case CHAT:
             DefaultChatMessage chatMessage = new DefaultChatMessage( header );
-            return chatMessage.binaryStreamToMessage( dataStream );
+            return chatMessage.fromBinaryStream( dataStream );
         case HEARTBEAT:
             DefaultHeartbeatMessage heartbeatMessage = new DefaultHeartbeatMessage(
                     header );
-            return heartbeatMessage.binaryStreamToMessage( dataStream );
+            return heartbeatMessage.fromBinaryStream( dataStream );
         default:
             throw new Exception( "Invalid message type: "
                     + header.getMessageType() );
@@ -62,7 +62,7 @@ public final class MessageUtils
         DataOutputStream dataStream = new DataOutputStream( byteStream );
 
         msg.getMessageHeader().headerToBinaryStream( dataStream );
-        msg.messageToBinaryStream( dataStream );
+        msg.toBinaryStream( dataStream );
 
         return new DatagramPacket( byteStream.toByteArray(), byteStream.size() );
     }

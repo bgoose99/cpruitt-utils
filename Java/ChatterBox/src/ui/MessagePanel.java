@@ -16,7 +16,7 @@ import data.IUserActivityMonitor;
 
 /*******************************************************************************
  * This panel provides a place for the user to type a message.
- **************************************************************************/
+ ******************************************************************************/
 public class MessagePanel extends JPanel
 {
     private JTextArea textArea;
@@ -87,9 +87,10 @@ public class MessagePanel extends JPanel
         {
             try
             {
+                // TODO: pass options
                 DefaultChatMessage msg = new DefaultChatMessage(
                         localUser.getName(), localUser.getDisplayName(),
-                        localUser.getDisplayColor(), s );
+                        localUser.getDisplayColor(), s, null );
                 messageHandler.sendMessage( msg );
             } catch( Exception e )
             {
