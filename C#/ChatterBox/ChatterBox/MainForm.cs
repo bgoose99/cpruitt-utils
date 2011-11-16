@@ -30,6 +30,17 @@ namespace ChatterBox
             messageThread.Start();
         }
 
+        private void exitToolStripMenuItem_Click( object sender, EventArgs e )
+        {
+            // exit
+            System.Windows.Forms.Application.Exit();
+        }
+
+        private void preferencesToolStripMenuItem_Click( object sender, EventArgs e )
+        {
+            // show preferences form
+        }
+
         private void SendButton_Click( object sender, EventArgs e )
         {
             string messageText = messageTextBox.Text;
@@ -54,16 +65,6 @@ namespace ChatterBox
             {
                 chatTextBox.AppendText( s );
             }
-        }
-
-        private void exitToolStripMenuItem_Click( object sender, EventArgs e )
-        {
-            // exit
-        }
-
-        private void preferencesToolStripMenuItem_Click( object sender, EventArgs e )
-        {
-            // show preferences form
         }
     }
 }
