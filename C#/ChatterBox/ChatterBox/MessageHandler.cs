@@ -20,6 +20,12 @@ namespace ChatterBox
         private IPEndPoint remoteEP;
         private IPEndPoint localEP;
         
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="receiveMessage"></param>
+        /// <param name="ipAddress"></param>
+        /// <param name="port"></param>
         public MessageHandler( MessageUtils.ReceiveMessageDelegate receiveMessage, string ipAddress, int port )
         {
             this.processMessage = receiveMessage;
@@ -27,6 +33,10 @@ namespace ChatterBox
             this.port = port;
         }
 
+        /// <summary>
+        /// Starts this thread, which will listen for messages until the
+        /// application exits, or the socket is disconnected.
+        /// </summary>
         public void startProcessing()
         {
             // open socket and start listening for messages
@@ -55,6 +65,9 @@ namespace ChatterBox
 
         }
 
+        /// <summary>
+        /// Attempts to connect on the address/port supplied in the constructor.
+        /// </summary>
         public void connect()
         {
             try
@@ -84,11 +97,15 @@ namespace ChatterBox
             }
         }
 
+        /// <summary>
+        /// Attempts to disconnect from the currently connected socket, if one exists.
+        /// </summary>
         public void disconnect()
         {
             try
             {
                 receiveSocket.Close();
+                sendSocket.Close();
                 connected = false;
             }
             catch( Exception e )
@@ -98,6 +115,10 @@ namespace ChatterBox
             }
         }
 
+        /// <summary>
+        /// Sends a message, if connected.
+        /// </summary>
+        /// <param name="msg"></param>
         public void sendMessage( IMessage msg )
         {
             // send message over socket

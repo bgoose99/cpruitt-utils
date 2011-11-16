@@ -13,7 +13,10 @@ namespace ChatterBox
     public partial class MainForm : Form
     {
         private delegate void ChatBoxAppendDelegate( string text );
-        
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public MainForm()
         {
             InitializeComponent();
@@ -30,17 +33,31 @@ namespace ChatterBox
             messageThread.Start();
         }
 
+        /// <summary>
+        /// Exits the application.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void exitToolStripMenuItem_Click( object sender, EventArgs e )
         {
-            // exit
             System.Windows.Forms.Application.Exit();
         }
 
+        /// <summary>
+        /// Presents a preference dialog to the user.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void preferencesToolStripMenuItem_Click( object sender, EventArgs e )
         {
             // show preferences form
         }
 
+        /// <summary>
+        /// Sends a message.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SendButton_Click( object sender, EventArgs e )
         {
             string messageText = messageTextBox.Text;
@@ -52,6 +69,11 @@ namespace ChatterBox
             }
         }
 
+        /// <summary>
+        /// Receives an individual message and updates the chat text
+        /// accordingly.
+        /// </summary>
+        /// <param name="msg"></param>
         private void receiveMessage( IMessage msg )
         {
             string s = "(" + msg.getDateTime().ToShortTimeString() +
