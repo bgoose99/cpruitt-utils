@@ -8,15 +8,30 @@ namespace ChatterBox
 {
     sealed class MessageUtils
     {
+        /// <summary>
+        /// This delegate is used to process incoming messages.
+        /// </summary>
+        /// <param name="message"></param>
         public delegate void ReceiveMessageDelegate( IMessage message );
 
+        /// <summary>
+        /// Message type enum.
+        /// </summary>
         public enum MessageType { CHAT, HEARTBEAT };
 
+        /// <summary>
+        /// Maximum UDP packet size.
+        /// </summary>
         public static int MAX_MESSAGE_SIZE = 65535;
 
         private static Object EncodeLock = new Object();
         private static Object DecodeLock = new Object();
 
+        /// <summary>
+        /// Encodes the supplied message to a raw byte array.
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <returns></returns>
         public static byte[] encodeMessage( IMessage msg )
         {
             lock( EncodeLock )
@@ -34,6 +49,11 @@ namespace ChatterBox
             }
         }
 
+        /// <summary>
+        /// Decodes a raw byte array.
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <returns></returns>
         public static IMessage decodeMessage( byte[] msg )
         {
             lock( DecodeLock )

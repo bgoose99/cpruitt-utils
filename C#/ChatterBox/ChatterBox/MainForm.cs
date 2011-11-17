@@ -10,8 +10,16 @@ using System.Threading;
 
 namespace ChatterBox
 {
+    /// <summary>
+    /// Main application window.
+    /// </summary>
     public partial class MainForm : Form
     {
+        /// <summary>
+        /// This delegate is used to update the main chat box from
+        /// any thread.
+        /// </summary>
+        /// <param name="text"></param>
         private delegate void ChatBoxAppendDelegate( string text );
 
         /// <summary>

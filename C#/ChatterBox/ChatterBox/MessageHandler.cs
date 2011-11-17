@@ -8,6 +8,12 @@ using System.Windows.Forms;
 
 namespace ChatterBox
 {
+    /// <summary>
+    /// This class handles incoming and outgoing messages. Incoming messages
+    /// are handled on a separate, background thread and passed off to a
+    /// message processing delegate. Outgoing messages simply use a class
+    /// method to send on the outgoing multicast socket based on a user action.
+    /// </summary>
     class MessageHandler
     {
         private MessageUtils.ReceiveMessageDelegate processMessage;
