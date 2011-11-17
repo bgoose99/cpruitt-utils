@@ -37,6 +37,7 @@ namespace ChatterBox
             this.processMessage = receiveMessage;
             this.ipAddress = ipAddress;
             this.port = port;
+            System.Diagnostics.Debug.WriteLine( "ip={0}, port={1}", ipAddress, port );
         }
 
         /// <summary>
@@ -74,33 +75,37 @@ namespace ChatterBox
         /// <summary>
         /// Attempts to connect on the address/port supplied in the constructor.
         /// </summary>
-        public void connect()
+        public bool connect()
         {
-            try
+            if( !connected )
             {
-                IPAddress ip = IPAddress.Parse( ipAddress );
-                remoteEP = new IPEndPoint( ip, port );
-                localEP = new IPEndPoint( IPAddress.Any, port );
-                
-                receiveSocket = new Socket( AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp );
-                receiveSocket.SetSocketOption( SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true );
-                receiveSocket.Bind( localEP );
-                receiveSocket.SetSocketOption( SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption( ip ) );
-                receiveSocket.SetSocketOption( SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 20 );
-                
-                sendSocket = new Socket( AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp );
-                sendSocket.SetSocketOption( SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true );
-                sendSocket.Connect( remoteEP );
-                sendSocket.SetSocketOption( SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption( ip ) );
-                sendSocket.SetSocketOption( SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 20 );
-                
-                connected = true;
+                try
+                {
+                    IPAddress ip = IPAddress.Parse( ipAddress );
+                    remoteEP = new IPEndPoint( ip, port );
+                    localEP = new IPEndPoint( IPAddress.Any, port );
+
+                    receiveSocket = new Socket( AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp );
+                    receiveSocket.SetSocketOption( SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true );
+                    receiveSocket.Bind( localEP );
+                    receiveSocket.SetSocketOption( SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption( ip ) );
+                    receiveSocket.SetSocketOption( SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 20 );
+
+                    sendSocket = new Socket( AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp );
+                    sendSocket.SetSocketOption( SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true );
+                    sendSocket.Connect( remoteEP );
+                    sendSocket.SetSocketOption( SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption( ip ) );
+                    sendSocket.SetSocketOption( SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 20 );
+
+                    connected = true;
+                    System.Diagnostics.Debug.WriteLine( "WOOT!" );
+                }
+                catch( Exception e )
+                {
+                    MessageBox.Show( e.Message, "Cannot connect", MessageBoxButtons.OK, MessageBoxIcon.Error );
+                }
             }
-            catch( Exception e )
-            {
-                MessageBox.Show( e.Message );
-                return;
-            }
+            return connected;
         }
 
         /// <summary>
@@ -116,7 +121,7 @@ namespace ChatterBox
             }
             catch( Exception e )
             {
-                MessageBox.Show( e.Message );
+                MessageBox.Show( e.Message, "Cannot disconnect", MessageBoxButtons.OK, MessageBoxIcon.Error );
                 return;
             }
         }

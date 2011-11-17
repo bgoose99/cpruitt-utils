@@ -31,14 +31,51 @@ namespace ChatterBox
 
             chatTextBox.ReadOnly = true;
             chatTextBox.BackColor = Color.White;
-            
-            // debug
-            user = new ChatUser( "bug" );
-            messageHandler = new MessageHandler( new MessageUtils.ReceiveMessageDelegate( receiveMessage ), "224.0.0.0", 6969 );
-            messageHandler.connect();
+
+            // init our user's preferences
+            string homePath = ( Environment.OSVersion.Platform == PlatformID.Unix ||
+                Environment.OSVersion.Platform == PlatformID.MacOSX )
+                ? Environment.GetEnvironmentVariable( "HOME" )
+                : Environment.ExpandEnvironmentVariables( "%HOMEDRIVE%%HOMEPATH%" );
+            Preferences.initialize( homePath + "/.ChatterBoxPrefs",
+                new string[] {"user", "autoconnect", "host", "port", "color"} );
+            if( !Preferences.exists() )
+                preferencesToolStripMenuItem_Click( null, null );
+            Preferences.readPreferences();
+
+            user = new ChatUser( Preferences.getPreference( "user" ) );
+            int port = 0;
+            try
+            {
+                port = int.Parse( Preferences.getPreference( "port" ) );
+            }
+            catch( Exception )
+            {
+                MessageBox.Show( "Port '" + Preferences.getPreference( "port" ) +
+                    "' is not a valid integer.\nUsing 6969 instead. Please change your preferences.",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
+                port = 6969;
+            }
+
+            bool autoConnect = false;
+            try
+            {
+                autoConnect = bool.Parse( Preferences.getPreference( "autoconnect" ) );
+            }
+            catch( Exception )
+            {
+            }
+
+            messageHandler = new MessageHandler( 
+                new MessageUtils.ReceiveMessageDelegate( receiveMessage ), 
+                Preferences.getPreference( "host" ), port );
             messageThread = new Thread( new ThreadStart( messageHandler.startProcessing ) );
             messageThread.IsBackground = true;
-            messageThread.Start();
+
+            if( autoConnect )
+            {
+                messageThread.Start();
+            }
         }
 
         /// <summary>
@@ -58,7 +95,12 @@ namespace ChatterBox
         /// <param name="e"></param>
         private void preferencesToolStripMenuItem_Click( object sender, EventArgs e )
         {
-            // show preferences form
+            PreferenceForm prefForm = new PreferenceForm();
+            if( prefForm.ShowDialog( this ) == DialogResult.OK )
+            {
+                Preferences.writePreferences();
+            }
+            prefForm.Dispose();
         }
 
         /// <summary>
