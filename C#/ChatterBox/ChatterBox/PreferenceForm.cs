@@ -11,6 +11,16 @@ namespace ChatterBox
         public PreferenceForm()
         {
             InitializeComponent();
+
+            // attempt to fill components with current preferences
+            displayNameTextBox.Text = Preferences.getPreference( "user" );
+            hostNameTextBox.Text = Preferences.getPreference( "host" );
+            portTextBox.Text = Preferences.getPreference( "port" );
+            try
+            {
+                autoConnectCheckBox.Checked = bool.Parse( Preferences.getPreference( "autoconnect" ) );
+            }
+            catch { }
         }
 
         /// <summary>
@@ -18,14 +28,14 @@ namespace ChatterBox
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void acceptButton_Click( object sender, EventArgs e )
+        private void accept( object sender, EventArgs e )
         {
             bool inputValid = true;
             string validationErrors = "";
             
-            string name = this.displayNameTextBox.Text.Trim();
-            string host = this.hostNameTextBox.Text.Trim();
-            string port = this.portTextBox.Text.Trim();
+            string name = displayNameTextBox.Text.Trim();
+            string host = hostNameTextBox.Text.Trim();
+            string port = portTextBox.Text.Trim();
 
             if( name.Length < 1 )
             {
@@ -52,7 +62,7 @@ namespace ChatterBox
             Preferences.setPreference( "user", name );
             Preferences.setPreference( "host", host );
             Preferences.setPreference( "port", port );
-            Preferences.setPreference( "autoconnect", this.autoConnectCheckBox.Checked.ToString() );
+            Preferences.setPreference( "autoconnect", autoConnectCheckBox.Checked.ToString() );
             
             DialogResult = DialogResult.OK;
             Dispose();
@@ -63,9 +73,8 @@ namespace ChatterBox
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void cancelButton_Click( object sender, EventArgs e )
+        private void cancel( object sender, EventArgs e )
         {
-            //
             DialogResult = DialogResult.Cancel;
             Dispose();
         }

@@ -87,7 +87,7 @@
             this.acceptButton.Size = new System.Drawing.Size( 60, 40 );
             this.acceptButton.TabIndex = 4;
             this.acceptButton.UseVisualStyleBackColor = true;
-            this.acceptButton.Click += new System.EventHandler( this.acceptButton_Click );
+            this.acceptButton.Click += new System.EventHandler( this.accept );
             // 
             // cancelButton
             // 
@@ -99,7 +99,7 @@
             this.cancelButton.Size = new System.Drawing.Size( 60, 40 );
             this.cancelButton.TabIndex = 5;
             this.cancelButton.UseVisualStyleBackColor = true;
-            this.cancelButton.Click += new System.EventHandler( this.cancelButton_Click );
+            this.cancelButton.Click += new System.EventHandler( this.cancel );
             // 
             // displayNameTextBox
             // 

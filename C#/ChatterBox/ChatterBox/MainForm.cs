@@ -40,41 +40,25 @@ namespace ChatterBox
             Preferences.initialize( homePath + "/.ChatterBoxPrefs",
                 new string[] {"user", "autoconnect", "host", "port", "color"} );
             if( !Preferences.exists() )
-                preferencesToolStripMenuItem_Click( null, null );
+                showPreferenceDialog( null, null );
             Preferences.readPreferences();
 
             user = new ChatUser( Preferences.getPreference( "user" ) );
-            int port = 0;
-            try
-            {
-                port = int.Parse( Preferences.getPreference( "port" ) );
-            }
-            catch( Exception )
-            {
-                MessageBox.Show( "Port '" + Preferences.getPreference( "port" ) +
-                    "' is not a valid integer.\nUsing 6969 instead. Please change your preferences.",
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
-                port = 6969;
-            }
 
             bool autoConnect = false;
             try
             {
                 autoConnect = bool.Parse( Preferences.getPreference( "autoconnect" ) );
             }
-            catch( Exception )
-            {
-            }
-
-            messageHandler = new MessageHandler( 
-                new MessageUtils.ReceiveMessageDelegate( receiveMessage ), 
-                Preferences.getPreference( "host" ), port );
-            messageThread = new Thread( new ThreadStart( messageHandler.startProcessing ) );
-            messageThread.IsBackground = true;
-
+            catch {}
+            
             if( autoConnect )
             {
-                messageThread.Start();
+                connect( null, null );
+            }
+            else
+            {
+                disonnectButton.Enabled = false;
             }
         }
 
@@ -83,8 +67,9 @@ namespace ChatterBox
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void exitToolStripMenuItem_Click( object sender, EventArgs e )
+        private void exitApplication( object sender, EventArgs e )
         {
+            disconnect( null, null );
             System.Windows.Forms.Application.Exit();
         }
 
@@ -93,7 +78,7 @@ namespace ChatterBox
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void preferencesToolStripMenuItem_Click( object sender, EventArgs e )
+        private void showPreferenceDialog( object sender, EventArgs e )
         {
             PreferenceForm prefForm = new PreferenceForm();
             if( prefForm.ShowDialog( this ) == DialogResult.OK )
@@ -108,7 +93,7 @@ namespace ChatterBox
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SendButton_Click( object sender, EventArgs e )
+        private void sendMessage( object sender, EventArgs e )
         {
             string messageText = messageTextBox.Text;
             if( messageText.Length > 0 )
@@ -137,6 +122,84 @@ namespace ChatterBox
             {
                 chatTextBox.AppendText( s );
             }
+        }
+
+        /// <summary>
+        /// Connects on the user's preferred ip/port.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void connect( object sender, EventArgs e )
+        {
+            if( messageHandler != null )
+                messageHandler.disconnect();
+            
+            if( messageThread != null && messageThread.IsAlive )
+            {
+                messageThread.Abort();
+                messageThread.Join();
+            }
+
+            int port = 0;
+            try
+            {
+                port = int.Parse( Preferences.getPreference( "port" ) );
+            }
+            catch( Exception )
+            {
+                MessageBox.Show( "Port '" + Preferences.getPreference( "port" ) +
+                    "' is not a valid integer.\nUsing 6969 instead. Please change your preferences.",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
+                port = 6969;
+            }
+
+            messageHandler = new MessageHandler(
+                new MessageUtils.ReceiveMessageDelegate( receiveMessage ),
+                Preferences.getPreference( "host" ), port );
+            messageThread = new Thread( new ThreadStart( messageHandler.startProcessing ) );
+            messageThread.IsBackground = true;
+
+            if( messageHandler.connect() )
+            {
+                messageThread.Start();
+                connectButton.Enabled = false;
+                disonnectButton.Enabled = true;
+            }
+            else
+            {
+                connectButton.Enabled = true;
+                disonnectButton.Enabled = false;
+            }
+        }
+
+        /// <summary>
+        /// Disconnects from the currently connect socket, if necessary.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void disconnect( object sender, EventArgs e )
+        {
+            if( messageHandler != null )
+                messageHandler.disconnect();
+
+            if( messageThread != null && messageThread.IsAlive )
+            {
+                messageThread.Abort();
+                messageThread.Join();
+            }
+
+            connectButton.Enabled = true;
+            disonnectButton.Enabled = false;
+        }
+
+        /// <summary>
+        /// Clears the conversation pane.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void clearConversation( object sender, EventArgs e )
+        {
+            chatTextBox.Clear();
         }
     }
 }

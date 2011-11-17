@@ -98,7 +98,6 @@ namespace ChatterBox
                     sendSocket.SetSocketOption( SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 20 );
 
                     connected = true;
-                    System.Diagnostics.Debug.WriteLine( "WOOT!" );
                 }
                 catch( Exception e )
                 {

@@ -62,7 +62,7 @@ namespace ChatterBox
             this.sendButton.TabIndex = 0;
             this.sendButton.Text = "Send";
             this.sendButton.UseVisualStyleBackColor = true;
-            this.sendButton.Click += new System.EventHandler( this.SendButton_Click );
+            this.sendButton.Click += new System.EventHandler( this.sendMessage );
             // 
             // messageTextBox
             // 
@@ -107,6 +107,7 @@ namespace ChatterBox
             this.connectButton.Size = new System.Drawing.Size( 23, 22 );
             this.connectButton.Text = "toolStripButton1";
             this.connectButton.ToolTipText = "Connect to address specified in configuration.";
+            this.connectButton.Click += new System.EventHandler( this.connect );
             // 
             // disonnectButton
             // 
@@ -117,6 +118,7 @@ namespace ChatterBox
             this.disonnectButton.Size = new System.Drawing.Size( 23, 22 );
             this.disonnectButton.Text = "toolStripButton1";
             this.disonnectButton.ToolTipText = "Disconnect from the current address.";
+            this.disonnectButton.Click += new System.EventHandler( this.disconnect );
             // 
             // toolStripSeparator1
             // 
@@ -131,6 +133,7 @@ namespace ChatterBox
             this.deleteButton.Name = "deleteButton";
             this.deleteButton.Size = new System.Drawing.Size( 23, 22 );
             this.deleteButton.Text = "toolStripButton1";
+            this.deleteButton.Click += new System.EventHandler( this.clearConversation );
             // 
             // menuStrip1
             // 
@@ -155,9 +158,11 @@ namespace ChatterBox
             // 
             this.exitToolStripMenuItem.Image = ( (System.Drawing.Image)( resources.GetObject( "exitToolStripMenuItem.Image" ) ) );
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Q";
+            this.exitToolStripMenuItem.ShortcutKeys = ( (System.Windows.Forms.Keys)( ( System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q ) ) );
             this.exitToolStripMenuItem.Size = new System.Drawing.Size( 152, 22 );
             this.exitToolStripMenuItem.Text = "Exit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler( this.exitToolStripMenuItem_Click );
+            this.exitToolStripMenuItem.Click += new System.EventHandler( this.exitApplication );
             // 
             // editToolStripMenuItem
             // 
@@ -170,9 +175,9 @@ namespace ChatterBox
             // preferencesToolStripMenuItem
             // 
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
-            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size( 152, 22 );
+            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size( 143, 22 );
             this.preferencesToolStripMenuItem.Text = "Preferences";
-            this.preferencesToolStripMenuItem.Click += new System.EventHandler( this.preferencesToolStripMenuItem_Click );
+            this.preferencesToolStripMenuItem.Click += new System.EventHandler( this.showPreferenceDialog );
             // 
             // MainForm
             // 
