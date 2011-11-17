@@ -132,7 +132,7 @@ namespace ChatterBox
             this.deleteButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.deleteButton.Name = "deleteButton";
             this.deleteButton.Size = new System.Drawing.Size( 23, 22 );
-            this.deleteButton.Text = "toolStripButton1";
+            this.deleteButton.Text = "Clear the current conversation";
             this.deleteButton.Click += new System.EventHandler( this.clearConversation );
             // 
             // menuStrip1
@@ -160,7 +160,7 @@ namespace ChatterBox
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Q";
             this.exitToolStripMenuItem.ShortcutKeys = ( (System.Windows.Forms.Keys)( ( System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q ) ) );
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size( 152, 22 );
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size( 143, 22 );
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler( this.exitApplication );
             // 

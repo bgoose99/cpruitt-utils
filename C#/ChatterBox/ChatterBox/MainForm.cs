@@ -29,6 +29,9 @@ namespace ChatterBox
         {
             InitializeComponent();
 
+            // set the default accept button to send
+            AcceptButton = sendButton;
+
             chatTextBox.ReadOnly = true;
             chatTextBox.BackColor = Color.White;
 
@@ -83,6 +86,8 @@ namespace ChatterBox
             PreferenceForm prefForm = new PreferenceForm();
             if( prefForm.ShowDialog( this ) == DialogResult.OK )
             {
+                // update user display name, if necessary
+                user.setDisplayName( Preferences.getPreference( "user" ) );
                 Preferences.writePreferences();
             }
             prefForm.Dispose();

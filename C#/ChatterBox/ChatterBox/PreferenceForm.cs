@@ -12,6 +12,8 @@ namespace ChatterBox
         {
             InitializeComponent();
 
+            AcceptButton = acceptButton;
+
             // attempt to fill components with current preferences
             displayNameTextBox.Text = Preferences.getPreference( "user" );
             hostNameTextBox.Text = Preferences.getPreference( "host" );
