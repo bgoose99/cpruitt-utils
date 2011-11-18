@@ -9,6 +9,12 @@ namespace ChatterBox
     sealed class MessageUtils
     {
         /// <summary>
+        /// This delegat is used to send outgoing messages.
+        /// </summary>
+        /// <param name="message"></param>
+        public delegate void SendMessageDelegate( IMessage message );
+        
+        /// <summary>
         /// This delegate is used to process incoming messages.
         /// </summary>
         /// <param name="message"></param>
@@ -71,8 +77,8 @@ namespace ChatterBox
                             ChatMessage chatMessage = new ChatMessage( header );
                             return chatMessage.fromBinaryStream( reader );
                         case MessageUtils.MessageType.HEARTBEAT:
-                            // TODO: fix
-                            return null;
+                            HeartbeatMessage heartbeatMessage = new HeartbeatMessage( header );
+                            return heartbeatMessage.fromBinaryStream( reader );
                         default:
                             throw new Exception( "Invalid message type: " + header.getMessageType() );
                     }

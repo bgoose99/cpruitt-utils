@@ -15,11 +15,8 @@ namespace ChatterBox
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose( bool disposing )
         {
-            if( messageThread != null && messageThread.IsAlive )
-                messageThread.Abort();
-            if( messageHandler != null )
-                messageHandler.disconnect();
-            
+            disconnect( this, null );
+
             if( disposing && ( components != null ) )
             {
                 components.Dispose();
@@ -41,7 +38,7 @@ namespace ChatterBox
             this.chatTextBox = new System.Windows.Forms.RichTextBox();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.connectButton = new System.Windows.Forms.ToolStripButton();
-            this.disonnectButton = new System.Windows.Forms.ToolStripButton();
+            this.disconnectButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.deleteButton = new System.Windows.Forms.ToolStripButton();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -89,7 +86,7 @@ namespace ChatterBox
             // 
             this.toolStrip.Items.AddRange( new System.Windows.Forms.ToolStripItem[] {
             this.connectButton,
-            this.disonnectButton,
+            this.disconnectButton,
             this.toolStripSeparator1,
             this.deleteButton} );
             this.toolStrip.Location = new System.Drawing.Point( 0, 24 );
@@ -111,14 +108,14 @@ namespace ChatterBox
             // 
             // disonnectButton
             // 
-            this.disonnectButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.disonnectButton.Image = ( (System.Drawing.Image)( resources.GetObject( "disonnectButton.Image" ) ) );
-            this.disonnectButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.disonnectButton.Name = "disonnectButton";
-            this.disonnectButton.Size = new System.Drawing.Size( 23, 22 );
-            this.disonnectButton.Text = "toolStripButton1";
-            this.disonnectButton.ToolTipText = "Disconnect from the current address.";
-            this.disonnectButton.Click += new System.EventHandler( this.disconnect );
+            this.disconnectButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.disconnectButton.Image = ( (System.Drawing.Image)( resources.GetObject( "disonnectButton.Image" ) ) );
+            this.disconnectButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.disconnectButton.Name = "disonnectButton";
+            this.disconnectButton.Size = new System.Drawing.Size( 23, 22 );
+            this.disconnectButton.Text = "toolStripButton1";
+            this.disconnectButton.ToolTipText = "Disconnect from the current address.";
+            this.disconnectButton.Click += new System.EventHandler( this.disconnect );
             // 
             // toolStripSeparator1
             // 
@@ -207,13 +204,14 @@ namespace ChatterBox
         private IUser user;
         private MessageHandler messageHandler;
         private Thread messageThread;
+        private HeartbeatSendTask heartbeatTask;
 
         private System.Windows.Forms.Button sendButton;
         private System.Windows.Forms.RichTextBox messageTextBox;
         private System.Windows.Forms.RichTextBox chatTextBox;
         private System.Windows.Forms.ToolStrip toolStrip;
         private System.Windows.Forms.ToolStripButton connectButton;
-        private System.Windows.Forms.ToolStripButton disonnectButton;
+        private System.Windows.Forms.ToolStripButton disconnectButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton deleteButton;
         private System.Windows.Forms.MenuStrip menuStrip1;

@@ -61,7 +61,7 @@ namespace ChatterBox
             }
             else
             {
-                disonnectButton.Enabled = false;
+                disconnectButton.Enabled = false;
             }
         }
 
@@ -133,6 +133,10 @@ namespace ChatterBox
                     }
                     break;
                 case MessageUtils.MessageType.HEARTBEAT:
+                    IHeartbeatMessage heartbeatMsg = (IHeartbeatMessage)msg;
+                    break;
+                default:
+                    System.Diagnostics.Debug.WriteLine( "Received message of unknown type: {0}", msg.getMessageHeader().getMessageType() );
                     break;
             }
         }
@@ -144,15 +148,8 @@ namespace ChatterBox
         /// <param name="e"></param>
         private void connect( object sender, EventArgs e )
         {
-            if( messageHandler != null )
-                messageHandler.disconnect();
+            disconnect( this, null );
             
-            if( messageThread != null && messageThread.IsAlive )
-            {
-                messageThread.Abort();
-                messageThread.Join();
-            }
-
             int port = 0;
             try
             {
@@ -172,16 +169,20 @@ namespace ChatterBox
             messageThread = new Thread( new ThreadStart( messageHandler.startProcessing ) );
             messageThread.IsBackground = true;
 
+            heartbeatTask = new HeartbeatSendTask( user,
+                new MessageUtils.SendMessageDelegate( messageHandler.sendMessage ) );
+
             if( messageHandler.connect() )
             {
                 messageThread.Start();
+                heartbeatTask.startSending();
                 connectButton.Enabled = false;
-                disonnectButton.Enabled = true;
+                disconnectButton.Enabled = true;
             }
             else
             {
                 connectButton.Enabled = true;
-                disonnectButton.Enabled = false;
+                disconnectButton.Enabled = false;
             }
         }
 
@@ -192,6 +193,9 @@ namespace ChatterBox
         /// <param name="e"></param>
         private void disconnect( object sender, EventArgs e )
         {
+            if( heartbeatTask != null )
+                heartbeatTask.stopSending();
+            
             if( messageHandler != null )
                 messageHandler.disconnect();
 
@@ -202,7 +206,7 @@ namespace ChatterBox
             }
 
             connectButton.Enabled = true;
-            disonnectButton.Enabled = false;
+            disconnectButton.Enabled = false;
         }
 
         /// <summary>
