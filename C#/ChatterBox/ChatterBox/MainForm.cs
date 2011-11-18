@@ -116,16 +116,24 @@ namespace ChatterBox
         /// <param name="msg"></param>
         private void receiveMessage( IMessage msg )
         {
-            string s = "(" + msg.getDateTime().ToShortTimeString() +
-                    ") " + msg.getSender() + ": " + msg.getMessage() + "\n";
-            if( chatTextBox.InvokeRequired )
+            switch( msg.getMessageHeader().getMessageType() )
             {
-                ChatBoxAppendDelegate del = new ChatBoxAppendDelegate( chatTextBox.AppendText );
-                chatTextBox.Invoke( del, s );
-            }
-            else
-            {
-                chatTextBox.AppendText( s );
+                case MessageUtils.MessageType.CHAT:
+                    IChatMessage chatMsg = (IChatMessage)msg;
+                    string s = "(" + chatMsg.getSendTime().ToShortTimeString() +
+                            ") " + chatMsg.getUserDisplayName() + ": " + chatMsg.getMessage() + "\n";
+                    if( chatTextBox.InvokeRequired )
+                    {
+                        ChatBoxAppendDelegate del = new ChatBoxAppendDelegate( chatTextBox.AppendText );
+                        chatTextBox.Invoke( del, s );
+                    }
+                    else
+                    {
+                        chatTextBox.AppendText( s );
+                    }
+                    break;
+                case MessageUtils.MessageType.HEARTBEAT:
+                    break;
             }
         }
 

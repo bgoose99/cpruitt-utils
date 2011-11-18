@@ -48,6 +48,9 @@
   <ItemGroup>
     <Compile Include="ChatMessage.cs" />
     <Compile Include="ChatUser.cs" />
+    <Compile Include="HeartbeatMessage.cs" />
+    <Compile Include="IChatMessage.cs" />
+    <Compile Include="IHeartbeatMessage.cs" />
     <Compile Include="IMessageHeader.cs" />
     <Compile Include="IMessageSerializer.cs" />
     <Compile Include="IMessage.cs" />

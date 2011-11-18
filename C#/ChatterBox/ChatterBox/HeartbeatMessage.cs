@@ -7,100 +7,98 @@ using System.IO;
 namespace ChatterBox
 {
     /// <summary>
-    /// This class represents a single chat message.
+    /// This class represents a single heartbeat message.
     /// </summary>
-    class ChatMessage : IMessage, IChatMessage
+    class HeartbeatMessage : IMessage, IHeartbeatMessage
     {
         private IMessageHeader header;
 
-        private string displayName;
         private DateTime sendTime;
-        private string message;
+        private bool available;
+        private string displayName;
         private int messageLength;
 
         /// <summary>
-        /// Default constructor
+        /// Constructor
         /// </summary>
-        public ChatMessage() : this( "", "", "" )
+        public HeartbeatMessage() : this( "Unknown", "Unknown", false )
         {
         }
 
         /// <summary>
-        /// Constructor used for sending messages.
+        /// Constructor
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="displayName"></param>
-        /// <param name="message"></param>
-        public ChatMessage( string sender, string displayName, string message )
+        /// <param name="available"></param>
+        public HeartbeatMessage( string sender, string displayName, bool available )
         {
             this.displayName = displayName;
-            this.sendTime = DateTime.Now;
-            this.message = message;
-
+            this.available = available;
+            sendTime = DateTime.Now;
             calculateMessageLength();
 
             if( messageLength > MessageUtils.MAX_MESSAGE_SIZE )
             {
-                throw new Exception( "Message is too long. (" + 
-                                     messageLength + " bytes, max is " + 
+                throw new Exception( "Message is too long. (" +
+                                     messageLength + " bytes, max is " +
                                      MessageUtils.MAX_MESSAGE_SIZE + " bytes)" );
             }
 
-            header = new MessageHeader( sender.GetHashCode(), MessageUtils.MessageType.CHAT, messageLength );
+            header = new MessageHeader( sender.GetHashCode(), MessageUtils.MessageType.HEARTBEAT, messageLength );
         }
 
         /// <summary>
-        /// Constructor used for receiving messages. This one is necessary
-        /// because we don't know the message contents yet, as they haven't
-        /// been parsed from the raw binary message.
+        /// Constructor
         /// </summary>
         /// <param name="header"></param>
-        public ChatMessage( IMessageHeader header ) : this()
+        public HeartbeatMessage( IMessageHeader header ) : this()
         {
             this.header = header;
         }
 
         /// <summary>
-        /// Calculates the message length.
+        /// Calculates the length of this message.
         /// </summary>
         private void calculateMessageLength()
         {
-            messageLength = MessageHeader.SIZE + 1 + displayName.Length + sizeof( long ) + 1 + message.Length;
+            messageLength = MessageHeader.SIZE + sizeof( long ) + 1 + 1 + displayName.Length;
         }
 
         /// <summary cref="IMessage.getMessageHeader">
         /// <see cref="IMessage.getMessageHeader"/>
         /// </summary>
+        /// <returns></returns>
         public IMessageHeader getMessageHeader()
         {
             return header;
         }
 
-        /// <summary cref="IChatMessage.getMessage">
-        /// <see cref="IChatMessage.getMessage"/>
-        /// </summary>
-        /// <returns></returns>
-        public string getMessage()
-        {
-            return message;
-        }
-
-        /// <summary cref="IChatMessage.getUserDisplayName">
-        /// <see cref="IChatMessage.getUserDisplayName"/>
-        /// </summary>
-        /// <returns></returns>
-        public string getUserDisplayName()
-        {
-            return displayName;
-        }
-
-        /// <summary cref="IChatMessage.getSendTime">
-        /// <see cref="IChatMessage.getSendTime"/>
+        /// <summary cref="IHeartbeatMessage.getSendTime">
+        /// <see cref="IHeartbeatMessage.getSendTime"/>
         /// </summary>
         /// <returns></returns>
         public DateTime getSendTime()
         {
             return sendTime;
+        }
+
+        /// <summary cref="IHeartbeatMessage.isUserAvailable">
+        /// <see cref="IHeartbeatMessage.isUserAvailable"/>
+        /// </summary>
+        /// <returns></returns>
+        public bool isUserAvailable()
+        {
+            return available;
+        }
+
+        /// <summary cref="IHeartbeatMessage.getUserDisplayName">
+        /// <see cref="IHeartbeatMessage.getUserDisplayName"/>
+        /// </summary>
+        /// <returns></returns>
+        public string getUserDisplayName()
+        {
+            return displayName;
         }
 
         /// <summary cref="IMessageSerializer.toBinaryStream">
@@ -109,9 +107,9 @@ namespace ChatterBox
         /// <param name="writer"></param>
         public void toBinaryStream( BinaryWriter writer )
         {
-            writer.Write( displayName );
             writer.Write( sendTime.ToBinary() );
-            writer.Write( message );
+            writer.Write( available );
+            writer.Write( displayName );
         }
 
         /// <summary cref="IMessageSerializer.fromBinaryStream">
@@ -121,10 +119,9 @@ namespace ChatterBox
         /// <returns></returns>
         public IMessage fromBinaryStream( BinaryReader reader )
         {
-            displayName = reader.ReadString();
             sendTime = DateTime.FromBinary( reader.ReadInt64() );
-            message = reader.ReadString();
-            
+            available = reader.ReadBoolean();
+            displayName = reader.ReadString();
             calculateMessageLength();
             header.setMessageLength( messageLength );
             return this;

@@ -37,7 +37,6 @@ namespace ChatterBox
             this.processMessage = receiveMessage;
             this.ipAddress = ipAddress;
             this.port = port;
-            System.Diagnostics.Debug.WriteLine( "ip={0}, port={1}", ipAddress, port );
         }
 
         /// <summary>

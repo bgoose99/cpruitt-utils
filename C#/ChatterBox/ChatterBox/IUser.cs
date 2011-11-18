@@ -24,5 +24,17 @@ namespace ChatterBox
         /// </summary>
         /// <param name="displayName"></param>
         void setDisplayName( string displayName );
+
+        /// <summary>
+        /// Returns true if this user is available, false otherwise.
+        /// </summary>
+        /// <returns></returns>
+        bool isAvailable();
+
+        /// <summary>
+        /// Sets the availability of this user.
+        /// </summary>
+        /// <param name="available"></param>
+        void setAvailable( bool available );
     }
 }
