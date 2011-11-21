@@ -32,7 +32,6 @@ namespace ChatterBox
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager( typeof( MainForm ) );
             this.sendButton = new System.Windows.Forms.Button();
             this.messageTextBox = new System.Windows.Forms.RichTextBox();
             this.chatTextBox = new System.Windows.Forms.RichTextBox();
@@ -40,14 +39,16 @@ namespace ChatterBox
             this.connectButton = new System.Windows.Forms.ToolStripButton();
             this.disconnectButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.onlineButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.deleteButton = new System.Windows.Forms.ToolStripButton();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip.SuspendLayout();
-            this.menuStrip1.SuspendLayout();
+            this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // sendButton
@@ -88,32 +89,34 @@ namespace ChatterBox
             this.connectButton,
             this.disconnectButton,
             this.toolStripSeparator1,
+            this.onlineButton,
+            this.toolStripSeparator2,
             this.deleteButton} );
             this.toolStrip.Location = new System.Drawing.Point( 0, 24 );
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size( 597, 25 );
             this.toolStrip.TabIndex = 3;
-            this.toolStrip.Text = "toolStrip1";
+            this.toolStrip.Text = "toolStrip";
             // 
             // connectButton
             // 
             this.connectButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.connectButton.Image = ( (System.Drawing.Image)( resources.GetObject( "connectButton.Image" ) ) );
+            this.connectButton.Image = global::ChatterBox.Properties.Resources.connect16;
             this.connectButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.connectButton.Name = "connectButton";
             this.connectButton.Size = new System.Drawing.Size( 23, 22 );
-            this.connectButton.Text = "toolStripButton1";
+            this.connectButton.Text = "connectButton";
             this.connectButton.ToolTipText = "Connect to address specified in configuration.";
             this.connectButton.Click += new System.EventHandler( this.connect );
             // 
-            // disonnectButton
+            // disconnectButton
             // 
             this.disconnectButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.disconnectButton.Image = ( (System.Drawing.Image)( resources.GetObject( "disonnectButton.Image" ) ) );
+            this.disconnectButton.Image = global::ChatterBox.Properties.Resources.disconnect16;
             this.disconnectButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.disconnectButton.Name = "disonnectButton";
+            this.disconnectButton.Name = "disconnectButton";
             this.disconnectButton.Size = new System.Drawing.Size( 23, 22 );
-            this.disconnectButton.Text = "toolStripButton1";
+            this.disconnectButton.Text = "disconnectButton";
             this.disconnectButton.ToolTipText = "Disconnect from the current address.";
             this.disconnectButton.Click += new System.EventHandler( this.disconnect );
             // 
@@ -122,26 +125,42 @@ namespace ChatterBox
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size( 6, 25 );
             // 
+            // onlineButton
+            // 
+            this.onlineButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.onlineButton.Image = global::ChatterBox.Properties.Resources.user_silhouette16;
+            this.onlineButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.onlineButton.Name = "onlineButton";
+            this.onlineButton.Size = new System.Drawing.Size( 23, 22 );
+            this.onlineButton.Text = "onlineButton";
+            this.onlineButton.ToolTipText = "Toggle status";
+            this.onlineButton.Click += new System.EventHandler( this.toggleStatus );
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size( 6, 25 );
+            // 
             // deleteButton
             // 
             this.deleteButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.deleteButton.Image = ( (System.Drawing.Image)( resources.GetObject( "deleteButton.Image" ) ) );
+            this.deleteButton.Image = global::ChatterBox.Properties.Resources.mail_trash16;
             this.deleteButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.deleteButton.Name = "deleteButton";
             this.deleteButton.Size = new System.Drawing.Size( 23, 22 );
             this.deleteButton.Text = "Clear the current conversation";
             this.deleteButton.Click += new System.EventHandler( this.clearConversation );
             // 
-            // menuStrip1
+            // menuStrip
             // 
-            this.menuStrip1.Items.AddRange( new System.Windows.Forms.ToolStripItem[] {
+            this.menuStrip.Items.AddRange( new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem} );
-            this.menuStrip1.Location = new System.Drawing.Point( 0, 0 );
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size( 597, 24 );
-            this.menuStrip1.TabIndex = 4;
-            this.menuStrip1.Text = "menuStrip1";
+            this.menuStrip.Location = new System.Drawing.Point( 0, 0 );
+            this.menuStrip.Name = "menuStrip";
+            this.menuStrip.Size = new System.Drawing.Size( 597, 24 );
+            this.menuStrip.TabIndex = 4;
+            this.menuStrip.Text = "menuStrip";
             // 
             // fileToolStripMenuItem
             // 
@@ -153,7 +172,7 @@ namespace ChatterBox
             // 
             // exitToolStripMenuItem
             // 
-            this.exitToolStripMenuItem.Image = ( (System.Drawing.Image)( resources.GetObject( "exitToolStripMenuItem.Image" ) ) );
+            this.exitToolStripMenuItem.Image = global::ChatterBox.Properties.Resources.door_in16;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Q";
             this.exitToolStripMenuItem.ShortcutKeys = ( (System.Windows.Forms.Keys)( ( System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q ) ) );
@@ -182,18 +201,18 @@ namespace ChatterBox
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size( 597, 274 );
             this.Controls.Add( this.toolStrip );
-            this.Controls.Add( this.menuStrip1 );
+            this.Controls.Add( this.menuStrip );
             this.Controls.Add( this.chatTextBox );
             this.Controls.Add( this.messageTextBox );
             this.Controls.Add( this.sendButton );
-            this.MainMenuStrip = this.menuStrip1;
+            this.MainMenuStrip = this.menuStrip;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ChatterBox";
             this.toolStrip.ResumeLayout( false );
             this.toolStrip.PerformLayout();
-            this.menuStrip1.ResumeLayout( false );
-            this.menuStrip1.PerformLayout();
+            this.menuStrip.ResumeLayout( false );
+            this.menuStrip.PerformLayout();
             this.ResumeLayout( false );
             this.PerformLayout();
 
@@ -210,15 +229,17 @@ namespace ChatterBox
         private System.Windows.Forms.RichTextBox messageTextBox;
         private System.Windows.Forms.RichTextBox chatTextBox;
         private System.Windows.Forms.ToolStrip toolStrip;
+        private System.Windows.Forms.MenuStrip menuStrip;
         private System.Windows.Forms.ToolStripButton connectButton;
-        private System.Windows.Forms.ToolStripButton disconnectButton;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripButton deleteButton;
-        private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem preferencesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton disconnectButton;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripButton onlineButton;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripButton deleteButton;
     }
 }
 

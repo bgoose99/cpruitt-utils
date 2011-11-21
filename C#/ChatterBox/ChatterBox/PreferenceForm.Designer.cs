@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager( typeof( PreferenceForm ) );
             this.displayNameLabel = new System.Windows.Forms.Label();
             this.hostNameLabel = new System.Windows.Forms.Label();
             this.portLabel = new System.Windows.Forms.Label();
@@ -81,7 +80,7 @@
             // 
             this.acceptButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.acceptButton.AutoSize = true;
-            this.acceptButton.Image = ( (System.Drawing.Image)( resources.GetObject( "acceptButton.Image" ) ) );
+            this.acceptButton.Image = global::ChatterBox.Properties.Resources.accept32;
             this.acceptButton.Location = new System.Drawing.Point( 87, 92 );
             this.acceptButton.Name = "acceptButton";
             this.acceptButton.Size = new System.Drawing.Size( 60, 40 );
@@ -93,7 +92,7 @@
             // 
             this.cancelButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.cancelButton.AutoSize = true;
-            this.cancelButton.Image = ( (System.Drawing.Image)( resources.GetObject( "cancelButton.Image" ) ) );
+            this.cancelButton.Image = global::ChatterBox.Properties.Resources.cancel32;
             this.cancelButton.Location = new System.Drawing.Point( 153, 92 );
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size( 60, 40 );

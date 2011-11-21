@@ -19,6 +19,7 @@ namespace ChatterBox
         {
             this.name = WindowsIdentity.GetCurrent().Name; ;
             this.displayName = displayName;
+            available = true;
         }
 
         /// <summary cref="IUser.getName">

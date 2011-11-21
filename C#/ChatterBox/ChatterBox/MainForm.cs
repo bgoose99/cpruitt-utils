@@ -218,5 +218,18 @@ namespace ChatterBox
         {
             chatTextBox.Clear();
         }
+
+        /// <summary>
+        /// Toggle the user's online status.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void toggleStatus( object sender, EventArgs e )
+        {
+            user.setAvailable( !user.isAvailable() );
+            onlineButton.Image = user.isAvailable() ? 
+                global::ChatterBox.Properties.Resources.user_silhouette16 : 
+                global::ChatterBox.Properties.Resources.user16;
+        }
     }
 }
