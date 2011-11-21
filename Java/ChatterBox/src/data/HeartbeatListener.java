@@ -54,12 +54,7 @@ public class HeartbeatListener implements IHeartbeatListener
                 boolean found = false;
                 for( UserActivity u : users )
                 {
-                    // TODO: replace the following check with the real one after
-                    // debugging
-                    // if( header.getSenderHash() == u.user.getName().hashCode()
-                    // )
-                    if( msg.getUserDisplayName().equals(
-                            u.user.getDisplayName() ) )
+                    if( header.getSenderHash() == u.user.getName().hashCode() )
                     {
                         // same sender, update and break
                         if( msg.isUserAvailable() != u.user.isAvailable() )
