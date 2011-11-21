@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Threading;
+using System.Timers;
 
 namespace ChatterBox
 {
@@ -23,6 +24,18 @@ namespace ChatterBox
         private delegate void ChatBoxAppendDelegate( string text );
 
         /// <summary>
+        /// This delegate is used to update the user view.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="isAvailable"></param>
+        private delegate void UpdateUserViewDelegate( string name, bool isAvailable );
+
+        /// <summary>
+        /// Purges users who have not sent a heartbeat in an alotted time.
+        /// </summary>
+        private delegate void PurgeOldUserDelegate();
+
+        /// <summary>
         /// Constructor
         /// </summary>
         public MainForm()
@@ -32,6 +45,20 @@ namespace ChatterBox
             // set the default accept button to send
             AcceptButton = sendButton;
 
+            // set up our user image list
+            userView.SmallImageList = imageList1;
+            imageList1.Images.Add( global::ChatterBox.Properties.Resources.user16 );
+            imageList1.Images.Add( global::ChatterBox.Properties.Resources.user_silhouette16 );
+
+            // set up our user list
+            currentUserList = new List<ChatUserDisplay>();
+
+            // set up our timer
+            purgeUserTimer = new System.Timers.Timer( 1000.0 );
+            purgeUserTimer.Elapsed += new ElapsedEventHandler( onTimedEvent );
+            purgeUserTimer.Enabled = true;
+
+            // set up our chat box
             chatTextBox.ReadOnly = true;
             chatTextBox.BackColor = Color.White;
 
@@ -46,8 +73,10 @@ namespace ChatterBox
                 showPreferenceDialog( null, null );
             Preferences.readPreferences();
 
-            user = new ChatUser( Preferences.getPreference( "user" ) );
+            // create our user
+            localUser = new ChatUser( Preferences.getPreference( "user" ) );
 
+            // connect, if necessary
             bool autoConnect = false;
             try
             {
@@ -87,7 +116,7 @@ namespace ChatterBox
             if( prefForm.ShowDialog( this ) == DialogResult.OK )
             {
                 // update user display name, if necessary
-                user.setDisplayName( Preferences.getPreference( "user" ) );
+                localUser.setDisplayName( Preferences.getPreference( "user" ) );
                 Preferences.writePreferences();
             }
             prefForm.Dispose();
@@ -104,7 +133,7 @@ namespace ChatterBox
             if( messageText.Length > 0 )
             {
                 messageTextBox.Text = "";
-                IMessage msg = new ChatMessage( user.getName(), user.getDisplayName(), messageText );
+                IMessage msg = new ChatMessage( localUser.getName(), localUser.getDisplayName(), messageText );
                 messageHandler.sendMessage( msg );
             }
         }
@@ -122,18 +151,14 @@ namespace ChatterBox
                     IChatMessage chatMsg = (IChatMessage)msg;
                     string s = "(" + chatMsg.getSendTime().ToShortTimeString() +
                             ") " + chatMsg.getUserDisplayName() + ": " + chatMsg.getMessage() + "\n";
-                    if( chatTextBox.InvokeRequired )
-                    {
-                        ChatBoxAppendDelegate del = new ChatBoxAppendDelegate( chatTextBox.AppendText );
-                        chatTextBox.Invoke( del, s );
-                    }
-                    else
-                    {
-                        chatTextBox.AppendText( s );
-                    }
+                    ChatBoxAppendDelegate chatBoxAppendDelegate = new ChatBoxAppendDelegate( chatTextBox.AppendText );
+                    this.Invoke( chatBoxAppendDelegate, s );
                     break;
                 case MessageUtils.MessageType.HEARTBEAT:
                     IHeartbeatMessage heartbeatMsg = (IHeartbeatMessage)msg;
+                    string name = heartbeatMsg.getUserDisplayName();
+                    UpdateUserViewDelegate updateUserViewDelegate = new UpdateUserViewDelegate( updateUserView );
+                    this.Invoke( updateUserViewDelegate, heartbeatMsg.getUserDisplayName(), heartbeatMsg.isUserAvailable() );
                     break;
                 default:
                     System.Diagnostics.Debug.WriteLine( "Received message of unknown type: {0}", msg.getMessageHeader().getMessageType() );
@@ -169,7 +194,7 @@ namespace ChatterBox
             messageThread = new Thread( new ThreadStart( messageHandler.startProcessing ) );
             messageThread.IsBackground = true;
 
-            heartbeatTask = new HeartbeatSendTask( user,
+            heartbeatTask = new HeartbeatSendTask( localUser,
                 new MessageUtils.SendMessageDelegate( messageHandler.sendMessage ) );
 
             if( messageHandler.connect() )
@@ -207,6 +232,9 @@ namespace ChatterBox
 
             connectButton.Enabled = true;
             disconnectButton.Enabled = false;
+
+            userView.Clear();
+            currentUserList.Clear();
         }
 
         /// <summary>
@@ -226,10 +254,125 @@ namespace ChatterBox
         /// <param name="e"></param>
         private void toggleStatus( object sender, EventArgs e )
         {
-            user.setAvailable( !user.isAvailable() );
-            onlineButton.Image = user.isAvailable() ? 
+            localUser.setAvailable( !localUser.isAvailable() );
+            onlineButton.Image = localUser.isAvailable() ? 
                 global::ChatterBox.Properties.Resources.user_silhouette16 : 
                 global::ChatterBox.Properties.Resources.user16;
+        }
+
+        /// <summary>
+        /// Updates the user view.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="isAvailable"></param>
+        private void updateUserView( string name, bool isAvailable )
+        {
+            int index = isAvailable ? 0 : 1; // user image index
+            bool found = false;
+            if( !name.Equals( localUser.getDisplayName() ) )
+            {
+                foreach( ChatUserDisplay user in currentUserList )
+                {
+                    if( user.ListViewItem.Name.Equals( name ) )
+                    {
+                        // update
+                        found = true;
+                        user.LastUpdate = DateTime.Now;
+                        if( user.ListViewItem.ImageIndex != index )
+                            user.ListViewItem.ImageIndex = index;
+                    }
+                }
+                if( !found )
+                {
+                    ChatUserDisplay user = new ChatUserDisplay( name );
+                    currentUserList.Add( user );
+                    userView.Items.Add( user.ListViewItem );
+                    chatTextBox.AppendText( "(" + DateTime.Now.ToShortTimeString() +
+                        ") User " + user.ListViewItem.Name + " has joined the conversation\n" );
+                }
+            }
+        }
+
+        /// <summary>
+        /// Timer function.
+        /// </summary>
+        private void onTimedEvent( object source, ElapsedEventArgs e )
+        {
+            PurgeOldUserDelegate purgeOldUserDelegate = new PurgeOldUserDelegate( purgeOldUsers );
+            this.Invoke( purgeOldUserDelegate );
+        }
+
+        /// <summary>
+        /// Purges all users that have not sent a heartbeat in the last 5 seconds.
+        /// </summary>
+        private void purgeOldUsers()
+        {
+            foreach( ChatUserDisplay user in currentUserList.FindAll( isUserOffline ) )
+            {
+                userView.Items.Remove( user.ListViewItem );
+                chatTextBox.AppendText( "(" + DateTime.Now.ToShortTimeString() + 
+                    ") User " + user.ListViewItem.Name + " has left the conversation\n" );
+            }
+            currentUserList.RemoveAll( isUserOffline );
+        }
+
+        /// <summary>
+        /// Predicate for determining if a user has not sent a heartbeat in the last 5 seconds.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        private bool isUserOffline( ChatUserDisplay user )
+        {
+            TimeSpan threshold = new TimeSpan( 0, 0, 5 );
+            DateTime now = DateTime.Now;
+            return ( TimeSpan.Compare( now - user.LastUpdate, threshold ) > 0 );
+        }
+
+        /// <summary>
+        /// This class represents a user that gets displayed in the user view.
+        /// </summary>
+        private class ChatUserDisplay
+        {
+            private ListViewItem listViewItem;
+            private DateTime lastUpdate;
+
+            /// <summary>
+            /// Constructor
+            /// </summary>
+            /// <param name="name"></param>
+            public ChatUserDisplay( string name ) : this( name, true )
+            {
+            }
+
+            /// <summary>
+            /// Constructor
+            /// </summary>
+            /// <param name="name"></param>
+            /// <param name="isAvailable"></param>
+            public ChatUserDisplay( string name, bool isAvailable )
+            {
+                listViewItem = new ListViewItem( name, isAvailable ? 0 : 1 );
+                listViewItem.Name = name;
+                lastUpdate = DateTime.Now;
+            }
+
+            /// <summary>
+            /// The ListViewItem associated with this user.
+            /// </summary>
+            public ListViewItem ListViewItem
+            {
+                get { return listViewItem; }
+                set { listViewItem = value; }
+            }
+
+            /// <summary>
+            /// The last time a heartbeat was received for this user.
+            /// </summary>
+            public DateTime LastUpdate
+            {
+                get { return lastUpdate; }
+                set { lastUpdate = value; }
+            }
         }
     }
 }

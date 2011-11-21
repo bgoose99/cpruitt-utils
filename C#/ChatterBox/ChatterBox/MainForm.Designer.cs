@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System;
+using System.Collections.Generic;
 namespace ChatterBox
 {
     partial class MainForm
@@ -32,6 +33,7 @@ namespace ChatterBox
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.sendButton = new System.Windows.Forms.Button();
             this.messageTextBox = new System.Windows.Forms.RichTextBox();
             this.chatTextBox = new System.Windows.Forms.RichTextBox();
@@ -47,6 +49,8 @@ namespace ChatterBox
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.userView = new System.Windows.Forms.ListView();
+            this.imageList1 = new System.Windows.Forms.ImageList( this.components );
             this.toolStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -79,7 +83,7 @@ namespace ChatterBox
                         | System.Windows.Forms.AnchorStyles.Right ) ) );
             this.chatTextBox.Location = new System.Drawing.Point( 0, 52 );
             this.chatTextBox.Name = "chatTextBox";
-            this.chatTextBox.Size = new System.Drawing.Size( 597, 170 );
+            this.chatTextBox.Size = new System.Drawing.Size( 460, 170 );
             this.chatTextBox.TabIndex = 2;
             this.chatTextBox.Text = "";
             // 
@@ -195,11 +199,31 @@ namespace ChatterBox
             this.preferencesToolStripMenuItem.Text = "Preferences";
             this.preferencesToolStripMenuItem.Click += new System.EventHandler( this.showPreferenceDialog );
             // 
+            // userView
+            // 
+            this.userView.Anchor = ( (System.Windows.Forms.AnchorStyles)( ( ( System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom )
+                        | System.Windows.Forms.AnchorStyles.Right ) ) );
+            this.userView.Location = new System.Drawing.Point( 466, 52 );
+            this.userView.MultiSelect = false;
+            this.userView.Name = "userView";
+            this.userView.Size = new System.Drawing.Size( 131, 170 );
+            this.userView.Sorting = System.Windows.Forms.SortOrder.Ascending;
+            this.userView.TabIndex = 5;
+            this.userView.UseCompatibleStateImageBehavior = false;
+            this.userView.View = System.Windows.Forms.View.List;
+            // 
+            // imageList1
+            // 
+            this.imageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
+            this.imageList1.ImageSize = new System.Drawing.Size( 16, 16 );
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF( 6F, 13F );
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size( 597, 274 );
+            this.Controls.Add( this.userView );
             this.Controls.Add( this.toolStrip );
             this.Controls.Add( this.menuStrip );
             this.Controls.Add( this.chatTextBox );
@@ -220,10 +244,12 @@ namespace ChatterBox
 
         #endregion
 
-        private IUser user;
+        private IUser localUser;
         private MessageHandler messageHandler;
         private Thread messageThread;
         private HeartbeatSendTask heartbeatTask;
+        private List<ChatUserDisplay> currentUserList;
+        private System.Timers.Timer purgeUserTimer;
 
         private System.Windows.Forms.Button sendButton;
         private System.Windows.Forms.RichTextBox messageTextBox;
@@ -240,6 +266,8 @@ namespace ChatterBox
         private System.Windows.Forms.ToolStripButton onlineButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton deleteButton;
+        private System.Windows.Forms.ListView userView;
+        private System.Windows.Forms.ImageList imageList1;
     }
 }
 
