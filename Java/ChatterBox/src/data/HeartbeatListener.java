@@ -47,8 +47,7 @@ public class HeartbeatListener implements IHeartbeatListener
     public void receiveHeartbeat( IHeartbeatMessage msg )
     {
         IMessageHeader header = msg.getMessageHeader();
-        // TODO: add this check in after debugging
-        // if( header.getSenderHash() != localUser.getName().hashCode() )
+        if( header.getSenderHash() != localUser.getName().hashCode() )
         {
             synchronized( this )
             {
