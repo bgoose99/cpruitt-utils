@@ -151,7 +151,7 @@ namespace ChatterBox
                     IChatMessage chatMsg = (IChatMessage)msg;
                     string s = "(" + chatMsg.getSendTime().ToShortTimeString() +
                             ") " + chatMsg.getUserDisplayName() + ": " + chatMsg.getMessage() + "\n";
-                    ChatBoxAppendDelegate chatBoxAppendDelegate = new ChatBoxAppendDelegate( chatTextBox.AppendText );
+                    ChatBoxAppendDelegate chatBoxAppendDelegate = new ChatBoxAppendDelegate( appendToConversation );
                     this.Invoke( chatBoxAppendDelegate, s );
                     break;
                 case MessageUtils.MessageType.HEARTBEAT:
@@ -287,7 +287,7 @@ namespace ChatterBox
                     ChatUserDisplay user = new ChatUserDisplay( name );
                     currentUserList.Add( user );
                     userView.Items.Add( user.ListViewItem );
-                    chatTextBox.AppendText( "(" + DateTime.Now.ToShortTimeString() +
+                    appendToConversation( "(" + DateTime.Now.ToShortTimeString() +
                         ") User " + user.ListViewItem.Name + " has joined the conversation\n" );
                 }
             }
@@ -310,7 +310,7 @@ namespace ChatterBox
             foreach( ChatUserDisplay user in currentUserList.FindAll( isUserOffline ) )
             {
                 userView.Items.Remove( user.ListViewItem );
-                chatTextBox.AppendText( "(" + DateTime.Now.ToShortTimeString() + 
+                appendToConversation( "(" + DateTime.Now.ToShortTimeString() + 
                     ") User " + user.ListViewItem.Name + " has left the conversation\n" );
             }
             currentUserList.RemoveAll( isUserOffline );
@@ -326,6 +326,17 @@ namespace ChatterBox
             TimeSpan threshold = new TimeSpan( 0, 0, 5 );
             DateTime now = DateTime.Now;
             return ( TimeSpan.Compare( now - user.LastUpdate, threshold ) > 0 );
+        }
+
+        /// <summary>
+        /// Method to append text to the chat pane and scroll down, if necessary.
+        /// </summary>
+        /// <param name="text"></param>
+        private void appendToConversation( string text )
+        {
+            chatTextBox.AppendText( text );
+            chatTextBox.Select( chatTextBox.Text.Length, 0 );
+            chatTextBox.ScrollToCaret();
         }
 
         /// <summary>
