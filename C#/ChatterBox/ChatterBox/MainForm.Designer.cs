@@ -34,6 +34,7 @@ namespace ChatterBox
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager( typeof( MainForm ) );
             this.sendButton = new System.Windows.Forms.Button();
             this.messageTextBox = new System.Windows.Forms.RichTextBox();
             this.chatTextBox = new System.Windows.Forms.RichTextBox();
@@ -229,6 +230,7 @@ namespace ChatterBox
             this.Controls.Add( this.chatTextBox );
             this.Controls.Add( this.messageTextBox );
             this.Controls.Add( this.sendButton );
+            this.Icon = ( (System.Drawing.Icon)( resources.GetObject( "$this.Icon" ) ) );
             this.MainMenuStrip = this.menuStrip;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
