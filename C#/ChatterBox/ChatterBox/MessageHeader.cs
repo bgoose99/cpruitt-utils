@@ -14,7 +14,7 @@ namespace ChatterBox
         /// <summary>
         /// Size of a header.
         /// </summary>
-        public static int SIZE = 12;
+        public static int SIZE = 12; // 3 ints
 
         private int senderHash;
         private MessageUtils.MessageType messageType;
@@ -23,8 +23,7 @@ namespace ChatterBox
         /// <summary>
         /// Constructor
         /// </summary>
-        public MessageHeader()
-            : this( 0, MessageUtils.MessageType.CHAT, 0 )
+        public MessageHeader() : this( 0, MessageUtils.MessageType.CHAT, 0 )
         {
         }
 
