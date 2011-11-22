@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 
 namespace ChatterBox
 {
@@ -24,5 +25,11 @@ namespace ChatterBox
         /// </summary>
         /// <returns></returns>
         DateTime getSendTime();
+
+        /// <summary>
+        /// Returns this user's preferred display color.
+        /// </summary>
+        /// <returns></returns>
+        Color getDisplayColor();
     }
 }

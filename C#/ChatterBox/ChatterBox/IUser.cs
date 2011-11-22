@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 
 namespace ChatterBox
 {
@@ -36,5 +37,17 @@ namespace ChatterBox
         /// </summary>
         /// <param name="available"></param>
         void setAvailable( bool available );
+
+        /// <summary>
+        /// Returns this user's preferred color.
+        /// </summary>
+        /// <returns></returns>
+        Color getPreferredColor();
+
+        /// <summary>
+        /// Sets this user's preferred color.
+        /// </summary>
+        /// <param name="color"></param>
+        void setPreferredColor( Color color );
     }
 }

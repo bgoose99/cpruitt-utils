@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Drawing;
 
 namespace ChatterBox
 {
@@ -14,6 +15,7 @@ namespace ChatterBox
         private IMessageHeader header;
 
         private string displayName;
+        private Color displayColor;
         private DateTime sendTime;
         private string message;
         private int messageLength;
@@ -26,14 +28,26 @@ namespace ChatterBox
         }
 
         /// <summary>
-        /// Constructor used for sending messages.
+        /// Constructor
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="displayName"></param>
         /// <param name="message"></param>
-        public ChatMessage( string sender, string displayName, string message )
+        public ChatMessage( string sender, string displayName, string message ) : this( sender, displayName, Color.Black, message )
+        {
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="displayName"></param>
+        /// <param name="displayColor"></param>
+        /// <param name="message"></param>
+        public ChatMessage( string sender, string displayName, Color displayColor, string message )
         {
             this.displayName = displayName;
+            this.displayColor = displayColor;
             this.sendTime = DateTime.Now;
             this.message = message;
 
@@ -65,7 +79,11 @@ namespace ChatterBox
         /// </summary>
         private void calculateMessageLength()
         {
-            messageLength = MessageHeader.SIZE + 1 + displayName.Length + sizeof( long ) + 1 + message.Length;
+            messageLength = MessageHeader.SIZE;      // header
+            messageLength += 1 + displayName.Length; // display name
+            messageLength += sizeof( int );          // color
+            messageLength += sizeof( long );         // send time
+            messageLength += 1 + message.Length;     // message
         }
 
         /// <summary cref="IMessage.getMessageHeader">
@@ -103,6 +121,15 @@ namespace ChatterBox
             return sendTime;
         }
 
+        /// <summary cref="IChatMessage.getDisplayColor">
+        /// <see cref="IChatMessage.getDisplayColor"/>
+        /// </summary>
+        /// <returns></returns>
+        public Color getDisplayColor()
+        {
+            return displayColor;
+        }
+
         /// <summary cref="IMessageSerializer.toBinaryStream">
         /// <see cref="IMessageSerializer.toBinaryStream"/>
         /// </summary>
@@ -110,6 +137,7 @@ namespace ChatterBox
         public void toBinaryStream( BinaryWriter writer )
         {
             writer.Write( displayName );
+            writer.Write( displayColor.ToArgb() );
             writer.Write( sendTime.ToBinary() );
             writer.Write( message );
         }
@@ -122,6 +150,7 @@ namespace ChatterBox
         public IMessage fromBinaryStream( BinaryReader reader )
         {
             displayName = reader.ReadString();
+            displayColor = Color.FromArgb( reader.ReadInt32() );
             sendTime = DateTime.FromBinary( reader.ReadInt64() );
             message = reader.ReadString();
             

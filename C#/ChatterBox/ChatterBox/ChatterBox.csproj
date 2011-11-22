@@ -134,6 +134,7 @@
     <None Include="Resources\door_in16.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\color_wheel.png" />
     <Content Include="Small-Blue-Balloon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

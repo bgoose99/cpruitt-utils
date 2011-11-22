@@ -1,4 +1,5 @@
 ﻿using System.Security.Principal;
+using System.Drawing;
 
 namespace ChatterBox
 {
@@ -9,16 +10,27 @@ namespace ChatterBox
     {
         private string name;
         private string displayName;
+        private Color preferredColor;
         private bool available;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="displayName"></param>
-        public ChatUser( string displayName )
+        public ChatUser( string displayName ) : this( displayName, Color.Black )
+        {
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="displayName"></param>
+        /// <param name="preferredColor"></param>
+        public ChatUser( string displayName, Color preferredColor )
         {
             this.name = WindowsIdentity.GetCurrent().Name; ;
             this.displayName = displayName;
+            this.preferredColor = preferredColor;
             available = true;
         }
 
@@ -65,6 +77,24 @@ namespace ChatterBox
         public void setAvailable( bool available )
         {
             this.available = available;
+        }
+
+        /// <summary>
+        /// Returns this user's preferred color.
+        /// </summary>
+        /// <returns></returns>
+        public Color getPreferredColor()
+        {
+            return preferredColor;
+        }
+
+        /// <summary>
+        /// Sets this user's preferred color.
+        /// </summary>
+        /// <param name="color"></param>
+        public void setPreferredColor( Color color )
+        {
+            preferredColor = color;
         }
     }
 }

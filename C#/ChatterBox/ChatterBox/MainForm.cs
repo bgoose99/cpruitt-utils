@@ -21,7 +21,10 @@ namespace ChatterBox
         /// any thread.
         /// </summary>
         /// <param name="text"></param>
-        private delegate void ChatBoxAppendDelegate( string text );
+        /// <param name="name"></param>
+        /// <param name="color"></param>
+        /// <param name="timestamp"></param>
+        private delegate void ChatBoxAppendDelegate( DateTime timestamp, string name, Color color, string text );
 
         /// <summary>
         /// This delegate is used to update the user view.
@@ -74,7 +77,7 @@ namespace ChatterBox
             Preferences.readPreferences();
 
             // create our user
-            localUser = new ChatUser( Preferences.getPreference( "user" ) );
+            localUser = new ChatUser( Preferences.getPreference( "user" ), Color.FromArgb( Int32.Parse( Preferences.getPreference( "color" ) ) ) );
 
             // connect, if necessary
             bool autoConnect = false;
@@ -133,8 +136,10 @@ namespace ChatterBox
             if( messageText.Length > 0 )
             {
                 messageTextBox.Text = "";
-                IMessage msg = new ChatMessage( localUser.getName(), localUser.getDisplayName(), messageText );
-                messageHandler.sendMessage( msg );
+                IMessage msg = new ChatMessage( localUser.getName(), 
+                    localUser.getDisplayName(), localUser.getPreferredColor(), messageText );
+                if( messageHandler != null )
+                    messageHandler.sendMessage( msg );
             }
         }
 
@@ -149,10 +154,9 @@ namespace ChatterBox
             {
                 case MessageUtils.MessageType.CHAT:
                     IChatMessage chatMsg = (IChatMessage)msg;
-                    string s = "(" + chatMsg.getSendTime().ToShortTimeString() +
-                            ") " + chatMsg.getUserDisplayName() + ": " + chatMsg.getMessage() + "\n";
                     ChatBoxAppendDelegate chatBoxAppendDelegate = new ChatBoxAppendDelegate( appendToConversation );
-                    this.Invoke( chatBoxAppendDelegate, s );
+                    this.Invoke( chatBoxAppendDelegate, chatMsg.getSendTime(), 
+                        chatMsg.getUserDisplayName(), chatMsg.getDisplayColor(), chatMsg.getMessage() + "\n" );
                     break;
                 case MessageUtils.MessageType.HEARTBEAT:
                     IHeartbeatMessage heartbeatMsg = (IHeartbeatMessage)msg;
@@ -287,8 +291,8 @@ namespace ChatterBox
                     ChatUserDisplay user = new ChatUserDisplay( name );
                     currentUserList.Add( user );
                     userView.Items.Add( user.ListViewItem );
-                    appendToConversation( "(" + DateTime.Now.ToShortTimeString() +
-                        ") User " + user.ListViewItem.Name + " has joined the conversation\n" );
+                    appendToConversation( DateTime.Now, null, Color.Black,
+                        "User " + user.ListViewItem.Name + " has joined the conversation\n" );
                 }
             }
         }
@@ -310,8 +314,8 @@ namespace ChatterBox
             foreach( ChatUserDisplay user in currentUserList.FindAll( isUserOffline ) )
             {
                 userView.Items.Remove( user.ListViewItem );
-                appendToConversation( "(" + DateTime.Now.ToShortTimeString() + 
-                    ") User " + user.ListViewItem.Name + " has left the conversation\n" );
+                appendToConversation( DateTime.Now, null, Color.Black,
+                    "User " + user.ListViewItem.Name + " has left the conversation\n" );
             }
             currentUserList.RemoveAll( isUserOffline );
         }
@@ -331,12 +335,44 @@ namespace ChatterBox
         /// <summary>
         /// Method to append text to the chat pane and scroll down, if necessary.
         /// </summary>
+        /// <param name="timestamp"></param>
+        /// <param name="name"></param>
+        /// <param name="color"></param>
         /// <param name="text"></param>
-        private void appendToConversation( string text )
+        private void appendToConversation( DateTime timestamp, string name, Color color, string text )
         {
+            string t = "(" + timestamp.ToShortTimeString() + ") " +
+                ( name == null ? "" : name + ": " );
+            int index = chatTextBox.TextLength;
+            chatTextBox.AppendText( t );
             chatTextBox.AppendText( text );
+            if( name != null )
+            {
+                chatTextBox.SelectionStart = chatTextBox.Find( t, index, RichTextBoxFinds.None );
+                chatTextBox.SelectionLength = t.Length;
+                chatTextBox.SelectionColor = color;
+            }
             chatTextBox.Select( chatTextBox.Text.Length, 0 );
             chatTextBox.ScrollToCaret();
+        }
+
+        /// <summary>
+        /// Shows a dialog allowing the user to select a preferred color.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void showColorDialog( object sender, EventArgs e )
+        {
+            // show dialog
+            ColorDialog dialog = new ColorDialog();
+            dialog.Color = localUser.getPreferredColor();
+
+            if( dialog.ShowDialog() == DialogResult.OK )
+            {
+                localUser.setPreferredColor( dialog.Color );
+                Preferences.setPreference( "color", localUser.getPreferredColor().ToArgb().ToString() );
+                Preferences.writePreferences();
+            }
         }
 
         /// <summary>

@@ -52,6 +52,7 @@ namespace ChatterBox
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.userView = new System.Windows.Forms.ListView();
             this.imageList1 = new System.Windows.Forms.ImageList( this.components );
+            this.colorButton = new System.Windows.Forms.ToolStripButton();
             this.toolStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -93,8 +94,9 @@ namespace ChatterBox
             this.toolStrip.Items.AddRange( new System.Windows.Forms.ToolStripItem[] {
             this.connectButton,
             this.disconnectButton,
-            this.toolStripSeparator1,
             this.onlineButton,
+            this.toolStripSeparator1,
+            this.colorButton,
             this.toolStripSeparator2,
             this.deleteButton} );
             this.toolStrip.Location = new System.Drawing.Point( 0, 24 );
@@ -219,6 +221,17 @@ namespace ChatterBox
             this.imageList1.ImageSize = new System.Drawing.Size( 16, 16 );
             this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
             // 
+            // colorButton
+            // 
+            this.colorButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.colorButton.Image = global::ChatterBox.Properties.Resources.color_wheel;
+            this.colorButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.colorButton.Name = "colorButton";
+            this.colorButton.Size = new System.Drawing.Size( 23, 22 );
+            this.colorButton.Text = "toolStripButton1";
+            this.colorButton.ToolTipText = "Choose a preferred color for messages";
+            this.colorButton.Click += new System.EventHandler( this.showColorDialog );
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF( 6F, 13F );
@@ -270,6 +283,7 @@ namespace ChatterBox
         private System.Windows.Forms.ToolStripButton deleteButton;
         private System.Windows.Forms.ListView userView;
         private System.Windows.Forms.ImageList imageList1;
+        private System.Windows.Forms.ToolStripButton colorButton;
     }
 }
 

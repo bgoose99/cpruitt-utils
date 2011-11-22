@@ -74,6 +74,13 @@ namespace ChatterBox.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap color_wheel {
+            get {
+                object obj = ResourceManager.GetObject("color_wheel", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap connect16 {
             get {
                 object obj = ResourceManager.GetObject("connect16", resourceCulture);
