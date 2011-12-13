@@ -77,7 +77,11 @@ namespace ChatterBox
             Preferences.readPreferences();
 
             // create our user
-            localUser = new ChatUser( Preferences.getPreference( "user" ), Color.FromArgb( Int32.Parse( Preferences.getPreference( "color" ) ) ) );
+            localUser = new ChatUser( Preferences.getPreference( "user" ) );
+            try
+            {
+                localUser.setPreferredColor( Color.FromArgb( Int32.Parse( Preferences.getPreference( "color" ) ) ) );
+            } catch( Exception ){}
 
             // connect, if necessary
             bool autoConnect = false;
@@ -119,7 +123,10 @@ namespace ChatterBox
             if( prefForm.ShowDialog( this ) == DialogResult.OK )
             {
                 // update user display name, if necessary
-                localUser.setDisplayName( Preferences.getPreference( "user" ) );
+                if ( localUser != null )
+                {
+                    localUser.setDisplayName( Preferences.getPreference( "user" ) );
+                }
                 Preferences.writePreferences();
             }
             prefForm.Dispose();
