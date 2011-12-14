@@ -316,7 +316,7 @@ public class HexEditorFrame extends JFrame
                 IconManager.getImage( IconManager.YINYANG, IconSize.X32 ),
                 IconManager.getImage( IconManager.YINYANG, IconSize.X64 ) ) );
         setJMenuBar( menuBar );
-        setSize( 800, 700 );
+        setSize( 800, 710 );
         setLocationRelativeTo( null );
         getRootPane().setDefaultButton( gotoBlockButton );
 
