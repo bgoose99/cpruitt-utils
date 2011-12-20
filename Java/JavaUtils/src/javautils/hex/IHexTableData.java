@@ -1,5 +1,6 @@
 package javautils.hex;
 
+import java.io.File;
 import java.util.List;
 
 /*******************************************************************************
@@ -8,46 +9,76 @@ import java.util.List;
 public interface IHexTableData
 {
     /***************************************************************************
-     * Returns the number of bytes in this data model.
+     * Sets the input file that contains the underlying data. Upon calling this
+     * method, any existing data is cleared.
+     * 
+     * @param f
+     **************************************************************************/
+    public void setInputFile( File f );
+
+    /***************************************************************************
+     * Writes out data to the specified file.
+     **************************************************************************/
+    public void saveData( File f );
+
+    /***************************************************************************
+     * Returns the total size of the underlying data this class represents. E.g.
+     * the size of the input stream.
      * 
      * @return
      **************************************************************************/
-    public int getSize();
+    public long getTotalSize();
 
     /***************************************************************************
-     * Returns the byte at the specified index.
+     * Returns the block size this model uses.
+     * 
+     * @return
+     **************************************************************************/
+    public int getBlockSize();
+
+    /***************************************************************************
+     * Returns the total number of block in the underlying data.
+     * 
+     * @return
+     **************************************************************************/
+    public int getBlockCount();
+
+    /***************************************************************************
+     * Returns the number of bytes in the current block.
+     * 
+     * @return
+     **************************************************************************/
+    public int getCurrentBlockSize();
+
+    /***************************************************************************
+     * Returns the byte at the specified index in the current block.
      * 
      * @param index
      * @return
-     * @throws IndexOutOfBoundsException
+     * @throws Exception
      **************************************************************************/
-    public Byte getByte( int index ) throws IndexOutOfBoundsException;
+    public Byte getByte( int index ) throws Exception;
 
     /***************************************************************************
-     * Sets the byte at the specified index.
+     * Sets the byte at the specified index in the current block.
      * 
      * @param index
      * @param b
      * @throws IndexOutOfBoundsException
      **************************************************************************/
-    public void setByte( int index, Byte b ) throws IndexOutOfBoundsException;
+    public void setByte( int index, Byte b ) throws Exception;
 
     /***************************************************************************
-     * Returns the list of bytes associated with this data model.
+     * Returns the list of bytes associated with the current block in this data
+     * model.
      * 
      * @return
      **************************************************************************/
-    public List<Byte> getBytes();
+    public List<Byte> getCurrentBlock();
 
     /***************************************************************************
-     * Sets the list of bytes to be used with this data model.
-     * 
-     * @param bytes
-     **************************************************************************/
-    public void setBytes( List<Byte> bytes );
-
-    /***************************************************************************
-     * Returns a 'row' of this data model, represented as a string.
+     * Returns a 'row' in the current block of this data model, represented as a
+     * string.
      * 
      * @param row
      * @return
@@ -55,7 +86,7 @@ public interface IHexTableData
     public String getRowAsString( int row );
 
     /***************************************************************************
-     * Deletes a number of bytes from the underlying data, starting at the
+     * Deletes a number of bytes from the current block of data, starting at the
      * specified offset.
      * 
      * @param offset
@@ -64,8 +95,8 @@ public interface IHexTableData
     public void deleteBytes( int offset, int numBytesToDelete );
 
     /***************************************************************************
-     * Adds a number of bytes to the underlying data, starting at the specified
-     * offset.
+     * Adds a number of bytes to the current block of data, starting at the
+     * specified offset.
      * 
      * @param offset
      * @param numBytesToAdd
@@ -76,4 +107,46 @@ public interface IHexTableData
      * Clears all data.
      **************************************************************************/
     public void clear();
+
+    /***************************************************************************
+     * Returns true if this model has another block of data beyond the current,
+     * false otherwise.
+     * 
+     * @return
+     **************************************************************************/
+    public boolean hasNextBlock();
+
+    /***************************************************************************
+     * Returns true if this model has another block of data preceding the
+     * current, false otherwise.
+     * 
+     * @return
+     **************************************************************************/
+    public boolean hasPreviousBlock();
+
+    /***************************************************************************
+     * Advances this data model to the next block of data, if it exists.
+     **************************************************************************/
+    public void gotoNextBlock();
+
+    /***************************************************************************
+     * Backs up this data model to the previous block of data, if it exists.
+     **************************************************************************/
+    public void gotoPreviousBlock();
+
+    /***************************************************************************
+     * Moves the current data model to the specified block of data, if it
+     * exists.
+     * 
+     * @param blockNum
+     * @throws IndexOutOfBoundsException
+     **************************************************************************/
+    public boolean gotoBlock( int blockNum );
+
+    /***************************************************************************
+     * Returns the index of the current block.
+     * 
+     * @return
+     **************************************************************************/
+    public int getCurrentBlockIndex();
 }

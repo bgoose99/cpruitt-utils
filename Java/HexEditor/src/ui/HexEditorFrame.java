@@ -515,15 +515,13 @@ public class HexEditorFrame extends JFrame
             s = "No file loaded";
         } else
         {
-            gotoBlockTextField
-                    .setText( ""
-                            + ( hexTable.getHexTableModel()
-                                    .getCurrentBlockIndex() + 1 ) );
+            gotoBlockTextField.setText( ""
+                    + ( hexTable.getHexTableModel().getCurrentBlockIndex() ) );
             s = "<html>"
                     + selectedFile.getName()
                     + "<br>Showing block <b>"
                     + Utils.formatNumber( ( hexTable.getHexTableModel()
-                            .getCurrentBlockIndex() + 1 ) )
+                            .getCurrentBlockIndex() ) )
                     + "</b> of <b>"
                     + Utils.formatNumber( hexTable.getHexTableModel()
                             .getBlockCount() )
@@ -660,33 +658,67 @@ public class HexEditorFrame extends JFrame
     }
 
     /***************************************************************************
+     * Determines if a block change should take place. (E.g. in the event of the
+     * go to block button, or the prev/next block buttons) If there are no
+     * un-saved edits, returns true. Otherwise, prompts the user to discard
+     * un-saved edits.
+     * 
+     * @return
+     **************************************************************************/
+    private boolean shouldChangeBlock()
+    {
+        if( unsavedEdits )
+        {
+            if( JOptionPane.showConfirmDialog( this,
+                    "There are unsaved edits in this block.\n"
+                            + "Do you wish to continue anyway?\n"
+                            + "(Unsaved edits will be lost.)", "Continue?",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE ) != JOptionPane.YES_OPTION )
+            {
+                return false;
+            } else
+            {
+                // discard edits
+                unsavedEdits = false;
+                return true;
+            }
+        } else
+        {
+            return true;
+        }
+    }
+
+    /***************************************************************************
      * Parses the value in the goto text field and attempts to go to that block
      * of data.
      **************************************************************************/
     private void gotoBlock()
     {
-        String input = gotoBlockTextField.getText();
-        if( input == null )
-            return;
+        if( shouldChangeBlock() )
+        {
+            String input = gotoBlockTextField.getText();
+            if( input == null )
+                return;
 
-        try
-        {
-            int i = Integer.parseInt( input );
-            if( hexTable.getHexTableModel().gotoBlock( i - 1 ) )
+            try
             {
-                updateUI();
-            } else
+                int i = Integer.parseInt( input );
+                if( hexTable.getHexTableModel().gotoBlock( i ) )
+                {
+                    updateUI();
+                } else
+                {
+                    throw new Exception();
+                }
+            } catch( Exception e )
             {
-                throw new Exception();
+                JOptionPane.showMessageDialog( this, "Invalid block number: "
+                        + input, "Error", JOptionPane.ERROR_MESSAGE );
+                gotoBlockTextField
+                        .setText( ""
+                                + ( hexTable.getHexTableModel()
+                                        .getCurrentBlockIndex() ) );
             }
-        } catch( Exception e )
-        {
-            JOptionPane.showMessageDialog( this, "Invalid block number: "
-                    + input, "Error", JOptionPane.ERROR_MESSAGE );
-            gotoBlockTextField
-                    .setText( ""
-                            + ( hexTable.getHexTableModel()
-                                    .getCurrentBlockIndex() + 1 ) );
         }
     }
 
@@ -941,9 +973,12 @@ public class HexEditorFrame extends JFrame
         @Override
         public void actionPerformed( ActionEvent e )
         {
-            hexTable.getHexTableModel().next();
-            hexTable.clearSelection();
-            updateUI();
+            if( shouldChangeBlock() )
+            {
+                hexTable.getHexTableModel().next();
+                hexTable.clearSelection();
+                updateUI();
+            }
         }
     }
 
@@ -955,9 +990,12 @@ public class HexEditorFrame extends JFrame
         @Override
         public void actionPerformed( ActionEvent e )
         {
-            hexTable.getHexTableModel().previous();
-            hexTable.clearSelection();
-            updateUI();
+            if( shouldChangeBlock() )
+            {
+                hexTable.getHexTableModel().previous();
+                hexTable.clearSelection();
+                updateUI();
+            }
         }
     }
 

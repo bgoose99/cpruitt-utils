@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.channels.FileChannel;
 
 /*******************************************************************************
@@ -96,9 +97,9 @@ public final class FileUtils
      * 
      * @param from
      * @param to
-     * @throws Exception
+     * @return
      **************************************************************************/
-    public static void copyFile( File from, File to ) throws Exception
+    public static boolean copyFile( File from, File to )
     {
         FileChannel fromChannel = null;
         FileChannel toChannel = null;
@@ -110,15 +111,61 @@ public final class FileUtils
             fromChannel.transferTo( 0, fromChannel.size(), toChannel );
         } catch( Exception e )
         {
-            throw new Exception( "Error during file copy.\nFrom: "
-                    + from.getAbsolutePath() + "\nTo: " + to.getAbsolutePath()
-                    + "\nError: " + e.getMessage() );
+            return false;
         } finally
         {
-            if( fromChannel != null )
-                fromChannel.close();
-            if( toChannel != null )
-                toChannel.close();
+            try
+            {
+                if( fromChannel != null )
+                    fromChannel.close();
+                if( toChannel != null )
+                    toChannel.close();
+            } catch( Exception e )
+            {
+            }
+        }
+        return true;
+    }
+
+    /***************************************************************************
+     * Moves a file from one place to another. The destination is deleted first,
+     * to eliminate errors on Windows platforms.
+     * 
+     * @param from
+     * @param to
+     * @throws Exception
+     **************************************************************************/
+    public static void moveFile( File from, File to ) throws IOException
+    {
+        if( !from.isFile() )
+        {
+            throw new IOException( "Cannot move a directory: "
+                    + from.getAbsolutePath() );
+        }
+
+        if( to.isDirectory() )
+        {
+            throw new IOException( "Cannot move, directory exists: "
+                    + to.getAbsolutePath() );
+        }
+
+        if( !from.renameTo( to ) )
+        {
+            // if a rename fails (as it does on Windows when the destination
+            // exists), copy the file
+            if( !FileUtils.copyFile( from, to ) )
+            {
+                throw new IOException( "Error moving file "
+                        + from.getAbsolutePath() + " to "
+                        + to.getAbsolutePath() + "." );
+            }
+
+            // copy was successful, delete source
+            if( !from.delete() )
+            {
+                throw new IOException( "Error deleting source: "
+                        + from.getAbsolutePath() );
+            }
         }
     }
 }

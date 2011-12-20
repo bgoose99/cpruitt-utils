@@ -1,10 +1,6 @@
 package data;
 
-import io.HexDataSerializer;
-
 import java.io.File;
-import java.util.List;
-import java.util.Vector;
 
 import javautils.Utils;
 import javautils.hex.HexUtils;
@@ -24,11 +20,7 @@ import javax.swing.table.AbstractTableModel;
  ******************************************************************************/
 public class HexTableModel extends AbstractTableModel implements IHexTableModel
 {
-    private static final int BLOCK_SIZE = 512;
-
     private IHexTableData data;
-
-    private int currentBlockIndex;
 
     /***************************************************************************
      * Constructor
@@ -38,20 +30,6 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
         super();
 
         data = new HexTableData();
-        currentBlockIndex = 0;
-    }
-
-    /***************************************************************************
-     * Calculates the "row" into the actual data, using the row of the currently
-     * displayed block of data.
-     * 
-     * @param rowIndex
-     * @return
-     **************************************************************************/
-    private int getModifiedRow( int rowIndex )
-    {
-        return ( currentBlockIndex * ( BLOCK_SIZE / HexTableData.ROW_SIZE ) )
-                + rowIndex;
     }
 
     /***************************************************************************
@@ -62,10 +40,10 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
      **************************************************************************/
     private String getRowLabel( int row )
     {
-        int len = Integer.toHexString( getTotalBytes() ).length();
+        int len = Long.toHexString( getTotalBytes() ).length();
         String s = Integer.toHexString(
-                currentBlockIndex * BLOCK_SIZE + row * HexTableData.ROW_SIZE )
-                .toUpperCase();
+                ( data.getCurrentBlockIndex() - 1 ) * HexTableData.BLOCK_SIZE
+                        + row * HexTableData.ROW_SIZE ).toUpperCase();
         return "0x" + Utils.getPaddedString( s, len, '0', true );
     }
 
@@ -77,8 +55,7 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
      **************************************************************************/
     private String getRowString( int row )
     {
-        return ( data.getSize() == 0 ? "" : data
-                .getRowAsString( getModifiedRow( row ) ) );
+        return data.getRowAsString( row );
     }
 
     /***************************************************************************
@@ -90,11 +67,18 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
      **************************************************************************/
     private String getValue( int row, int col )
     {
-        int index = ( getModifiedRow( row ) * HexTableData.ROW_SIZE ) + col - 1;
-        if( index < data.getSize() )
+        int index = ( row * HexTableData.ROW_SIZE ) + col - 1;
+        if( index < data.getCurrentBlockSize() )
         {
-            return HexUtils.BYTES[HexUtils.byteToUnsignedInt( data
-                    .getByte( index ) )];
+            String s = "";
+            try
+            {
+                s = HexUtils.BYTES[HexUtils.byteToUnsignedInt( data
+                        .getByte( index ) )];
+            } catch( Exception e )
+            {
+            }
+            return s;
         } else
         {
             return null;
@@ -120,19 +104,12 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
     @Override
     public int getRowCount()
     {
-        if( data.getSize() == 0 )
+        if( data.getCurrentBlockSize() == 0 )
         {
             return 0;
         } else
         {
-            int sizeLeft = data.getSize() - currentBlockIndex * BLOCK_SIZE;
-            if( sizeLeft > BLOCK_SIZE )
-            {
-                return ( BLOCK_SIZE / HexTableData.ROW_SIZE );
-            } else
-            {
-                return ( ( ( sizeLeft - 1 ) / HexTableData.ROW_SIZE ) + 1 );
-            }
+            return ( ( ( data.getCurrentBlockSize() - 1 ) / HexTableData.ROW_SIZE ) + 1 );
         }
     }
 
@@ -209,11 +186,19 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
                 return;
             }
 
-            int index = ( getModifiedRow( rowIndex ) * HexTableData.ROW_SIZE )
-                    + columnIndex - 1;
-            if( index < data.getSize() )
+            int index = ( rowIndex * HexTableData.ROW_SIZE ) + columnIndex - 1;
+            if( index < data.getCurrentBlockSize() )
             {
-                data.setByte( index, new Byte( (byte)newVal ) );
+                try
+                {
+                    data.setByte( index, new Byte( (byte)newVal ) );
+                } catch( Exception e )
+                {
+                    JOptionPane.showMessageDialog( null, "Error setting index "
+                            + index + " to " + newVal + "." + e.getMessage(),
+                            "Error", JOptionPane.ERROR_MESSAGE );
+                    return;
+                }
             }
             fireTableCellUpdated( rowIndex, columnIndex );
         }
@@ -225,9 +210,9 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
      * @see javautils.hex.IHexTableModel#getTotalBytes()
      */
     @Override
-    public int getTotalBytes()
+    public long getTotalBytes()
     {
-        return data.getSize();
+        return data.getTotalSize();
     }
 
     /*
@@ -238,8 +223,7 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
     @Override
     public int getBlockCount()
     {
-        return ( data.getSize() < 1 ? 0
-                : ( ( data.getSize() - 1 ) / BLOCK_SIZE ) ) + 1;
+        return data.getBlockCount();
     }
 
     /*
@@ -250,7 +234,7 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
     @Override
     public int getCurrentBlockIndex()
     {
-        return currentBlockIndex;
+        return data.getCurrentBlockIndex();
     }
 
     /*
@@ -261,8 +245,7 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
     @Override
     public int getCurrentBlockSize()
     {
-        return Math.min( BLOCK_SIZE, data.getSize()
-                - ( currentBlockIndex * BLOCK_SIZE ) );
+        return data.getCurrentBlockSize();
     }
 
     /*
@@ -273,7 +256,7 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
     @Override
     public int getMaxBlockSize()
     {
-        return BLOCK_SIZE;
+        return HexTableData.BLOCK_SIZE;
     }
 
     /*
@@ -284,16 +267,18 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
     @Override
     public int find( int offset, byte searchKey )
     {
-        for( int i = offset; i < data.getSize(); i++ )
+        try
         {
-            if( data.getByte( i ).byteValue() == searchKey )
+            for( int i = offset; i < data.getBlockSize(); i++ )
             {
-                // update current block index
-                currentBlockIndex = i / BLOCK_SIZE;
-                return i;
+                if( data.getByte( i ).byteValue() == searchKey )
+                {
+                    return i;
+                }
             }
+        } catch( Exception e )
+        {
         }
-
         return -1;
     }
 
@@ -305,14 +290,17 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
     @Override
     public int rfind( int offset, byte searchKey )
     {
-        for( int i = offset; i >= 0; i-- )
+        try
         {
-            if( data.getByte( i ).byteValue() == searchKey )
+            for( int i = offset; i >= 0; i-- )
             {
-                // update current block index
-                currentBlockIndex = i / BLOCK_SIZE;
-                return i;
+                if( data.getByte( i ).byteValue() == searchKey )
+                {
+                    return i;
+                }
             }
+        } catch( Exception e )
+        {
         }
 
         return -1;
@@ -326,8 +314,9 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
     @Override
     public int gotoOffset( int offset )
     {
-        currentBlockIndex = offset / BLOCK_SIZE;
-        return offset % BLOCK_SIZE;
+        int blockIndex = offset / HexTableData.BLOCK_SIZE + 1;
+        data.gotoBlock( blockIndex );
+        return offset % HexTableData.BLOCK_SIZE;
     }
 
     /*
@@ -338,7 +327,7 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
     @Override
     public boolean hasNext()
     {
-        return data.getSize() > ( ( currentBlockIndex + 1 ) * BLOCK_SIZE );
+        return data.hasNextBlock();
     }
 
     /*
@@ -349,7 +338,7 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
     @Override
     public boolean hasPrevious()
     {
-        return currentBlockIndex > 0;
+        return data.hasPreviousBlock();
     }
 
     /*
@@ -360,10 +349,7 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
     @Override
     public void next()
     {
-        if( hasNext() )
-        {
-            currentBlockIndex++;
-        }
+        data.gotoNextBlock();
     }
 
     /*
@@ -374,10 +360,7 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
     @Override
     public void previous()
     {
-        if( hasPrevious() )
-        {
-            currentBlockIndex--;
-        }
+        data.gotoPreviousBlock();
     }
 
     /*
@@ -388,12 +371,7 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
     @Override
     public boolean gotoBlock( int block )
     {
-        if( block >= 0 && ( block * BLOCK_SIZE ) < data.getSize() )
-        {
-            currentBlockIndex = block;
-            return true;
-        }
-        return false;
+        return data.gotoBlock( block );
     }
 
     /*
@@ -404,8 +382,7 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
     @Override
     public void deleteBytes( int offset, int numBytesToDelete )
     {
-        data.deleteBytes( ( currentBlockIndex * BLOCK_SIZE ) + offset,
-                numBytesToDelete );
+        data.deleteBytes( offset, numBytesToDelete );
     }
 
     /*
@@ -416,8 +393,7 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
     @Override
     public void addBytes( int offset, int numBytesToAdd )
     {
-        data.addBytes( ( currentBlockIndex * BLOCK_SIZE ) + offset,
-                numBytesToAdd );
+        data.addBytes( offset, numBytesToAdd );
     }
 
     /*
@@ -428,8 +404,8 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
     @Override
     public void readData( File f ) throws Exception
     {
-        HexDataSerializer serializer = new HexDataSerializer( f );
-        data = serializer.readItem();
+        data.setInputFile( f );
+        gotoBlock( 1 );
     }
 
     /*
@@ -440,8 +416,8 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
     @Override
     public void writeData( File f ) throws Exception
     {
-        HexDataSerializer serializer = new HexDataSerializer( f );
-        serializer.writeItem( data );
+        data.saveData( f );
+        gotoBlock( data.getCurrentBlockIndex() );
     }
 
     /*
@@ -453,7 +429,6 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
     public void clear()
     {
         data.clear();
-        currentBlockIndex = 0;
     }
 
     /*
@@ -465,9 +440,6 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
     public void newData()
     {
         data.clear();
-        currentBlockIndex = 0;
-        List<Byte> bytes = new Vector<Byte>();
-        bytes.add( new Byte( (byte)0 ) );
-        data.setBytes( bytes );
+        data.addBytes( 0, 1 );
     }
 }

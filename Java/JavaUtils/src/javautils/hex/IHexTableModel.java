@@ -14,7 +14,7 @@ public interface IHexTableModel
      * 
      * @return
      **************************************************************************/
-    public int getTotalBytes();
+    public long getTotalBytes();
 
     /***************************************************************************
      * Returns the number of blocks in this model.
