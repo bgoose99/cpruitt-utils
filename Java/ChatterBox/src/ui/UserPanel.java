@@ -16,8 +16,8 @@ import data.UserListCellRenderer;
 
 public class UserPanel extends JPanel implements IUserDisplay
 {
-    private DefaultListModel listModel;
-    private JList list;
+    private DefaultListModel<IUser> listModel;
+    private JList<IUser> list;
     private JScrollPane scrollPane;
 
     /***************************************************************************
@@ -25,8 +25,8 @@ public class UserPanel extends JPanel implements IUserDisplay
      **************************************************************************/
     public UserPanel()
     {
-        listModel = new DefaultListModel();
-        list = new JList( listModel );
+        listModel = new DefaultListModel<IUser>();
+        list = new JList<IUser>( listModel );
         UserListCellRenderer renderer = new UserListCellRenderer();
         list.setCellRenderer( renderer );
         scrollPane = new JScrollPane( list );

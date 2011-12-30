@@ -23,8 +23,8 @@ import data.ProblemFactory;
  ******************************************************************************/
 public class ProjectEulerFrame extends JFrame
 {
-    private DefaultListModel problemListModel;
-    private JList problemList;
+    private DefaultListModel<AbstractProblem> problemListModel;
+    private JList<AbstractProblem> problemList;
     private JScrollPane scrollPane;
     private JButton viewButton;
 
@@ -33,12 +33,12 @@ public class ProjectEulerFrame extends JFrame
      **************************************************************************/
     public ProjectEulerFrame()
     {
-        problemListModel = new DefaultListModel();
+        problemListModel = new DefaultListModel<AbstractProblem>();
         for( AbstractProblem p : ProblemFactory.getProblems() )
         {
             problemListModel.addElement( p );
         }
-        problemList = new JList( problemListModel );
+        problemList = new JList<AbstractProblem>( problemListModel );
         problemList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
         problemList.addMouseListener( new ListMouseAdapter() );
         scrollPane = new JScrollPane( problemList );
