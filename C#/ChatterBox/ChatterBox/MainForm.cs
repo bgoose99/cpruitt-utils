@@ -70,24 +70,25 @@ namespace ChatterBox
                 Environment.OSVersion.Platform == PlatformID.MacOSX )
                 ? Environment.GetEnvironmentVariable( "HOME" )
                 : Environment.ExpandEnvironmentVariables( "%HOMEDRIVE%%HOMEPATH%" );
-            Preferences.initialize( homePath + "/.ChatterBoxPrefs",
+            CsUtils.Utils.Preferences.initialize( homePath + "/.ChatterBoxPrefs",
                 new string[] {"user", "autoconnect", "host", "port", "color"} );
-            if( !Preferences.exists() )
+            if( !CsUtils.Utils.Preferences.exists() )
                 showPreferenceDialog( null, null );
-            Preferences.readPreferences();
+            CsUtils.Utils.Preferences.readPreferences();
 
             // create our user
-            localUser = new ChatUser( Preferences.getPreference( "user" ) );
+            localUser = new ChatUser( CsUtils.Utils.Preferences.getPreference( "user" ) );
             try
             {
-                localUser.setPreferredColor( Color.FromArgb( Int32.Parse( Preferences.getPreference( "color" ) ) ) );
+                localUser.setPreferredColor( Color.FromArgb( 
+                    Int32.Parse( CsUtils.Utils.Preferences.getPreference( "color" ) ) ) );
             } catch( Exception ){}
 
             // connect, if necessary
             bool autoConnect = false;
             try
             {
-                autoConnect = bool.Parse( Preferences.getPreference( "autoconnect" ) );
+                autoConnect = bool.Parse( CsUtils.Utils.Preferences.getPreference( "autoconnect" ) );
             }
             catch {}
             
@@ -125,9 +126,9 @@ namespace ChatterBox
                 // update user display name, if necessary
                 if ( localUser != null )
                 {
-                    localUser.setDisplayName( Preferences.getPreference( "user" ) );
+                    localUser.setDisplayName( CsUtils.Utils.Preferences.getPreference( "user" ) );
                 }
-                Preferences.writePreferences();
+                CsUtils.Utils.Preferences.writePreferences();
             }
             prefForm.Dispose();
         }
@@ -189,11 +190,11 @@ namespace ChatterBox
             int port = 0;
             try
             {
-                port = int.Parse( Preferences.getPreference( "port" ) );
+                port = int.Parse( CsUtils.Utils.Preferences.getPreference( "port" ) );
             }
             catch( Exception )
             {
-                MessageBox.Show( "Port '" + Preferences.getPreference( "port" ) +
+                MessageBox.Show( "Port '" + CsUtils.Utils.Preferences.getPreference( "port" ) +
                     "' is not a valid integer.\nUsing 6969 instead. Please change your preferences.",
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
                 port = 6969;
@@ -201,7 +202,7 @@ namespace ChatterBox
 
             messageHandler = new MessageHandler(
                 new MessageUtils.ReceiveMessageDelegate( receiveMessage ),
-                Preferences.getPreference( "host" ), port );
+                CsUtils.Utils.Preferences.getPreference( "host" ), port );
             messageThread = new Thread( new ThreadStart( messageHandler.startProcessing ) );
             messageThread.IsBackground = true;
 
@@ -377,8 +378,8 @@ namespace ChatterBox
             if( dialog.ShowDialog() == DialogResult.OK )
             {
                 localUser.setPreferredColor( dialog.Color );
-                Preferences.setPreference( "color", localUser.getPreferredColor().ToArgb().ToString() );
-                Preferences.writePreferences();
+                CsUtils.Utils.Preferences.setPreference( "color", localUser.getPreferredColor().ToArgb().ToString() );
+                CsUtils.Utils.Preferences.writePreferences();
             }
         }
 

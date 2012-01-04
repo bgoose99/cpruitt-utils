@@ -74,7 +74,6 @@
     <Compile Include="PreferenceForm.Designer.cs">
       <DependentUpon>PreferenceForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Preferences.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="MainForm.resx">
@@ -136,6 +135,12 @@
   <ItemGroup>
     <None Include="Resources\color_wheel.png" />
     <Content Include="Small-Blue-Balloon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\CsUtils\CsUtils\CsUtils.csproj">
+      <Project>{B291B771-9D90-4403-8F5D-7273A319EBA6}</Project>
+      <Name>CsUtils</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -15,12 +15,12 @@ namespace ChatterBox
             AcceptButton = acceptButton;
 
             // attempt to fill components with current preferences
-            displayNameTextBox.Text = Preferences.getPreference( "user" );
-            hostNameTextBox.Text = Preferences.getPreference( "host" );
-            portTextBox.Text = Preferences.getPreference( "port" );
+            displayNameTextBox.Text = CsUtils.Utils.Preferences.getPreference( "user" );
+            hostNameTextBox.Text = CsUtils.Utils.Preferences.getPreference( "host" );
+            portTextBox.Text = CsUtils.Utils.Preferences.getPreference( "port" );
             try
             {
-                autoConnectCheckBox.Checked = bool.Parse( Preferences.getPreference( "autoconnect" ) );
+                autoConnectCheckBox.Checked = bool.Parse( CsUtils.Utils.Preferences.getPreference( "autoconnect" ) );
             }
             catch { }
         }
@@ -61,10 +61,10 @@ namespace ChatterBox
                 return;
             }
 
-            Preferences.setPreference( "user", name );
-            Preferences.setPreference( "host", host );
-            Preferences.setPreference( "port", port );
-            Preferences.setPreference( "autoconnect", autoConnectCheckBox.Checked.ToString() );
+            CsUtils.Utils.Preferences.setPreference( "user", name );
+            CsUtils.Utils.Preferences.setPreference( "host", host );
+            CsUtils.Utils.Preferences.setPreference( "port", port );
+            CsUtils.Utils.Preferences.setPreference( "autoconnect", autoConnectCheckBox.Checked.ToString() );
             
             DialogResult = DialogResult.OK;
             Dispose();

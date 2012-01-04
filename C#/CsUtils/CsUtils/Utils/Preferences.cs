@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.IO;
 using System.Windows.Forms;
+using System.IO;
 
-namespace ChatterBox
+namespace CsUtils.Utils
 {
     /// <summary>
     /// This class handles preference I/O so that information can be saved between
-    /// runs of an application. Once initialized, parameter can be set and retrieved
+    /// runs of an application. Once initialized, parameters can be set and retrieved
     /// from the preference map.
     /// </summary>
-    sealed class Preferences
+    public sealed class Preferences
     {
         private static Dictionary<string, string> prefDict;
 
