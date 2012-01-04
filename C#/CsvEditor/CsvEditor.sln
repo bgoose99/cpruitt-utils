@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvEditor", "CsvEditor\CsvE
 		{B291B771-9D90-4403-8F5D-7273A319EBA6} = {B291B771-9D90-4403-8F5D-7273A319EBA6}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsUtils", "..\..\..\myStuff\workspace\cpruitt-utils\C#\CsUtils\CsUtils\CsUtils.csproj", "{B291B771-9D90-4403-8F5D-7273A319EBA6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsUtils", "..\CsUtils\CsUtils\CsUtils.csproj", "{B291B771-9D90-4403-8F5D-7273A319EBA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
