@@ -83,7 +83,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\myStuff\workspace\cpruitt-utils\C#\CsUtils\CsUtils\CsUtils.csproj">
+    <ProjectReference Include="..\..\CsUtils\CsUtils\CsUtils.csproj">
       <Project>{B291B771-9D90-4403-8F5D-7273A319EBA6}</Project>
       <Name>CsUtils</Name>
     </ProjectReference>
