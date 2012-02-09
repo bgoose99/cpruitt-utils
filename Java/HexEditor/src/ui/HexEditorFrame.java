@@ -601,10 +601,6 @@ public class HexEditorFrame extends JFrame
         } else
         {
             offset = findIndex + ( reverse ? -1 : 1 );
-            if( findKey < 0 )
-            {
-                Toolkit.getDefaultToolkit().beep();
-            }
 
         }
 
@@ -705,7 +701,9 @@ public class HexEditorFrame extends JFrame
                 int i = Integer.parseInt( input );
                 if( hexTable.getHexTableModel().gotoBlock( i ) )
                 {
+                    hexTable.clearSelection();
                     updateUI();
+                    findIndex = 0;
                 } else
                 {
                     throw new Exception();
@@ -978,6 +976,7 @@ public class HexEditorFrame extends JFrame
                 hexTable.getHexTableModel().next();
                 hexTable.clearSelection();
                 updateUI();
+                findIndex = 0;
             }
         }
     }
@@ -995,6 +994,7 @@ public class HexEditorFrame extends JFrame
                 hexTable.getHexTableModel().previous();
                 hexTable.clearSelection();
                 updateUI();
+                findIndex = 0;
             }
         }
     }
