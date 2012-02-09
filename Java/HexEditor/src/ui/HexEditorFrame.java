@@ -33,6 +33,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
@@ -84,6 +85,8 @@ public class HexEditorFrame extends JFrame
 
     private JScrollPane scrollPane;
     private HexTable hexTable;
+
+    private JProgressBar progressBar;
 
     private File saveFile;
     private File selectedFile;
@@ -137,6 +140,8 @@ public class HexEditorFrame extends JFrame
 
         hexTable = new HexTable();
         scrollPane = new JScrollPane( hexTable );
+
+        progressBar = new JProgressBar();
 
         hexTable.addPropertyChangeListener( HexTable.EDIT,
                 new TableEditListener() );
@@ -316,7 +321,7 @@ public class HexEditorFrame extends JFrame
                 IconManager.getImage( IconManager.YINYANG, IconSize.X32 ),
                 IconManager.getImage( IconManager.YINYANG, IconSize.X64 ) ) );
         setJMenuBar( menuBar );
-        setSize( 800, 710 );
+        setSize( 800, 750 );
         setLocationRelativeTo( null );
         getRootPane().setDefaultButton( gotoBlockButton );
 
@@ -349,9 +354,12 @@ public class HexEditorFrame extends JFrame
         add( infoPanel, new GridBagConstraints( 0, 1, 1, 1, 1.0, 0.05,
                 GridBagConstraints.WEST, GridBagConstraints.BOTH, new Insets(
                         3, 3, 3, 3 ), 0, 0 ) );
-        add( scrollPane, new GridBagConstraints( 0, 2, 1, 1, 1.0, 0.94,
+        add( scrollPane, new GridBagConstraints( 0, 2, 1, 1, 1.0, 0.93,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(
                         3, 3, 3, 3 ), 0, 0 ) );
+        add( progressBar, new GridBagConstraints( 0, 3, 1, 1, 1.0, 0.01,
+                GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+                new Insets( 3, 3, 3, 3 ), 0, 0 ) );
 
         updateUI();
     }
@@ -509,6 +517,7 @@ public class HexEditorFrame extends JFrame
     private void setInfo()
     {
         String s;
+        double d;
         if( selectedFile == null )
         {
             gotoBlockTextField.setText( "" );
@@ -529,6 +538,9 @@ public class HexEditorFrame extends JFrame
                     + "<br>(Total bytes: <b>"
                     + Utils.formatNumber( hexTable.getHexTableModel()
                             .getTotalBytes() ) + "</b>)</html>";
+            d = ( ( hexTable.getHexTableModel().getCurrentBlockIndex() * 1.0 ) / hexTable
+                    .getHexTableModel().getBlockCount() ) * 100.0;
+            progressBar.setValue( (int)d );
         }
         infoLabel.setText( s );
         setTitle( ( unsavedEdits ? "*" : "" ) + FRAME_TITLE );
