@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">BigThree</string>
+    <string name="weightHint">Weight (lbs)</string>
+    <string name="repsHint">Repetitions</string>
+    <string name="date">Date</string>
+    <string name="dateDisplay">Today</string>
+    <string name="exercise">Exercise</string>
+    <string name="set">Top Set</string>
+    <string name="noRecords">No records. SFW!</string>
+    <string name="ok">OK</string>
+    <string name="addRecord">Add Record</string>
+    <string name="oneRepMax">1RM</string>
+    <string name="percentCalculator">Percentage Calculator</string>
+    <string name="calculate">Calculate</string>
+    <string name="p95">95%</string>
+    <string name="p90">90%</string>
+    <string name="p85">85%</string>
+    <string name="p80">80%</string>
+    <string name="p75">75%</string>
+    <string name="p70">70%</string>
+    <string name="p65">65%</string>
+    <string name="p60">60%</string>
+    <string name="p55">55%</string>
+    <string name="p50">50%</string>
+    <string name="maxCalculator">Theoretical Max Calculator</string>
+    <string name="max">Theoretical Max</string>
+    <string name="addExercise">Add Exercise</string>
+    <string name="saveRecords">Save to CSV</string>
+    <string name="deleteRecords">Delete record(s)</string>
+
+</resources>

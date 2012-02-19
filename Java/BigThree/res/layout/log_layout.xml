@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/logLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/log_date"
+        style="?android:attr/listSeparatorTextViewStyle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_margin="3px"
+        android:text="@string/date" />
+
+    <Button
+        android:id="@+id/log_dateButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/log_date"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="3px"
+        android:text="@string/dateDisplay" />
+
+    <TextView
+        android:id="@+id/log_exerciseDisplay"
+        style="?android:attr/listSeparatorTextViewStyle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/log_dateButton"
+        android:layout_gravity="left"
+        android:layout_margin="3px"
+        android:text="@string/exercise" />
+
+    <Spinner
+        android:id="@+id/log_exerciseSpinner"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/log_exerciseDisplay"
+        android:layout_gravity="left"
+        android:layout_margin="3px"
+        android:text="@string/exercise" />
+
+    <TextView
+        android:id="@+id/log_setDisplay"
+        style="?android:attr/listSeparatorTextViewStyle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/log_exerciseSpinner"
+        android:layout_gravity="left"
+        android:layout_margin="3px"
+        android:text="@string/set" />
+
+    <EditText
+        android:id="@+id/log_weight"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/log_setDisplay"
+        android:layout_gravity="center"
+        android:layout_margin="3px"
+        android:hint="@string/weightHint"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/log_reps"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/log_weight"
+        android:layout_gravity="center"
+        android:layout_margin="3px"
+        android:hint="@string/repsHint"
+        android:inputType="number" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" >
+
+        <Button
+            android:id="@+id/log_addRecordButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="3px"
+            android:text="@string/addRecord" />
+    </RelativeLayout>
+
+</RelativeLayout>

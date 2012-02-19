@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/percentagesLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+    
+    <TextView
+        android:id="@+id/percentages_percentCalculatorDesc"
+        style="?android:attr/listSeparatorTextViewStyle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:text="@string/percentCalculator" />
+    
+    <EditText
+        android:id="@+id/percentages_weight"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/percentages_percentCalculatorDesc"
+        android:layout_gravity="center"
+        android:hint="@string/weightHint"
+        android:inputType="number" />
+
+    <Button
+        android:id="@+id/percentages_calculateButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/percentages_weight"
+        android:layout_centerHorizontal="true"
+        android:text="@string/calculate" />
+    
+    <TextView
+        android:id="@+id/percentages_p95Label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/percentages_calculateButton"
+        android:text="@string/p95" />
+    
+    <TextView
+        android:id="@+id/percentages_p95Value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/percentages_p95Label"
+        android:layout_alignTop="@id/percentages_p95Label"
+        android:layout_marginLeft="15px"
+        android:textColor="#00F" />
+    
+    <TextView
+        android:id="@+id/percentages_p90Label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_below="@id/percentages_p95Label"
+        android:text="@string/p90" />
+    
+    <TextView
+        android:id="@+id/percentages_p90Value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/percentages_p90Label"
+        android:layout_alignTop="@id/percentages_p90Label"
+        android:layout_marginLeft="15px"
+        android:textColor="#00F" />
+    
+    <TextView
+        android:id="@+id/percentages_p85Label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_below="@id/percentages_p90Label"
+        android:text="@string/p85" />
+    
+    <TextView
+        android:id="@+id/percentages_p85Value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/percentages_p85Label"
+        android:layout_alignTop="@id/percentages_p85Label"
+        android:layout_marginLeft="15px"
+        android:textColor="#00F" />
+    
+    <TextView
+        android:id="@+id/percentages_p80Label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_below="@id/percentages_p85Label"
+        android:text="@string/p80" />
+    
+    <TextView
+        android:id="@+id/percentages_p80Value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/percentages_p80Label"
+        android:layout_alignTop="@id/percentages_p80Label"
+        android:layout_marginLeft="15px"
+        android:textColor="#00F" />
+    
+    <TextView
+        android:id="@+id/percentages_p75Label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_below="@id/percentages_p80Label"
+        android:text="@string/p75" />
+    
+    <TextView
+        android:id="@+id/percentages_p75Value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/percentages_p75Label"
+        android:layout_alignTop="@id/percentages_p75Label"
+        android:layout_marginLeft="15px"
+        android:textColor="#00F" />
+    
+    <TextView
+        android:id="@+id/percentages_p70Label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_below="@id/percentages_p75Label"
+        android:text="@string/p70" />
+    
+    <TextView
+        android:id="@+id/percentages_p70Value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/percentages_p70Label"
+        android:layout_alignTop="@id/percentages_p70Label"
+        android:layout_marginLeft="15px"
+        android:textColor="#00F" />
+    
+    <TextView
+        android:id="@+id/percentages_p65Label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_below="@id/percentages_p70Label"
+        android:text="@string/p65" />
+    
+    <TextView
+        android:id="@+id/percentages_p65Value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/percentages_p65Label"
+        android:layout_alignTop="@id/percentages_p65Label"
+        android:layout_marginLeft="15px"
+        android:textColor="#00F" />
+    
+    <TextView
+        android:id="@+id/percentages_p60Label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_below="@id/percentages_p65Label"
+        android:text="@string/p60" />
+    
+    <TextView
+        android:id="@+id/percentages_p60Value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/percentages_p60Label"
+        android:layout_alignTop="@id/percentages_p60Label"
+        android:layout_marginLeft="15px"
+        android:textColor="#00F" />
+    
+    <TextView
+        android:id="@+id/percentages_p55Label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_below="@id/percentages_p60Label"
+        android:text="@string/p55" />
+    
+    <TextView
+        android:id="@+id/percentages_p55Value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/percentages_p55Label"
+        android:layout_alignTop="@id/percentages_p55Label"
+        android:layout_marginLeft="15px"
+        android:textColor="#00F" />
+    
+    <TextView
+        android:id="@+id/percentages_p50Label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_below="@id/percentages_p55Label"
+        android:text="@string/p50" />
+    
+    <TextView
+        android:id="@+id/percentages_p50Value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/percentages_p50Label"
+        android:layout_alignTop="@id/percentages_p50Label"
+        android:layout_marginLeft="15px"
+        android:textColor="#00F" />
+
+</RelativeLayout>
