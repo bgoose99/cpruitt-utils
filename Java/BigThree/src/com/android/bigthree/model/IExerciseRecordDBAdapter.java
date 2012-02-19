@@ -46,11 +46,10 @@ public interface IExerciseRecordDBAdapter
     /**
      * Deletes a record from the database.
      * 
-     * @param date
-     * @param description
+     * @param id
      * @return
      */
-    public boolean deleteRecord( String date, String description );
+    public boolean deleteRecord( long id );
 
     /**
      * Returns all records in the database.
@@ -68,7 +67,7 @@ public interface IExerciseRecordDBAdapter
     public Cursor getRecordsByType( String description );
 
     /**
-     * Updates a single exercise.
+     * Updates a single exercise record.
      * 
      * @param rowId
      * @param date
@@ -78,7 +77,7 @@ public interface IExerciseRecordDBAdapter
      * @param max
      * @return
      */
-    public boolean updateExercise( long rowId, String date, String description,
+    public boolean updateRecord( long rowId, String date, String description,
             int weight, int reps, double max );
 
     /**

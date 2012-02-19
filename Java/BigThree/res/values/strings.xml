@@ -28,6 +28,6 @@
     <string name="max">Theoretical Max</string>
     <string name="addExercise">Add Exercise</string>
     <string name="saveRecords">Save to CSV</string>
-    <string name="deleteRecords">Delete record(s)</string>
+    <string name="delete">Delete</string>
 
 </resources>

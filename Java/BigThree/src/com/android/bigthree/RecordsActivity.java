@@ -1,25 +1,36 @@
 package com.android.bigthree;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
-import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.android.bigthree.model.IDBListener;
 import com.android.bigthree.model.IExerciseDBAdapter;
 import com.android.bigthree.model.IExerciseRecordDBAdapter;
+import com.android.bigthree.model.Record;
 
 public class RecordsActivity extends Activity
 {
@@ -29,7 +40,9 @@ public class RecordsActivity extends Activity
     private IDBListener recordsDbListener;
     private BigThree bigThree;
     private String currentExerciseSelection;
-    private TableLayout tableLayout;
+    private ListView recordListView;
+    private List<Record> recordList;
+    private ArrayAdapter<Record> recordAdapter;
     private TableRow headerRow;
 
     private final LayoutParams rowLayoutParams = new LayoutParams(
@@ -41,6 +54,30 @@ public class RecordsActivity extends Activity
     public RecordsActivity()
     {
         super();
+    }
+
+    @Override
+    public void onCreateContextMenu( ContextMenu menu, View v,
+            ContextMenuInfo menuInfo )
+    {
+        super.onCreateContextMenu( menu, v, menuInfo );
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate( R.menu.record_context_menu, menu );
+    }
+
+    @Override
+    public boolean onContextItemSelected( MenuItem item )
+    {
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo)item
+                .getMenuInfo();
+        switch( item.getItemId() )
+        {
+        case R.id.deleteRecordMenuItem:
+            deleteRecord( info.id );
+            return true;
+        default:
+            return super.onContextItemSelected( item );
+        }
     }
 
     /*
@@ -67,10 +104,7 @@ public class RecordsActivity extends Activity
         switch( item.getItemId() )
         {
         case R.id.saveRecordsMenuItem:
-            MessagePresenter.showToastMessage( this, "Save me, bizzle" );
-            return true;
-        case R.id.deleteRecordsMenuItem:
-            MessagePresenter.showToastMessage( this, "Delete me, bizzle" );
+            MessagePresenter.showToastMessage( this, "Currently not supported" );
             return true;
         default:
             return super.onOptionsItemSelected( item );
@@ -90,7 +124,12 @@ public class RecordsActivity extends Activity
 
         // get handles to our components
         exerciseSpinner = (Spinner)findViewById( R.id.records_exerciseSpinner );
-        tableLayout = (TableLayout)findViewById( R.id.records_tableLayout );
+        recordListView = (ListView)findViewById( R.id.records_listView );
+        recordList = new ArrayList<Record>();
+        recordAdapter = new RecordsAdapter( this,
+                R.layout.single_record_layout, recordList );
+        recordListView.setAdapter( recordAdapter );
+        registerForContextMenu( recordListView );
 
         TextView dateHeaderView = new TextView( this );
         dateHeaderView.setText( R.string.date );
@@ -172,49 +211,48 @@ public class RecordsActivity extends Activity
      */
     private void updateTable()
     {
-        // clear table
-        tableLayout.removeAllViews();
+        recordAdapter.clear();
 
-        // get records based on current exercise
         Cursor cursor = bigThree.getExerciseRecordDBAdapter().getRecordsByType(
                 currentExerciseSelection );
 
-        // add header
-        tableLayout.addView( headerRow );
-
-        // add records
-        if( cursor.moveToFirst() )
+        if( cursor != null && cursor.moveToFirst() )
         {
             do
             {
-                TextView v1 = new TextView( this );
-                v1.setText( cursor
-                        .getString( IExerciseRecordDBAdapter.KEY_DATE_ROWID ) );
-                v1.setGravity( Gravity.LEFT );
-                TextView v2 = new TextView( this );
-                v2.setText( String.format( "%.2f", cursor
-                        .getDouble( IExerciseRecordDBAdapter.KEY_MAX_ROWID ) ) );
-                v2.setGravity( Gravity.RIGHT );
-
-                TableRow row = new TableRow( this );
-                row.setLayoutParams( rowLayoutParams );
-                row.addView( v1 );
-                row.addView( v2 );
-                tableLayout.addView( row );
+                Record r = new Record(
+                        cursor.getLong( IExerciseRecordDBAdapter.KEY_ID_ROWID ),
+                        cursor.getString( IExerciseRecordDBAdapter.KEY_DATE_ROWID ),
+                        cursor.getString( IExerciseRecordDBAdapter.KEY_DESC_ROWID ),
+                        cursor.getInt( IExerciseRecordDBAdapter.KEY_WEIGHT_ROWID ),
+                        cursor.getInt( IExerciseRecordDBAdapter.KEY_REPS_ROWID ),
+                        cursor.getDouble( IExerciseRecordDBAdapter.KEY_MAX_ROWID ) );
+                recordAdapter.add( r );
             } while( cursor.moveToNext() );
+            cursor.close();
         } else
         {
-            TextView v = new TextView( this );
-            v.setText( R.string.noRecords );
-            v.setGravity( Gravity.CENTER );
-
-            TableRow row = new TableRow( this );
-            row.setLayoutParams( rowLayoutParams );
-            row.addView( v );
-            tableLayout.addView( row );
+            Record r = new Record();
+            r.setDate( "No Records. SFW!" );
+            recordAdapter.add( r );
         }
 
-        cursor.close();
+        recordAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Removes a single record from the database. Note that the supplied id is
+     * an index into the list adapter.
+     * 
+     * @param id
+     */
+    private void deleteRecord( long id )
+    {
+        Record r = recordAdapter.getItem( (int)id );
+        if( bigThree.getExerciseRecordDBAdapter().deleteRecord( r.getId() ) )
+            MessagePresenter.showToastMessage( this, "Record deleted" );
+        else
+            MessagePresenter.showToastMessage( this, "Error deleting record" );
     }
 
     /**
@@ -236,6 +274,45 @@ public class RecordsActivity extends Activity
         public void notifyContentsChanged()
         {
             updateTable();
+        }
+    }
+
+    /**
+     * 
+     */
+    private class RecordsAdapter extends ArrayAdapter<Record>
+    {
+        private List<Record> items;
+
+        public RecordsAdapter( Context context, int textViewResourceId,
+                List<Record> items )
+        {
+            super( context, textViewResourceId, items );
+            this.items = items;
+        }
+
+        @Override
+        public View getView( int position, View convertView, ViewGroup parent )
+        {
+            View v = convertView;
+            if( v == null )
+            {
+                LayoutInflater li = (LayoutInflater)getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+                v = li.inflate( R.layout.single_record_layout, null );
+            }
+
+            Record r = items.get( position );
+            if( r != null )
+            {
+                TextView v1 = (TextView)v.findViewById( R.id.record_dateView );
+                TextView v2 = (TextView)v.findViewById( R.id.record_maxView );
+                if( v1 != null )
+                    v1.setText( r.getDate() );
+                if( v2 != null )
+                    v2.setText( String.format( "%.2f", r.getMax() ) );
+            }
+
+            return v;
         }
     }
 }

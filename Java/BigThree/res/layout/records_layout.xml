@@ -20,19 +20,30 @@
             android:text="@string/exercise" />
     </RelativeLayout>
 
-    <ScrollView
-        android:id="@+id/records_scrollView"
+    <TextView
+        android:id="@+id/records_dateHeader"
+        style="?android:attr/listSeparatorTextViewStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/records_spinnerLayout"
+        android:text="@string/date" />
+
+    <TextView
+        android:id="@+id/records_maxHeader"
+        style="?android:attr/listSeparatorTextViewStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@id/records_dateHeader"
+        android:layout_below="@id/records_spinnerLayout"
+        android:gravity="right"
+        android:text="@string/max" />
+
+    <ListView
+        android:id="@+id/records_listView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/records_spinnerLayout" >
-
-        <TableLayout
-            android:id="@+id/records_tableLayout"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:stretchColumns="1" >
-        </TableLayout>
-
-    </ScrollView>
+        android:layout_below="@id/records_dateHeader" />
 
 </RelativeLayout>

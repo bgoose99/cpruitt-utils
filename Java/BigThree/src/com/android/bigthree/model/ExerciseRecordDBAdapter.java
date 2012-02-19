@@ -111,13 +111,11 @@ public class ExerciseRecordDBAdapter implements IExerciseRecordDBAdapter
      * (non-Javadoc)
      * 
      * @see
-     * com.android.bigthree.model.IExerciseRecordDBAdapter#deleteRecord(java
-     * .lang.String, java.lang.String)
+     * com.android.bigthree.model.IExerciseRecordDBAdapter#deleteRecord(long)
      */
-    public synchronized boolean deleteRecord( String date, String description )
+    public synchronized boolean deleteRecord( long id )
     {
-        boolean rval = db.delete( DB_TABLE, KEY_DATE + "='" + date + "' AND "
-                + KEY_DESC + "='" + description + "'", null ) > 0;
+        boolean rval = db.delete( DB_TABLE, KEY_ID + "=" + id, null ) > 0;
 
         if( rval )
             notifyListeners();
@@ -144,8 +142,10 @@ public class ExerciseRecordDBAdapter implements IExerciseRecordDBAdapter
      */
     public synchronized Cursor getRecordsByType( String description )
     {
-        Cursor cursor = db.query( true, DB_TABLE, QUERY_ALL, KEY_DESC + "='"
-                + description + "'", null, null, null, KEY_DATE, null );
+        Cursor cursor = db
+                .query( true, DB_TABLE, QUERY_ALL, KEY_DESC + "='"
+                        + description + "'", null, null, null, KEY_DATE
+                        + " DESC", null );
 
         if( cursor != null )
             cursor.moveToFirst();
@@ -160,7 +160,7 @@ public class ExerciseRecordDBAdapter implements IExerciseRecordDBAdapter
      * com.android.bigthree.model.IExerciseRecordDBAdapter#updateExercise(long,
      * java.lang.String, java.lang.String, int, int, double)
      */
-    public synchronized boolean updateExercise( long rowId, String date,
+    public synchronized boolean updateRecord( long rowId, String date,
             String description, int weight, int reps, double max )
     {
         ContentValues values = new ContentValues();

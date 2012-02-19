@@ -95,9 +95,9 @@ public class LogActivity extends Activity
         switch( id )
         {
         case DATE_DIALOG_ID:
-            showDatePickerDialog();
+            return showDatePickerDialog();
         case EXERCISE_DIALOG_ID:
-            showExerciseInputDialog();
+            return showExerciseInputDialog();
         }
         return null;
     }

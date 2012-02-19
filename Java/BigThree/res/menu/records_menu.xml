@@ -5,9 +5,5 @@
         android:id="@+id/saveRecordsMenuItem"
         android:icon="@drawable/ic_menu_save_records"
         android:title="@string/saveRecords"/>
-    <item
-        android:id="@+id/deleteRecordsMenuItem"
-        android:icon="@drawable/ic_menu_delete_records"
-        android:title="@string/deleteRecords"/>
 
 </menu>
