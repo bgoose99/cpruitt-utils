@@ -130,7 +130,8 @@ public class ExerciseRecordDBAdapter implements IExerciseRecordDBAdapter
      */
     public synchronized Cursor getAllRecords()
     {
-        return db.query( DB_TABLE, QUERY_ALL, null, null, null, null, null );
+        return db.query( DB_TABLE, QUERY_ALL, null, null, null, null, KEY_DESC
+                + "," + KEY_DATE );
     }
 
     /*

@@ -1,5 +1,6 @@
 package com.android.bigthree;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Gravity;
@@ -26,11 +28,13 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.bigthree.model.IDBListener;
 import com.android.bigthree.model.IExerciseDBAdapter;
 import com.android.bigthree.model.IExerciseRecordDBAdapter;
 import com.android.bigthree.model.Record;
+import com.android.bigthree.model.RecordsSerializer;
 
 public class RecordsActivity extends Activity
 {
@@ -56,6 +60,12 @@ public class RecordsActivity extends Activity
         super();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.app.Activity#onCreateContextMenu(android.view.ContextMenu,
+     * android.view.View, android.view.ContextMenu.ContextMenuInfo)
+     */
     @Override
     public void onCreateContextMenu( ContextMenu menu, View v,
             ContextMenuInfo menuInfo )
@@ -65,6 +75,11 @@ public class RecordsActivity extends Activity
         inflater.inflate( R.menu.record_context_menu, menu );
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.app.Activity#onContextItemSelected(android.view.MenuItem)
+     */
     @Override
     public boolean onContextItemSelected( MenuItem item )
     {
@@ -104,7 +119,7 @@ public class RecordsActivity extends Activity
         switch( item.getItemId() )
         {
         case R.id.saveRecordsMenuItem:
-            MessagePresenter.showToastMessage( this, "Currently not supported" );
+            saveRecordsToFile();
             return true;
         default:
             return super.onOptionsItemSelected( item );
@@ -253,6 +268,40 @@ public class RecordsActivity extends Activity
             MessagePresenter.showToastMessage( this, "Record deleted" );
         else
             MessagePresenter.showToastMessage( this, "Error deleting record" );
+    }
+
+    /**
+     * 
+     */
+    private void saveRecordsToFile()
+    {
+        // make sure external storage is available
+        String state = Environment.getExternalStorageState();
+        if( Environment.MEDIA_MOUNTED.equals( state ) )
+        {
+            // Get path to our application's directory
+            File file = new File( getExternalFilesDir( null ),
+                    getString( R.string.csvFile ) );
+            RecordsSerializer serializer = new RecordsSerializer(
+                    bigThree.getExerciseRecordDBAdapter() );
+            try
+            {
+                serializer.writeRecordsToFile( file );
+            } catch( Exception e )
+            {
+                MessagePresenter.showToastMessage( this,
+                        "Error writing to file: " + file.getAbsolutePath()
+                                + "\n" + e.getMessage() );
+                return;
+            }
+
+            MessagePresenter.showToastMessage( this, "Records written to: "
+                    + file.getAbsolutePath(), Toast.LENGTH_LONG );
+        } else
+        {
+            MessagePresenter.showToastMessage( this,
+                    "Storage media is not available for writing." );
+        }
     }
 
     /**

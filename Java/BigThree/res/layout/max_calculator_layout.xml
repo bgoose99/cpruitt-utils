@@ -11,6 +11,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="left"
+        android:layout_margin="3px"
         android:text="@string/maxCalculator" />
 
     <EditText
@@ -19,6 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/calculatorDesc"
         android:layout_gravity="center"
+        android:layout_margin="3px"
         android:hint="@string/weightHint"
         android:inputType="number" />
 
@@ -28,6 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/weight"
         android:layout_gravity="center"
+        android:layout_margin="3px"
         android:hint="@string/repsHint"
         android:inputType="number" />
 
@@ -37,6 +40,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/reps"
         android:layout_centerHorizontal="true"
+        android:layout_margin="3px"
         android:text="@string/calculate" />
 
     <RelativeLayout
@@ -51,6 +55,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
+            android:layout_margin="3px"
             android:text="@string/max" />
 
         <TextView

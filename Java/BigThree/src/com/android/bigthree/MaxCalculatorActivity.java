@@ -77,8 +77,7 @@ public class MaxCalculatorActivity extends Activity
                 try
                 {
                     maxView.setText( String.format( "%.2f",
-                            maxCalculator.calculateMax( weight, reps ) )
-                            + " pounds" );
+                            maxCalculator.calculateMax( weight, reps ) ) );
                 } catch( Exception e )
                 {
                     MessagePresenter.showErrorDialog(

@@ -11,6 +11,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="left"
+        android:layout_margin="3px"
         android:text="@string/percentCalculator" />
     
     <EditText
@@ -19,6 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/percentages_percentCalculatorDesc"
         android:layout_gravity="center"
+        android:layout_margin="3px"
         android:hint="@string/weightHint"
         android:inputType="number" />
 
@@ -28,6 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/percentages_weight"
         android:layout_centerHorizontal="true"
+        android:layout_margin="3px"
         android:text="@string/calculate" />
     
     <TextView

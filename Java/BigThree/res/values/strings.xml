@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">BigThree</string>
-    <string name="weightHint">Weight (lbs)</string>
+    <string name="weightHint">Weight</string>
     <string name="repsHint">Repetitions</string>
     <string name="date">Date</string>
     <string name="dateDisplay">Today</string>
@@ -30,5 +30,6 @@
     <string name="deleteExercise">Remove Exercise</string>
     <string name="saveRecords">Save to CSV</string>
     <string name="delete">Delete</string>
+    <string name="csvFile">MyRecords.csv</string>
 
 </resources>
