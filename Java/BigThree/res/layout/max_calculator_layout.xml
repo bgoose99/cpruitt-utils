@@ -64,8 +64,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/maxDesc"
             android:layout_centerHorizontal="true"
-            android:textColor="#00F"
-            android:textSize="30px"
+            android:textColor="#0F0"
+            android:textSize="40px"
             android:typeface="monospace" />
     </RelativeLayout>
 

@@ -321,15 +321,6 @@ public class RecordsActivity extends Activity
             Cursor cursor = bigThree.getExerciseRecordDBAdapter()
                     .getRecordsByType( currentExerciseSelection );
 
-            try
-            {
-                Thread.sleep( 1000 );
-            } catch( InterruptedException e )
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
             UpdateRecordsRunnable runnable = new UpdateRecordsRunnable( cursor,
                     dialog );
 
@@ -419,6 +410,7 @@ public class RecordsActivity extends Activity
      **************************************************************************/
     private class RecordsAdapter extends ArrayAdapter<Record>
     {
+        private static final float TEXT_SIZE = 20.0f;
         private List<Record> items;
 
         /***********************************************************************
@@ -457,9 +449,15 @@ public class RecordsActivity extends Activity
                 TextView v1 = (TextView)v.findViewById( R.id.record_dateView );
                 TextView v2 = (TextView)v.findViewById( R.id.record_maxView );
                 if( v1 != null )
+                {
                     v1.setText( r.getDate() );
+                    v1.setTextSize( TEXT_SIZE );
+                }
                 if( v2 != null )
+                {
                     v2.setText( String.format( "%.2f", r.getMax() ) );
+                    v2.setTextSize( TEXT_SIZE );
+                }
             }
 
             return v;
