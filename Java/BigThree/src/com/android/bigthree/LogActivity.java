@@ -44,6 +44,7 @@ public class LogActivity extends Activity
 
     private static final int DATE_DIALOG_ID = 0;
     private static final int EXERCISE_DIALOG_ID = 1;
+    private static final int RM_EXERCISE_DIALOG_ID = 2;
 
     /**
      * Default constructor
@@ -79,6 +80,9 @@ public class LogActivity extends Activity
         case R.id.addExerciseMenuItem:
             showDialog( EXERCISE_DIALOG_ID );
             return true;
+        case R.id.deleteExerciseMenuItem:
+            showDialog( RM_EXERCISE_DIALOG_ID );
+            return true;
         default:
             return super.onOptionsItemSelected( item );
         }
@@ -98,6 +102,8 @@ public class LogActivity extends Activity
             return showDatePickerDialog();
         case EXERCISE_DIALOG_ID:
             return showExerciseInputDialog();
+        case RM_EXERCISE_DIALOG_ID:
+            return showDeleteExerciseInputDialog();
         }
         return null;
     }
@@ -220,6 +226,24 @@ public class LogActivity extends Activity
 
     /**
      * 
+     * @param exerciseName
+     */
+    private void deleteExercise( String exerciseName )
+    {
+        boolean success = bigThree.getExerciseDBAdapter().deleteExercise(
+                exerciseName );
+
+        if( success )
+            bigThree.getExerciseRecordDBAdapter().deleteRecordsByType(
+                    exerciseName );
+
+        if( success )
+            MessagePresenter.showToastMessage( this, "Exercise " + exerciseName
+                    + " has been removed from tracking." );
+    }
+
+    /**
+     * 
      */
     private void addRecord()
     {
@@ -308,6 +332,53 @@ public class LogActivity extends Activity
             public void onClick( DialogInterface dialog, int which )
             {
                 addExercise( input.getText().toString() );
+                dialog.dismiss();
+            }
+        } );
+
+        builder.setNegativeButton( "Cancel",
+                new DialogInterface.OnClickListener()
+                {
+                    public void onClick( DialogInterface dialog, int which )
+                    {
+                        dialog.dismiss();
+                    }
+                } );
+
+        return builder.show();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    private Dialog showDeleteExerciseInputDialog()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder( this );
+        builder.setTitle( "Remove exercise" );
+        builder.setMessage( "Select exercise to delete.\n"
+                + "NOTE: This will delete the exercise from tracking, "
+                + "including ALL records." );
+
+        // Build a spinner filled with exercises
+        final Spinner spinner = new Spinner( this );
+        Cursor cursor = bigThree.getExerciseDBAdapter().getAllExercises();
+        String[] from = new String[] { IExerciseDBAdapter.KEY_DESC };
+        int[] to = new int[] { android.R.id.text1 };
+        SimpleCursorAdapter adapter = new SimpleCursorAdapter( this,
+                android.R.layout.simple_spinner_item, cursor, from, to );
+        adapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
+        spinner.setAdapter( adapter );
+
+        builder.setView( spinner );
+
+        builder.setPositiveButton( "OK", new DialogInterface.OnClickListener()
+        {
+            public void onClick( DialogInterface dialog, int which )
+            {
+                Cursor c = (Cursor)spinner.getSelectedItem();
+                String desc = c.getString( IExerciseDBAdapter.KEY_DESC_ROWID );
+                deleteExercise( desc );
                 dialog.dismiss();
             }
         } );

@@ -27,6 +27,7 @@
     <string name="maxCalculator">Theoretical Max Calculator</string>
     <string name="max">Theoretical Max</string>
     <string name="addExercise">Add Exercise</string>
+    <string name="deleteExercise">Remove Exercise</string>
     <string name="saveRecords">Save to CSV</string>
     <string name="delete">Delete</string>
 

@@ -67,6 +67,14 @@ public interface IExerciseRecordDBAdapter
     public Cursor getRecordsByType( String description );
 
     /**
+     * Deletes all records with the given description.
+     * 
+     * @param description
+     * @return
+     */
+    public boolean deleteRecordsByType( String description );
+
+    /**
      * Updates a single exercise record.
      * 
      * @param rowId

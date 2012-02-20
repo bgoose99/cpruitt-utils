@@ -157,6 +157,24 @@ public class ExerciseRecordDBAdapter implements IExerciseRecordDBAdapter
      * (non-Javadoc)
      * 
      * @see
+     * com.android.bigthree.model.IExerciseRecordDBAdapter#deleteRecordsByType
+     * (java.lang.String)
+     */
+    public synchronized boolean deleteRecordsByType( String description )
+    {
+        boolean rval = db.delete( DB_TABLE,
+                KEY_DESC + "='" + description + "'", null ) > 0;
+
+        if( rval )
+            notifyListeners();
+
+        return rval;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
      * com.android.bigthree.model.IExerciseRecordDBAdapter#updateExercise(long,
      * java.lang.String, java.lang.String, int, int, double)
      */
