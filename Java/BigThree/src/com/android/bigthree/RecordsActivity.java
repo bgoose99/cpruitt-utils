@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -231,33 +232,16 @@ public class RecordsActivity extends Activity
      **************************************************************************/
     private void updateTable()
     {
-        recordAdapter.clear();
+        ProgressDialog dialog = new ProgressDialog( this );
+        dialog.setMessage( "Fetching records..." );
+        dialog.setIndeterminate( true );
 
-        Cursor cursor = bigThree.getExerciseRecordDBAdapter().getRecordsByType(
-                currentExerciseSelection );
+        Thread thread = new Thread( new GetRecordsRunnable( dialog ) );
+        thread.start();
 
-        if( cursor != null && cursor.moveToFirst() )
-        {
-            do
-            {
-                Record r = new Record(
-                        cursor.getLong( IExerciseRecordDBAdapter.KEY_ID_ROWID ),
-                        cursor.getString( IExerciseRecordDBAdapter.KEY_DATE_ROWID ),
-                        cursor.getString( IExerciseRecordDBAdapter.KEY_DESC_ROWID ),
-                        cursor.getInt( IExerciseRecordDBAdapter.KEY_WEIGHT_ROWID ),
-                        cursor.getInt( IExerciseRecordDBAdapter.KEY_REPS_ROWID ),
-                        cursor.getDouble( IExerciseRecordDBAdapter.KEY_MAX_ROWID ) );
-                recordAdapter.add( r );
-            } while( cursor.moveToNext() );
-            cursor.close();
-        } else
-        {
-            Record r = new Record();
-            r.setDate( "No Records. SFW!" );
-            recordAdapter.add( r );
-        }
-
-        recordAdapter.notifyDataSetChanged();
+        // only show the progress dialog if this window has focus
+        if( this.getCurrentFocus() != null )
+            dialog.show();
     }
 
     /***************************************************************************
@@ -310,6 +294,105 @@ public class RecordsActivity extends Activity
     }
 
     /***************************************************************************
+     * Runnable for retrieving records from the database. This should NOT be run
+     * on the UI thread.
+     **************************************************************************/
+    private class GetRecordsRunnable implements Runnable
+    {
+        private ProgressDialog dialog;
+
+        /***********************************************************************
+         * Constructor
+         * 
+         * @param dialog
+         **********************************************************************/
+        public GetRecordsRunnable( ProgressDialog dialog )
+        {
+            this.dialog = dialog;
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see java.lang.Runnable#run()
+         */
+        public void run()
+        {
+            Cursor cursor = bigThree.getExerciseRecordDBAdapter()
+                    .getRecordsByType( currentExerciseSelection );
+
+            try
+            {
+                Thread.sleep( 1000 );
+            } catch( InterruptedException e )
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            UpdateRecordsRunnable runnable = new UpdateRecordsRunnable( cursor,
+                    dialog );
+
+            runOnUiThread( runnable );
+        }
+    }
+
+    /***************************************************************************
+     * Runnable for updating records table. This should be run on the UI thread.
+     **************************************************************************/
+    private class UpdateRecordsRunnable implements Runnable
+    {
+        private Cursor cursor = null;
+        private ProgressDialog dialog;
+
+        /***********************************************************************
+         * Constructor
+         * 
+         * @param cursor
+         * @param dialog
+         **********************************************************************/
+        public UpdateRecordsRunnable( Cursor cursor, ProgressDialog dialog )
+        {
+            this.cursor = cursor;
+            this.dialog = dialog;
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see java.lang.Runnable#run()
+         */
+        public void run()
+        {
+            recordAdapter.clear();
+
+            if( cursor != null && cursor.moveToFirst() )
+            {
+                do
+                {
+                    Record r = new Record(
+                            cursor.getLong( IExerciseRecordDBAdapter.KEY_ID_ROWID ),
+                            cursor.getString( IExerciseRecordDBAdapter.KEY_DATE_ROWID ),
+                            cursor.getString( IExerciseRecordDBAdapter.KEY_DESC_ROWID ),
+                            cursor.getInt( IExerciseRecordDBAdapter.KEY_WEIGHT_ROWID ),
+                            cursor.getInt( IExerciseRecordDBAdapter.KEY_REPS_ROWID ),
+                            cursor.getDouble( IExerciseRecordDBAdapter.KEY_MAX_ROWID ) );
+                    recordAdapter.add( r );
+                } while( cursor.moveToNext() );
+                cursor.close();
+            } else
+            {
+                Record r = new Record();
+                r.setDate( "No Records. SFW!" );
+                recordAdapter.add( r );
+            }
+
+            recordAdapter.notifyDataSetChanged();
+            dialog.dismiss();
+        }
+    }
+
+    /***************************************************************************
      * Simple {@link IDBListener} for exercise changes.
      **************************************************************************/
     private class ExerciseDBListener implements IDBListener
@@ -331,13 +414,20 @@ public class RecordsActivity extends Activity
         }
     }
 
-    /**
-     * 
-     */
+    /***************************************************************************
+     * {@link ArrayAdapter} for displaying custom items in the {@link ListView}.
+     **************************************************************************/
     private class RecordsAdapter extends ArrayAdapter<Record>
     {
         private List<Record> items;
 
+        /***********************************************************************
+         * Constructor
+         * 
+         * @param context
+         * @param textViewResourceId
+         * @param items
+         **********************************************************************/
         public RecordsAdapter( Context context, int textViewResourceId,
                 List<Record> items )
         {
@@ -345,6 +435,12 @@ public class RecordsActivity extends Activity
             this.items = items;
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see android.widget.ArrayAdapter#getView(int, android.view.View,
+         * android.view.ViewGroup)
+         */
         @Override
         public View getView( int position, View convertView, ViewGroup parent )
         {
