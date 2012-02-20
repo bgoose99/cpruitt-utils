@@ -45,7 +45,6 @@ public class BigThree extends Application
     @Override
     public void onCreate()
     {
-        System.out.println( "Entering the application" );
         // open our databases
         exerciseDBAdapter = new ExerciseDBAdapter( this );
         exerciseDBAdapter.open();
