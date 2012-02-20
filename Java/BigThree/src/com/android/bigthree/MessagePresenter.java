@@ -5,15 +5,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.widget.Toast;
 
+/*******************************************************************************
+ * This class provides some simple, handy methods for displaying messages to the
+ * user.
+ ******************************************************************************/
 public class MessagePresenter
 {
-    /**
+    /***************************************************************************
      * Show a simple error dialog with an OK button.
      * 
      * @param context
      * @param title
      * @param message
-     */
+     **************************************************************************/
     public static void showErrorDialog( Context context, String title,
             String message )
     {
@@ -30,24 +34,24 @@ public class MessagePresenter
         dialog.show();
     }
 
-    /**
+    /***************************************************************************
      * Show a simple toast message with length = Toast.LENGTH_SHORT.
      * 
      * @param context
      * @param message
-     */
+     **************************************************************************/
     public static void showToastMessage( Context context, String message )
     {
         showToastMessage( context, message, Toast.LENGTH_SHORT );
     }
 
-    /**
+    /***************************************************************************
      * Show a simple toast message with custom length.
      * 
      * @param context
      * @param message
      * @param duration
-     */
+     **************************************************************************/
     public static void showToastMessage( Context context, String message,
             int duration )
     {

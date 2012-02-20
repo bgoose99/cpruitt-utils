@@ -29,6 +29,9 @@ import com.android.bigthree.model.IDBListener;
 import com.android.bigthree.model.IExerciseDBAdapter;
 import com.android.bigthree.model.IMaxCalculator;
 
+/*******************************************************************************
+ * This {@link Activity} provides the user with a place to log exercises.
+ ******************************************************************************/
 public class LogActivity extends Activity
 {
     private Button dateButton;
@@ -51,9 +54,9 @@ public class LogActivity extends Activity
     private static final int RM_EXERCISE_DIALOG_ID = 2;
     private static final int ABOUT_DIALOG_ID = 3;
 
-    /**
+    /***************************************************************************
      * Default constructor
-     */
+     **************************************************************************/
     public LogActivity()
     {
         super();
@@ -171,7 +174,7 @@ public class LogActivity extends Activity
                 selectedYear = year;
                 selectedMonth = monthOfYear;
                 selectedDay = dayOfMonth;
-                updateDisplay();
+                udpateDateDisplay();
             }
         };
 
@@ -181,12 +184,12 @@ public class LogActivity extends Activity
         selectedMonth = c.get( Calendar.MONTH );
         selectedDay = c.get( Calendar.DAY_OF_MONTH );
 
-        updateDisplay();
+        udpateDateDisplay();
     }
 
-    /**
-     * 
-     */
+    /***************************************************************************
+     * Fills the exercise spinner with items from the database.
+     **************************************************************************/
     private void fillExerciseSpinner()
     {
         Cursor cursor = bigThree.getExerciseDBAdapter().getAllExercises();
@@ -205,10 +208,10 @@ public class LogActivity extends Activity
         }
     }
 
-    /**
-     * 
-     */
-    private void updateDisplay()
+    /***************************************************************************
+     * Updates the date display to show the currently selected date.
+     **************************************************************************/
+    private void udpateDateDisplay()
     {
         Calendar c = Calendar.getInstance();
         if( selectedMonth == c.get( Calendar.MONTH )
@@ -220,10 +223,12 @@ public class LogActivity extends Activity
                     + selectedYear );
     }
 
-    /**
+    /***************************************************************************
+     * Adds an exercise. If successful, this exercise will now be tracked by the
+     * application.
      * 
      * @param exerciseName
-     */
+     **************************************************************************/
     private void addExercise( String exerciseName )
     {
         boolean success = bigThree.getExerciseDBAdapter().insertExercise(
@@ -234,10 +239,13 @@ public class LogActivity extends Activity
                     + " will now be tracked." );
     }
 
-    /**
+    /***************************************************************************
+     * Deletes an exercise. If successful, the exercise will no long be tracked
+     * by the application. NOTE: this method will delete all records of the
+     * current exercise.
      * 
      * @param exerciseName
-     */
+     **************************************************************************/
     private void deleteExercise( String exerciseName )
     {
         boolean success = bigThree.getExerciseDBAdapter().deleteExercise(
@@ -252,9 +260,9 @@ public class LogActivity extends Activity
                     + " has been removed from tracking." );
     }
 
-    /**
-     * 
-     */
+    /***************************************************************************
+     * Adds an exercise record.
+     **************************************************************************/
     private void addRecord()
     {
         String date = "";
@@ -314,20 +322,22 @@ public class LogActivity extends Activity
             MessagePresenter.showToastMessage( this, "Record inserted" );
     }
 
-    /**
+    /***************************************************************************
+     * Returns a dialog allowing the user to select a date.
      * 
      * @return
-     */
+     **************************************************************************/
     private Dialog showDatePickerDialog()
     {
         return new DatePickerDialog( this, dateSetListener, selectedYear,
                 selectedMonth, selectedDay );
     }
 
-    /**
+    /***************************************************************************
+     * Returns a dialog allowing the user to specify a new exercise to track.
      * 
      * @return
-     */
+     **************************************************************************/
     private Dialog showExerciseInputDialog()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder( this );
@@ -358,10 +368,11 @@ public class LogActivity extends Activity
         return builder.show();
     }
 
-    /**
+    /***************************************************************************
+     * Returns a dialog allowing the user to remove an exercise from tracking.
      * 
      * @return
-     */
+     **************************************************************************/
     private Dialog showDeleteExerciseInputDialog()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder( this );
@@ -405,10 +416,11 @@ public class LogActivity extends Activity
         return builder.show();
     }
 
-    /**
+    /***************************************************************************
+     * Returns a dialog that displays information about this application.
      * 
      * @return
-     */
+     **************************************************************************/
     private Dialog showAboutDialog()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder( this );
@@ -433,9 +445,9 @@ public class LogActivity extends Activity
         return d;
     }
 
-    /**
-     * 
-     */
+    /***************************************************************************
+     * Simple {@link IDBListener} to update the UI when the database changes.
+     **************************************************************************/
     private class DBListener implements IDBListener
     {
         public void notifyContentsChanged()

@@ -1,18 +1,30 @@
 package com.android.bigthree;
 
+import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.widget.TabHost;
 
+/*******************************************************************************
+ * This {@link Activity} is the main view of our application.
+ ******************************************************************************/
 public class MainActivity extends TabActivity
 {
+    /***************************************************************************
+     * Default constructor.
+     **************************************************************************/
     public MainActivity()
     {
         super();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.app.ActivityGroup#onCreate(android.os.Bundle)
+     */
     @Override
     public void onCreate( Bundle savedInstanceState )
     {

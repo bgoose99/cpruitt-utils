@@ -12,6 +12,9 @@ import android.util.Log;
 
 import com.android.bigthree.MessagePresenter;
 
+/*******************************************************************************
+ * This {@link IExerciseDBAdapter} encapsulates our exercise database.
+ ******************************************************************************/
 public class ExerciseDBAdapter implements IExerciseDBAdapter
 {
     private static final String TAG = "ExerciseDBAdapter";
@@ -33,11 +36,11 @@ public class ExerciseDBAdapter implements IExerciseDBAdapter
 
     private List<IDBListener> listeners;
 
-    /**
+    /***************************************************************************
      * Constructor
      * 
      * @param context
-     */
+     **************************************************************************/
     public ExerciseDBAdapter( Context context )
     {
         this.context = context;
@@ -194,25 +197,39 @@ public class ExerciseDBAdapter implements IExerciseDBAdapter
         return listeners.remove( listener );
     }
 
-    /**
-     * 
-     */
+    /***************************************************************************
+     * Notifies all registered listeners that the contents of the database have
+     * changed.
+     **************************************************************************/
     private void notifyListeners()
     {
         for( IDBListener l : listeners )
             l.notifyContentsChanged();
     }
 
-    /**
-     * 
-     */
+    /***************************************************************************
+     * Simple {@link SQLiteOpenHelper} that creates the database or removes the
+     * old database, as needed.
+     **************************************************************************/
     private static class DBHelper extends SQLiteOpenHelper
     {
+        /***********************************************************************
+         * Constructor
+         * 
+         * @param context
+         **********************************************************************/
         public DBHelper( Context context )
         {
             super( context, DB_NAME, null, DB_VERSION );
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * android.database.sqlite.SQLiteOpenHelper#onCreate(android.database
+         * .sqlite.SQLiteDatabase)
+         */
         @Override
         public void onCreate( SQLiteDatabase db )
         {
@@ -228,6 +245,13 @@ public class ExerciseDBAdapter implements IExerciseDBAdapter
             }
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * android.database.sqlite.SQLiteOpenHelper#onUpgrade(android.database
+         * .sqlite.SQLiteDatabase, int, int)
+         */
         @Override
         public void onUpgrade( SQLiteDatabase db, int oldVersion, int newVersion )
         {

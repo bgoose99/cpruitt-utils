@@ -36,6 +36,10 @@ import com.android.bigthree.model.IExerciseRecordDBAdapter;
 import com.android.bigthree.model.Record;
 import com.android.bigthree.model.RecordsSerializer;
 
+/*******************************************************************************
+ * This {@link Activity} provides the user with a UI to display and edit their
+ * exercise records.
+ **************************************************************************/
 public class RecordsActivity extends Activity
 {
     private Spinner exerciseSpinner;
@@ -52,9 +56,9 @@ public class RecordsActivity extends Activity
     private final LayoutParams rowLayoutParams = new LayoutParams(
             LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT );
 
-    /**
+    /***************************************************************************
      * Default constructor.
-     */
+     **************************************************************************/
     public RecordsActivity()
     {
         super();
@@ -187,9 +191,9 @@ public class RecordsActivity extends Activity
         fillExerciseSpinner();
     }
 
-    /**
-     * 
-     */
+    /***************************************************************************
+     * Fills the exercise spinner with items from the database.
+     **************************************************************************/
     private void fillExerciseSpinner()
     {
         Cursor cursor = bigThree.getExerciseDBAdapter().getAllExercises();
@@ -208,10 +212,11 @@ public class RecordsActivity extends Activity
         }
     }
 
-    /**
+    /***************************************************************************
+     * Called when the user makes a selection in the exercise spinner.
      * 
      * @param newSelection
-     */
+     **************************************************************************/
     private void selectItem( String newSelection )
     {
         if( !currentExerciseSelection.equals( newSelection ) )
@@ -221,9 +226,9 @@ public class RecordsActivity extends Activity
         }
     }
 
-    /**
-     * 
-     */
+    /***************************************************************************
+     * Updates the records table when the selected exercise changes.
+     **************************************************************************/
     private void updateTable()
     {
         recordAdapter.clear();
@@ -255,12 +260,12 @@ public class RecordsActivity extends Activity
         recordAdapter.notifyDataSetChanged();
     }
 
-    /**
+    /***************************************************************************
      * Removes a single record from the database. Note that the supplied id is
      * an index into the list adapter.
      * 
      * @param id
-     */
+     **************************************************************************/
     private void deleteRecord( long id )
     {
         Record r = recordAdapter.getItem( (int)id );
@@ -270,9 +275,9 @@ public class RecordsActivity extends Activity
             MessagePresenter.showToastMessage( this, "Error deleting record" );
     }
 
-    /**
-     * 
-     */
+    /***************************************************************************
+     * Saves all the user's records to a CSV file.
+     **************************************************************************/
     private void saveRecordsToFile()
     {
         // make sure external storage is available
@@ -304,9 +309,9 @@ public class RecordsActivity extends Activity
         }
     }
 
-    /**
-     * 
-     */
+    /***************************************************************************
+     * Simple {@link IDBListener} for exercise changes.
+     **************************************************************************/
     private class ExerciseDBListener implements IDBListener
     {
         public void notifyContentsChanged()
@@ -315,9 +320,9 @@ public class RecordsActivity extends Activity
         }
     }
 
-    /**
-     * 
-     */
+    /***************************************************************************
+     * Simple {@link IDBListener} for record changes.
+     **************************************************************************/
     private class RecordsDBListener implements IDBListener
     {
         public void notifyContentsChanged()

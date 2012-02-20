@@ -1,10 +1,14 @@
 package com.android.bigthree.model;
 
+/*******************************************************************************
+ * This {@link IMaxCalculator} uses the Brzycki equation to estimate a
+ * theoretical 1RM.
+ ******************************************************************************/
 public class BrzyckiMaxCalculator implements IMaxCalculator
 {
-    /**
+    /***************************************************************************
      * Default constructor.
-     */
+     **************************************************************************/
     public BrzyckiMaxCalculator()
     {
     }

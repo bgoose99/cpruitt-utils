@@ -9,6 +9,9 @@ import android.widget.TextView;
 import com.android.bigthree.model.BrzyckiMaxCalculator;
 import com.android.bigthree.model.IMaxCalculator;
 
+/***************************************************************************
+ * This {@link Activity} provides the user with a theoretical 1RM calculator.
+ **************************************************************************/
 public class MaxCalculatorActivity extends Activity
 {
     private IMaxCalculator maxCalculator;
@@ -18,9 +21,9 @@ public class MaxCalculatorActivity extends Activity
     private TextView repsView;
     private TextView maxView;
 
-    /**
+    /***************************************************************************
      * Default constructor.
-     */
+     **************************************************************************/
     public MaxCalculatorActivity()
     {
         super();

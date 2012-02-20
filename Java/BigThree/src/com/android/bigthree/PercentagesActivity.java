@@ -6,6 +6,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+/*******************************************************************************
+ * This {@link Activity} provides the user with a simple percentage calculator.
+ ******************************************************************************/
 public class PercentagesActivity extends Activity
 {
     private TextView weightTextView;
@@ -21,9 +24,9 @@ public class PercentagesActivity extends Activity
     private TextView p50TextView;
     private Button calculateButton;
 
-    /**
+    /***************************************************************************
      * Default constructor.
-     */
+     **************************************************************************/
     public PercentagesActivity()
     {
         super();
