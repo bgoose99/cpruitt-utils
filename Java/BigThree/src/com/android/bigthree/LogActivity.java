@@ -10,6 +10,9 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,6 +22,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.android.bigthree.model.BrzyckiMaxCalculator;
 import com.android.bigthree.model.IDBListener;
@@ -45,6 +49,7 @@ public class LogActivity extends Activity
     private static final int DATE_DIALOG_ID = 0;
     private static final int EXERCISE_DIALOG_ID = 1;
     private static final int RM_EXERCISE_DIALOG_ID = 2;
+    private static final int ABOUT_DIALOG_ID = 3;
 
     /**
      * Default constructor
@@ -83,6 +88,9 @@ public class LogActivity extends Activity
         case R.id.deleteExerciseMenuItem:
             showDialog( RM_EXERCISE_DIALOG_ID );
             return true;
+        case R.id.aboutMenuItem:
+            showDialog( ABOUT_DIALOG_ID );
+            return true;
         default:
             return super.onOptionsItemSelected( item );
         }
@@ -104,6 +112,8 @@ public class LogActivity extends Activity
             return showExerciseInputDialog();
         case RM_EXERCISE_DIALOG_ID:
             return showDeleteExerciseInputDialog();
+        case ABOUT_DIALOG_ID:
+            return showAboutDialog();
         }
         return null;
     }
@@ -393,6 +403,34 @@ public class LogActivity extends Activity
                 } );
 
         return builder.show();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    private Dialog showAboutDialog()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder( this );
+        builder.setTitle( "About " + getString( R.string.app_name ) );
+        SpannableString msg = new SpannableString(
+                getString( R.string.aboutText ) );
+        Linkify.addLinks( msg, Linkify.ALL );
+        builder.setMessage( msg );
+
+        builder.setNeutralButton( "OK", new DialogInterface.OnClickListener()
+        {
+            public void onClick( DialogInterface dialog, int which )
+            {
+                dialog.dismiss();
+            }
+        } );
+
+        Dialog d = builder.show();
+        ( (TextView)d.findViewById( android.R.id.message ) )
+                .setMovementMethod( LinkMovementMethod.getInstance() );
+
+        return d;
     }
 
     /**

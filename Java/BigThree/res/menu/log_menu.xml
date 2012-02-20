@@ -10,5 +10,10 @@
         android:id="@+id/deleteExerciseMenuItem"
         android:icon="@drawable/ic_menu_delete_exercise"
         android:title="@string/deleteExercise"/>
+    
+    <item
+        android:id="@+id/aboutMenuItem"
+        android:icon="@drawable/ic_menu_about"
+        android:title="@string/about"/>
 
 </menu>
