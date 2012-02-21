@@ -35,6 +35,7 @@ import com.android.bigthree.model.IDBListener;
 import com.android.bigthree.model.IExerciseDBAdapter;
 import com.android.bigthree.model.IExerciseRecordDBAdapter;
 import com.android.bigthree.model.Record;
+import com.android.bigthree.model.RecordChartBuilder;
 import com.android.bigthree.model.RecordsSerializer;
 
 /*******************************************************************************
@@ -125,6 +126,9 @@ public class RecordsActivity extends Activity
         {
         case R.id.saveRecordsMenuItem:
             saveRecordsToFile();
+            return true;
+        case R.id.chartRecordsMenuItem:
+            generateChart();
             return true;
         default:
             return super.onOptionsItemSelected( item );
@@ -290,6 +294,25 @@ public class RecordsActivity extends Activity
         {
             MessagePresenter.showToastMessage( this,
                     "Storage media is not available for writing." );
+        }
+    }
+
+    /***************************************************************************
+     * Generates a chart of the current exercise.
+     **************************************************************************/
+    private void generateChart()
+    {
+        try
+        {
+            Cursor cursor = bigThree.getExerciseRecordDBAdapter()
+                    .getRecordsByType( currentExerciseSelection );
+            RecordChartBuilder.buildXYChart( this, currentExerciseSelection,
+                    bigThree.getExerciseRecordDBAdapter().getDateFormat(),
+                    cursor );
+        } catch( Exception e )
+        {
+            MessagePresenter.showToastMessage( this, "Error creating chart:\n"
+                    + e.getMessage(), Toast.LENGTH_LONG );
         }
     }
 

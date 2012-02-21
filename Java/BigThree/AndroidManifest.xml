@@ -25,6 +25,7 @@
         <activity android:name=".RecordsActivity"></activity>
         <activity android:name=".PercentagesActivity"></activity>
         <activity android:name=".MaxCalculatorActivity"></activity>
+        <activity android:name="org.achartengine.GraphicalActivity"></activity>
     </application>
 
 </manifest>

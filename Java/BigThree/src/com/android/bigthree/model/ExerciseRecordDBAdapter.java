@@ -1,5 +1,7 @@
 package com.android.bigthree.model;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Vector;
 
@@ -17,6 +19,9 @@ import com.android.bigthree.MessagePresenter;
  ******************************************************************************/
 public class ExerciseRecordDBAdapter implements IExerciseRecordDBAdapter
 {
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat(
+            "yyyy-MM-dd" );
+
     private static final String TAG = "ExerciseRecordDBAdapter";
     private static final String DB_NAME = "myRecords";
     private static final String DB_TABLE = "records";
@@ -222,6 +227,16 @@ public class ExerciseRecordDBAdapter implements IExerciseRecordDBAdapter
     public boolean removeDBListener( IDBListener listener )
     {
         return listeners.remove( listener );
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.android.bigthree.model.IExerciseRecordDBAdapter#getDateFormat()
+     */
+    public DateFormat getDateFormat()
+    {
+        return DATE_FORMAT;
     }
 
     /***************************************************************************

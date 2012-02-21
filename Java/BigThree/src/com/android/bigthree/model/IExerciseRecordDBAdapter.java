@@ -1,5 +1,7 @@
 package com.android.bigthree.model;
 
+import java.text.DateFormat;
+
 import android.database.Cursor;
 
 /*******************************************************************************
@@ -106,4 +108,12 @@ public interface IExerciseRecordDBAdapter
      * @return
      **************************************************************************/
     public boolean removeDBListener( IDBListener listener );
+
+    /***************************************************************************
+     * Returns the {@link DateFormat} object that can be used to parse the dates
+     * in this database.
+     * 
+     * @return
+     **************************************************************************/
+    public DateFormat getDateFormat();
 }

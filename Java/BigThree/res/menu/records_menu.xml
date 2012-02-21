@@ -5,5 +5,9 @@
         android:id="@+id/saveRecordsMenuItem"
         android:icon="@drawable/ic_menu_save_records"
         android:title="@string/saveRecords"/>
+    <item
+        android:id="@+id/chartRecordsMenuItem"
+        android:icon="@drawable/ic_menu_chart"
+        android:title="@string/chart"/>
 
 </menu>
