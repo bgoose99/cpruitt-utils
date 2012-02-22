@@ -20,7 +20,7 @@ import android.graphics.Color;
  ******************************************************************************/
 public class RecordChartBuilder
 {
-    private static String DATE_FORMAT = "yyyy-MM-dd";
+    private static String DATE_FORMAT = "MM-dd";
 
     /***************************************************************************
      * Builds an XY chart using records from the supplied {@link Cursor}.
@@ -54,11 +54,12 @@ public class RecordChartBuilder
         dataset.addSeries( series );
 
         XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
-        renderer.setAxisTitleTextSize( 16 );
-        renderer.setChartTitleTextSize( 20 );
-        renderer.setLabelsTextSize( 15 );
-        renderer.setLegendTextSize( 15 );
-        renderer.setPointSize( 5f );
+        renderer.setAxisTitleTextSize( 25 );
+        renderer.setChartTitleTextSize( 30 );
+        renderer.setLabelsTextSize( 25 );
+        renderer.setLegendTextSize( 25 );
+        renderer.setPointSize( 10f );
+        renderer.setMargins( new int[] { 20, 20, 20, 0 } );
         renderer.setGridColor( Color.DKGRAY );
         renderer.setShowGrid( true );
 

@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Environment;
@@ -22,6 +24,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -57,6 +60,8 @@ public class RecordsActivity extends Activity
 
     private final LayoutParams rowLayoutParams = new LayoutParams(
             LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT );
+
+    private AlertDialog.Builder recordDialogBuilder;
 
     /***************************************************************************
      * Default constructor.
@@ -191,6 +196,36 @@ public class RecordsActivity extends Activity
             {
             }
         } );
+
+        recordListView.setOnItemClickListener( new OnItemClickListener()
+        {
+            public void onItemClick( AdapterView<?> parent, View view,
+                    int position, long id )
+            {
+                Record r = recordAdapter.getItem( position );
+                if( r != null )
+                {
+                    String msg = "Date: " + r.getDate() + "\n" + "Weight: "
+                            + r.getWeight() + "\n" + "Reps: " + r.getReps()
+                            + "\n" + "Max: "
+                            + String.format( "%.2f", r.getMax() );
+                    recordDialogBuilder.setMessage( msg );
+                    recordDialogBuilder.show();
+                }
+                return;
+            }
+        } );
+
+        // set up our record dialog
+        recordDialogBuilder = new AlertDialog.Builder( this );
+        recordDialogBuilder.setNeutralButton( "OK",
+                new DialogInterface.OnClickListener()
+                {
+                    public void onClick( DialogInterface dialog, int which )
+                    {
+                        dialog.dismiss();
+                    }
+                } );
 
         // fill our spinner(s)
         fillExerciseSpinner();
