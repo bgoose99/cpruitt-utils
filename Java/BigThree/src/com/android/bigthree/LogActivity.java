@@ -102,6 +102,23 @@ public class LogActivity extends Activity
     /*
      * (non-Javadoc)
      * 
+     * @see android.app.Activity#onPrepareDialog(int, android.app.Dialog)
+     */
+    @Override
+    protected void onPrepareDialog( int id, Dialog dialog )
+    {
+        super.onPrepareDialog( id, dialog );
+        switch( id )
+        {
+        case DATE_DIALOG_ID:
+            ( (DatePickerDialog)dialog ).updateDate( selectedYear,
+                    selectedMonth, selectedDay );
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see android.app.Activity#onCreateDialog(int)
      */
     @Override
@@ -178,8 +195,28 @@ public class LogActivity extends Activity
             }
         };
 
-        // get the current date
-        final Calendar c = Calendar.getInstance();
+        setCurrentDate();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.app.Activity#onRestart()
+     */
+    @Override
+    protected void onRestart()
+    {
+        super.onRestart();
+        setCurrentDate();
+    }
+
+    /***************************************************************************
+     * Sets the date display to the current date.
+     **************************************************************************/
+    private void setCurrentDate()
+    {
+        // set the date to today
+        Calendar c = Calendar.getInstance();
         selectedYear = c.get( Calendar.YEAR );
         selectedMonth = c.get( Calendar.MONTH );
         selectedDay = c.get( Calendar.DAY_OF_MONTH );
