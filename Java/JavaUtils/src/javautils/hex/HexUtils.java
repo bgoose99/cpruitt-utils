@@ -1,21 +1,31 @@
 package javautils.hex;
 
-import javautils.Utils;
-
 public class HexUtils
 {
-    public static final String[] BYTES;
+    public static final String[] HEX_BYTES;
+    public static final String[] DEC_BYTES;
+    public static final String[] OCT_BYTES;
+    public static final String[] BIN_BYTES;
 
     /***************************************************************************
      * Static initializer.
      **************************************************************************/
     static
     {
-        BYTES = new String[256];
+        HEX_BYTES = new String[256];
+        DEC_BYTES = new String[256];
+        OCT_BYTES = new String[256];
+        BIN_BYTES = new String[256];
         for( int i = 0; i < 256; i++ )
         {
-            BYTES[i] = Utils.getPaddedString( Integer.toHexString( i )
-                    .toUpperCase(), 2, '0', true );
+            HEX_BYTES[i] = String.format( "%2s", Integer.toHexString( i ) )
+                    .replace( ' ', '0' ).toUpperCase();
+            DEC_BYTES[i] = String.format( "%3s", Integer.toString( i ) )
+                    .replace( ' ', '0' );
+            OCT_BYTES[i] = String.format( "%3s", Integer.toOctalString( i ) )
+                    .replace( ' ', '0' );
+            BIN_BYTES[i] = String.format( "%8s", Integer.toBinaryString( i ) )
+                    .replace( ' ', '0' );
         }
     }
 

@@ -20,9 +20,10 @@ import javautils.IconManager.IconSize;
 import javautils.SwingUtils;
 import javautils.Utils;
 import javautils.hex.HexUtils;
+import javautils.hex.IHexTableModel.HexTableViewMode;
 import javautils.io.Preferences;
 
-import javax.swing.Box;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -34,6 +35,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
@@ -61,6 +63,12 @@ public class HexEditorFrame extends JFrame
     private JMenuItem findPrevMenuItem;
     private JMenuItem addBytesMenuItem;
     private JMenuItem deleteBytesMenuItem;
+    private JMenu viewMenu;
+    private ButtonGroup viewButtonGroup;
+    private JRadioButtonMenuItem hexViewMenuItem;
+    private JRadioButtonMenuItem decViewMenuItem;
+    private JRadioButtonMenuItem octViewMenuItem;
+    private JRadioButtonMenuItem binViewMenuItem;
     private JMenu helpMenu;
     private JMenuItem aboutMenuItem;
     private JMenuItem asciiTableMenuItem;
@@ -108,10 +116,11 @@ public class HexEditorFrame extends JFrame
         menuBar = new JMenuBar();
         setupFileMenu();
         setupEditMenu();
+        setupViewMenu();
         setupHelpMenu();
         menuBar.add( fileMenu );
         menuBar.add( editMenu );
-        menuBar.add( Box.createHorizontalGlue() );
+        menuBar.add( viewMenu );
         menuBar.add( helpMenu );
 
         setupToolbar();
@@ -243,6 +252,37 @@ public class HexEditorFrame extends JFrame
         editMenu.add( findPrevMenuItem );
         editMenu.add( addBytesMenuItem );
         editMenu.add( deleteBytesMenuItem );
+    }
+
+    /***************************************************************************
+     * Sets up the View menu for this frame.
+     **************************************************************************/
+    private void setupViewMenu()
+    {
+        viewMenu = new JMenu( "View" );
+        hexViewMenuItem = new JRadioButtonMenuItem( "Hex" );
+        hexViewMenuItem.setSelected( true );
+        hexViewMenuItem.addActionListener( new HexViewActionListener() );
+
+        decViewMenuItem = new JRadioButtonMenuItem( "Decimal" );
+        decViewMenuItem.addActionListener( new DecViewActionListener() );
+
+        octViewMenuItem = new JRadioButtonMenuItem( "Octal" );
+        octViewMenuItem.addActionListener( new OctViewActionListener() );
+
+        binViewMenuItem = new JRadioButtonMenuItem( "Binary" );
+        binViewMenuItem.addActionListener( new BinViewActionListener() );
+
+        viewButtonGroup = new ButtonGroup();
+        viewButtonGroup.add( hexViewMenuItem );
+        viewButtonGroup.add( decViewMenuItem );
+        viewButtonGroup.add( octViewMenuItem );
+        viewButtonGroup.add( binViewMenuItem );
+
+        viewMenu.add( hexViewMenuItem );
+        viewMenu.add( decViewMenuItem );
+        viewMenu.add( octViewMenuItem );
+        viewMenu.add( binViewMenuItem );
     }
 
     /***************************************************************************
@@ -1080,6 +1120,54 @@ public class HexEditorFrame extends JFrame
         public void actionPerformed( ActionEvent e )
         {
             showAsciiDialog();
+        }
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private class HexViewActionListener implements ActionListener
+    {
+        @Override
+        public void actionPerformed( ActionEvent arg0 )
+        {
+            hexTable.setViewMode( HexTableViewMode.HEX );
+        }
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private class DecViewActionListener implements ActionListener
+    {
+        @Override
+        public void actionPerformed( ActionEvent arg0 )
+        {
+            hexTable.setViewMode( HexTableViewMode.DECIMAL );
+        }
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private class OctViewActionListener implements ActionListener
+    {
+        @Override
+        public void actionPerformed( ActionEvent arg0 )
+        {
+            hexTable.setViewMode( HexTableViewMode.OCTAL );
+        }
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private class BinViewActionListener implements ActionListener
+    {
+        @Override
+        public void actionPerformed( ActionEvent arg0 )
+        {
+            hexTable.setViewMode( HexTableViewMode.BINARY );
         }
     }
 

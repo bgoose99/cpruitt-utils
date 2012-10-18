@@ -21,6 +21,7 @@ import javax.swing.table.AbstractTableModel;
 public class HexTableModel extends AbstractTableModel implements IHexTableModel
 {
     private IHexTableData data;
+    private HexTableViewMode mode;
 
     /***************************************************************************
      * Constructor
@@ -30,6 +31,7 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
         super();
 
         data = new HexTableData();
+        mode = HexTableViewMode.HEX;
     }
 
     /***************************************************************************
@@ -73,8 +75,21 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
             String s = "";
             try
             {
-                s = HexUtils.BYTES[HexUtils.byteToUnsignedInt( data
-                        .getByte( index ) )];
+                switch( mode )
+                {
+                case HEX:
+                    s = HexUtils.HEX_BYTES[0xFF & data.getByte( index )];
+                    break;
+                case DECIMAL:
+                    s = HexUtils.DEC_BYTES[0xFF & data.getByte( index )];
+                    break;
+                case OCTAL:
+                    s = HexUtils.OCT_BYTES[0xFF & data.getByte( index )];
+                    break;
+                case BINARY:
+                    s = HexUtils.BIN_BYTES[0xFF & data.getByte( index )];
+                    break;
+                }
             } catch( Exception e )
             {
             }
@@ -441,5 +456,18 @@ public class HexTableModel extends AbstractTableModel implements IHexTableModel
     {
         data.clear();
         data.addBytes( 0, 1 );
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * javautils.hex.IHexTableModel#setViewMode(javautils.hex.IHexTableModel
+     * .HexTableViewMode)
+     */
+    @Override
+    public void setViewMode( HexTableViewMode mode )
+    {
+        this.mode = mode;
     }
 }

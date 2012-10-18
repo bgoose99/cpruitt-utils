@@ -10,6 +10,14 @@ import java.io.File;
 public interface IHexTableModel
 {
     /***************************************************************************
+     * View mode enumeration.
+     **************************************************************************/
+    public enum HexTableViewMode
+    {
+        HEX, DECIMAL, OCTAL, BINARY;
+    }
+
+    /***************************************************************************
      * Returns the total number of bytes in this model.
      * 
      * @return
@@ -151,4 +159,11 @@ public interface IHexTableModel
      * Sets up a blank data structure to be edited by the user.
      **************************************************************************/
     public void newData();
+
+    /***************************************************************************
+     * Sets the view mode for this model.
+     * 
+     * @param mode
+     **************************************************************************/
+    public void setViewMode( HexTableViewMode mode );
 }

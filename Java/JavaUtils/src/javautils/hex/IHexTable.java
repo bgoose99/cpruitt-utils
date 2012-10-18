@@ -1,5 +1,7 @@
 package javautils.hex;
 
+import javautils.hex.IHexTableModel.HexTableViewMode;
+
 /*******************************************************************************
  * Hex table interface.
  ******************************************************************************/
@@ -67,4 +69,11 @@ public interface IHexTable
      * @return <b>true</b> if the remove was successful, <b>false</b> otherwise
      **************************************************************************/
     public boolean deleteBytes( int numBytesToDelete );
+
+    /***************************************************************************
+     * Sets the view mode for this table.
+     * 
+     * @param mode
+     **************************************************************************/
+    public void setViewMode( HexTableViewMode mode );
 }

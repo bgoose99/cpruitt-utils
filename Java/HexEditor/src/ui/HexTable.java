@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 
 import javautils.hex.IHexTable;
 import javautils.hex.IHexTableModel;
+import javautils.hex.IHexTableModel.HexTableViewMode;
 import javautils.swing.JHighlightedLabel;
 
 import javax.swing.JOptionPane;
@@ -448,5 +449,18 @@ public class HexTable extends JTable implements IHexTable
                 break;
             }
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see javautils.hex.IHexTable#setViewMode(javautils.hex.IHexTableModel.
+     * HexTableViewMode)
+     */
+    @Override
+    public void setViewMode( HexTableViewMode mode )
+    {
+        tableModel.setViewMode( mode );
+        updateUI();
     }
 }
