@@ -103,28 +103,33 @@ public final class FileUtils
     {
         FileChannel fromChannel = null;
         FileChannel toChannel = null;
-
+        boolean success = false;
         try
         {
             fromChannel = new FileInputStream( from ).getChannel();
             toChannel = new FileOutputStream( to ).getChannel();
             fromChannel.transferTo( 0, fromChannel.size(), toChannel );
+            success = true;
         } catch( Exception e )
         {
-            return false;
         } finally
         {
             try
             {
                 if( fromChannel != null )
                     fromChannel.close();
+            } catch( Exception e )
+            {
+            }
+            try
+            {
                 if( toChannel != null )
                     toChannel.close();
             } catch( Exception e )
             {
             }
         }
-        return true;
+        return success;
     }
 
     /***************************************************************************
