@@ -149,7 +149,8 @@ public class AStarDemo extends GameFrame
      **************************************************************************/
     private IMapCell getClickedCell( Point p )
     {
-        return map.getCell( p.y / 64, p.x / 64 );
+        return map
+                .getCell( p.y / map.getCellHeight(), p.x / map.getCellWidth() );
     }
 
     /*
