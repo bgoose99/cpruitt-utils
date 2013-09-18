@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4D7AC83A-80FD-4F1D-9FF8-23F319074F26}</ProjectGuid>
+    <RootNamespace>CppUtils</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="AbstractThread.h" />
+    <ClInclude Include="Callback.h" />
+    <ClInclude Include="Condition.h" />
+    <ClInclude Include="ConfigReader.h" />
+    <ClInclude Include="CoordConversions.h" />
+    <ClInclude Include="EventHandler.h" />
+    <ClInclude Include="EventScheduler.h" />
+    <ClInclude Include="ISerializable.h" />
+    <ClInclude Include="Logger.h" />
+    <ClInclude Include="MulticastSocket.h" />
+    <ClInclude Include="MulticastThread.h" />
+    <ClInclude Include="Mutex.h" />
+    <ClInclude Include="ObjectState.h" />
+    <ClInclude Include="Propagator.h" />
+    <ClInclude Include="QueuedBinaryLogger.h" />
+    <ClInclude Include="QueuedLogger.h" />
+    <ClInclude Include="ScopedLock.h" />
+    <ClInclude Include="Socket.h" />
+    <ClInclude Include="SocketThread.h" />
+    <ClInclude Include="StringUtils.h" />
+    <ClInclude Include="TcpSocket.h" />
+    <ClInclude Include="TcpThread.h" />
+    <ClInclude Include="UdpSocket.h" />
+    <ClInclude Include="UdpThread.h" />
+    <ClInclude Include="Vector3D.h" />
+    <ClInclude Include="Vector4D.h" />
+    <ClInclude Include="WorkerPool.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AbstractThread.cpp" />
+    <ClCompile Include="Condition.cpp" />
+    <ClCompile Include="ConfigReader.cpp" />
+    <ClCompile Include="CoordConversions.cpp" />
+    <ClCompile Include="EventScheduler.cpp" />
+    <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MulticastSocket.cpp" />
+    <ClCompile Include="MulticastThread.cpp" />
+    <ClCompile Include="Mutex.cpp" />
+    <ClCompile Include="ObjectState.cpp" />
+    <ClCompile Include="Propagator.cpp" />
+    <ClCompile Include="QueuedBinaryLogger.cpp" />
+    <ClCompile Include="QueuedLogger.cpp" />
+    <ClCompile Include="ScopedLock.cpp" />
+    <ClCompile Include="Socket.cpp" />
+    <ClCompile Include="SocketThread.cpp" />
+    <ClCompile Include="StringUtils.cpp" />
+    <ClCompile Include="TcpSocket.cpp" />
+    <ClCompile Include="TcpThread.cpp" />
+    <ClCompile Include="UdpSocket.cpp" />
+    <ClCompile Include="UdpThread.cpp" />
+    <ClCompile Include="Vector3D.cpp" />
+    <ClCompile Include="Vector4D.cpp" />
+    <ClCompile Include="WorkerPool.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DUMMY_GRAM.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
