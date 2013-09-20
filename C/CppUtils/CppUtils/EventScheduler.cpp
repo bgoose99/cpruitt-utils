@@ -19,7 +19,7 @@ using namespace std;
  ******************************************************************************/
 EventScheduler::EventScheduler( const unsigned int &threadPoolSize )
 {
-   for( int i = 0; i < ( threadPoolSize < 1 ? 1 : threadPoolSize ); i++ )
+   for( unsigned int i = 0; i < ( threadPoolSize < 1 ? 1 : threadPoolSize ); i++ )
    {
       QueueServicer *t = new QueueServicer( *this );
       threads.push_back( t );
@@ -31,7 +31,7 @@ EventScheduler::EventScheduler( const unsigned int &threadPoolSize )
  ******************************************************************************/
 EventScheduler::~EventScheduler()
 {
-   for( int i = 0; i < threads.size(); i++ )
+   for( unsigned int i = 0; i < threads.size(); i++ )
    {
       threads[i]->shutdown();
       threads[i]->join();
@@ -128,7 +128,7 @@ long EventScheduler::getSystemMillis()
    static long long now;
    GetSystemTimeAsFileTime( &ft );
    now = (LONGLONG)ft.dwLowDateTime + ((LONGLONG)(ft.dwHighDateTime) << 32LL);
-   return now / 10000;
+   return (long)( now / 10000 );
    #else
    static struct timeval tv;
    gettimeofday( &tv, NULL );
