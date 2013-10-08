@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StarcTest", "StarcTest\StarcTest.vcxproj", "{739B3B3B-615A-4609-A1DA-D30DB15E3349}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StarcTestExample", "StarcTestExample\StarcTestExample.vcxproj", "{E4B5956A-7D78-44A2-B9C2-C906EFD528EC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{739B3B3B-615A-4609-A1DA-D30DB15E3349} = {739B3B3B-615A-4609-A1DA-D30DB15E3349}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{739B3B3B-615A-4609-A1DA-D30DB15E3349}.Debug|Win32.ActiveCfg = Debug|Win32
+		{739B3B3B-615A-4609-A1DA-D30DB15E3349}.Debug|Win32.Build.0 = Debug|Win32
+		{739B3B3B-615A-4609-A1DA-D30DB15E3349}.Release|Win32.ActiveCfg = Release|Win32
+		{739B3B3B-615A-4609-A1DA-D30DB15E3349}.Release|Win32.Build.0 = Release|Win32
+		{E4B5956A-7D78-44A2-B9C2-C906EFD528EC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E4B5956A-7D78-44A2-B9C2-C906EFD528EC}.Debug|Win32.Build.0 = Debug|Win32
+		{E4B5956A-7D78-44A2-B9C2-C906EFD528EC}.Release|Win32.ActiveCfg = Release|Win32
+		{E4B5956A-7D78-44A2-B9C2-C906EFD528EC}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
