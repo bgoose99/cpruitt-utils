@@ -15,7 +15,7 @@ import javax.swing.undo.UndoableEdit;
  ******************************************************************************/
 public class JListEdit implements UndoableEdit
 {
-    private JList list;
+    private JList<ListSelectionListener> list;
     private int[] oldValues;
     private int[] newValues;
     private IDataUpdater updater;
@@ -27,7 +27,8 @@ public class JListEdit implements UndoableEdit
      * @param oldValues
      * @param newValues
      **************************************************************************/
-    public JListEdit( JList list, int[] oldValues, int[] newValues )
+    public JListEdit( JList<ListSelectionListener> list, int[] oldValues,
+            int[] newValues )
     {
         this( list, oldValues, newValues, null );
     }
@@ -45,8 +46,8 @@ public class JListEdit implements UndoableEdit
      *            Used to keep the underlying data in sync with edits (can be
      *            <b>null</b>)
      **************************************************************************/
-    public JListEdit( JList list, int[] oldValues, int[] newValues,
-            IDataUpdater updater )
+    public JListEdit( JList<ListSelectionListener> list, int[] oldValues,
+            int[] newValues, IDataUpdater updater )
     {
         this.list = list;
         this.oldValues = oldValues;

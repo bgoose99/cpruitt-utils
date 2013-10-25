@@ -1,11 +1,6 @@
 package javautils;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
 
 /*******************************************************************************
  * Contains some useful file manipulation and I/O functions.
@@ -89,88 +84,6 @@ public final class FileUtils
             // if it starts with our search string, return it
             if( s.startsWith( startsWith ) )
                 return s;
-        }
-    }
-
-    /***************************************************************************
-     * Copies a file using NIO file channels.
-     * 
-     * @param from
-     * @param to
-     * @return
-     **************************************************************************/
-    public static boolean copyFile( File from, File to )
-    {
-        FileChannel fromChannel = null;
-        FileChannel toChannel = null;
-        boolean success = false;
-        try
-        {
-            fromChannel = new FileInputStream( from ).getChannel();
-            toChannel = new FileOutputStream( to ).getChannel();
-            fromChannel.transferTo( 0, fromChannel.size(), toChannel );
-            success = true;
-        } catch( Exception e )
-        {
-        } finally
-        {
-            try
-            {
-                if( fromChannel != null )
-                    fromChannel.close();
-            } catch( Exception e )
-            {
-            }
-            try
-            {
-                if( toChannel != null )
-                    toChannel.close();
-            } catch( Exception e )
-            {
-            }
-        }
-        return success;
-    }
-
-    /***************************************************************************
-     * Moves a file from one place to another. The destination is deleted first,
-     * to eliminate errors on Windows platforms.
-     * 
-     * @param from
-     * @param to
-     * @throws Exception
-     **************************************************************************/
-    public static void moveFile( File from, File to ) throws IOException
-    {
-        if( !from.isFile() )
-        {
-            throw new IOException( "Cannot move a directory: "
-                    + from.getAbsolutePath() );
-        }
-
-        if( to.isDirectory() )
-        {
-            throw new IOException( "Cannot move, directory exists: "
-                    + to.getAbsolutePath() );
-        }
-
-        if( !from.renameTo( to ) )
-        {
-            // if a rename fails (as it does on Windows when the destination
-            // exists), copy the file
-            if( !FileUtils.copyFile( from, to ) )
-            {
-                throw new IOException( "Error moving file "
-                        + from.getAbsolutePath() + " to "
-                        + to.getAbsolutePath() + "." );
-            }
-
-            // copy was successful, delete source
-            if( !from.delete() )
-            {
-                throw new IOException( "Error deleting source: "
-                        + from.getAbsolutePath() );
-            }
         }
     }
 }

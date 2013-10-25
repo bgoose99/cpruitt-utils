@@ -1,6 +1,7 @@
 package javautils.swing;
 
 import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 /*******************************************************************************
  * Simple class that handles common swing application initialization.
@@ -20,8 +21,14 @@ public abstract class MainRunner implements Runnable
         // set up the Nimbus L&F
         try
         {
-            UIManager
-                    .setLookAndFeel( "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel" );
+            for( LookAndFeelInfo info : UIManager.getInstalledLookAndFeels() )
+            {
+                if( "Nimbus".equals( info.getName() ) )
+                {
+                    UIManager.setLookAndFeel( info.getClassName() );
+                    break;
+                }
+            }
         } catch( Exception e )
         {
             e.printStackTrace();
