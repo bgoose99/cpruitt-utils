@@ -217,7 +217,7 @@ bool Vector3D::operator==( const Vector3D &vec ) const
 {
    if( this == &vec )
       return true;
-   return ( distance( vec ) < 1e-8 );
+   return ( distance( vec ) < 1e-6 );
 }
 
 /******************************************************************************
