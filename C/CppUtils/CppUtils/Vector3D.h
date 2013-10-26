@@ -68,6 +68,12 @@ class Vector3D : public ISerializable<Vector3D>
        * Returns the magnitude of this vector.
        ***********************************************************************/
       double magnitude() const;
+
+      /************************************************************************
+       * Returns the scalar distance between this vector and the supplied
+       * vector.
+       ***********************************************************************/
+      double distance( const Vector3D &v ) const;
       
       /************************************************************************
        * Normalizes this vector. (Converts this vector to a unit vector.)

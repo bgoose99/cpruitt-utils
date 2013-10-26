@@ -93,6 +93,12 @@ namespace StringUtils
     **************************************************************************/
    std::vector<std::string> split( const std::string &str, const std::string &delim, const bool &greedy = false );
    
+   /***************************************************************************
+    * Splits a string on whitespace.
+    * If greedy is true, multiple delimiters are treated as one.
+    **************************************************************************/
+   std::vector<std::string> split( const std::string &str, const bool &greedy = false );
+   
 }
 
 #endif

@@ -103,6 +103,14 @@ double Vector3D::magnitude() const
 /******************************************************************************
  * 
  *****************************************************************************/
+double Vector3D::distance( const Vector3D &v ) const
+{
+   return ( *this - v ).magnitude();
+}
+
+/******************************************************************************
+ * 
+ *****************************************************************************/
 Vector3D &Vector3D::normalize()
 {
    *this = this->normalized();
@@ -209,7 +217,7 @@ bool Vector3D::operator==( const Vector3D &vec ) const
 {
    if( this == &vec )
       return true;
-   return ( x == vec.x && y == vec.y && z == vec.z );
+   return ( distance( vec ) < 1e-8 );
 }
 
 /******************************************************************************

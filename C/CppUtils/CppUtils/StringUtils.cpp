@@ -205,5 +205,33 @@ namespace StringUtils
       vec.push_back( temp );
       return vec;
    }
+   
+   /***************************************************************************
+    * 
+    **************************************************************************/
+   std::vector<std::string> split( const std::string &str, const bool &greedy )
+   {
+      string temp( str );
+      if( greedy ) trimString( temp );
+      vector<string> vec;
+      
+      size_t pos = temp.find_first_of( " \t" );
+      while( pos != string::npos )
+      {
+         vec.push_back( temp.substr( 0, pos ) );
+         
+         temp.erase( 0, pos + 1 );
+         if( greedy )
+         {
+            while( startsWith( temp, " " ) || startsWith( temp, "\t" ) )
+               temp.erase( 0, 1 );
+         }
+         
+         pos = temp.find_first_of( " \t" );
+      }
+      
+      vec.push_back( temp );
+      return vec;
+   }
 
 }

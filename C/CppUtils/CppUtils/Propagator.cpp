@@ -1,7 +1,7 @@
 
 // system includes
-#include <cstdlib>
 #include <cmath>
+#include <cstdlib>
 #include <fstream>
 #include <vector>
 
@@ -10,442 +10,497 @@
 #include "Propagator.h"
 #include "StringUtils.h"
 
-const double Propagator::R_EARTH        =   6371.0298792;        // radius of spherical Earth (km)
-const double Propagator::GRAV           = 398600.4418;           // gravity constant (km^3/s^2)
-const double Propagator::G_ACCEL        =      0.0097976432222;  // acceleration due to gravity (km/s^2)
-const double Propagator::J2             =      0.00108264;
-const double Propagator::J3             =     -0.0000025;
-const double Propagator::J4             =     -0.0000016;
-const double Propagator::J5             =     -0.00000015;
-const double Propagator::A_EARTH        =   6378.137;            // Earth semi-major axis (km)
-const double Propagator::AIR_OVER_GAS   =      0.00348367635597; // air molecular weight divided by universal gas constant
-const double Propagator::COEFF_PRESSURE =      1.4;
-const double Propagator::MACH_1         =      0.6;
-const double Propagator::MACH_2         =      1.2;
-const double Propagator::DT_MAX         =      1.0;
-const double Propagator::SAFETY         =      0.9;
-const double Propagator::P_SHRINK       =     -0.25;
-const double Propagator::P_GROW         =     -0.2;
-const double Propagator::ERR_CON        =      1.89e-4;
-const double Propagator::RKF45_TOL      =      1.0e-8;
-
-const double Propagator::R_EARTH_M      = R_EARTH * 1000.0;      // radius of spherical Earth (m)
-const double Propagator::A_EARTH_2      = A_EARTH * A_EARTH;
-const double Propagator::A_EARTH_3      = A_EARTH_2 * A_EARTH;
-const double Propagator::A_EARTH_4      = A_EARTH_3 * A_EARTH;
-const double Propagator::INT_RATE_32Hz  = 1.0 / 32.0;
-const double Propagator::DT_MIN         = 1.0 / 4096.0;
-
-double Propagator::X_ERR[]                             = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-int    Propagator::numGramPoints                       = 0;
-double Propagator::envGramAltitude[MAX_GRAM_POINTS]    = { 0.0 };
-double Propagator::envGramTemperature[MAX_GRAM_POINTS] = { 0.0 };
-double Propagator::envGramPressure[MAX_GRAM_POINTS]    = { 0.0 };
-double Propagator::envGramDensity[MAX_GRAM_POINTS]     = { 0.0 };
-double Propagator::envGramNorthWind[MAX_GRAM_POINTS]   = { 0.0 };
-double Propagator::envGramEastWind[MAX_GRAM_POINTS]    = { 0.0 };
-
-/*******************************************************************************
- * 
- ******************************************************************************/
-bool Propagator::readGramFile( const std::string &filename )
+namespace Propagator
 {
-   std::ifstream in;
-   in.open( filename.c_str() );
-   if( !in.is_open() ) return false;
-   
-   std::string s;
-   std::vector<std::string> sArray;
-   
-   getline( in, s );
-   while( in.good() && numGramPoints <= MAX_GRAM_POINTS )
+   // anonymous namespace for "private" variables and methods
+   namespace
    {
-      StringUtils::trimString( s );
-      if( !StringUtils::startsWith( s, "#" ) )
+      // convenience struct for holding Runge-Kutta constants
+      // from the Butcher tablequ
+      struct RKConstants
       {
-         sArray.clear();
-         sArray = StringUtils::split( s, " ", true );
+         double t2, t3, t4, t5, t6;
+         double k21;
+         double k31, k32;
+         double k41, k42, k43;
+         double k51, k52, k53, k54;
+         double k61, k62, k63, k64, k65;
+         double b11, b12, b13, b14, b15, b16;
+         double b21, b22, b23, b24, b25, b26;
+      };
+      
+      // single record from GRAM file
+      struct GramRecord
+      {
+         double alt;
+         double temp;
+         double pressure;
+         double density;
+         double northWind;
+         double eastWind;
+      };
+      
+      // CONSTANTS
+      const double R_EARTH        = 6371029.8792;   // m
+      const double G              = 6.67384e-11;    // constant of gravitation ( m^3 / ( kg * s^2 ) )
+      const double GE             = 3.986004391e14; // geocentric gravitation constant ( m^3 / s^2 )
+      const double A              = 6378137.0;      // elliptical earth semi-major axis (m)
+      const double A2             = A * A;
+      const double A3             = A2 * A;
+      const double A4             = A3 * A;
+      const double PRESSURE_COEFF = 1.4;
+      const double MACH_FACTOR_1  = 0.6;
+      const double MACH_FACTOR_2  = 1.2;
+      
+      // gravitational harmonics from Fundamentals of Astrodynamics
+      const double J2             = 1.08264e-3;
+      const double J3             = -2.5e-6;
+      const double J4             = -1.6e-6;
+      const double J5             = -1.5e-7;
+      
+      const double DT_DEFAULT     = 1.0 / 32.0;   // default integration step size
+      const double DT_MIN         = 1.0 / 4096.0;
+      const double DT_MAX         = 1.0;
+      const double RK_TOL         = 1.0e-8;       // integrator tolerance
+      const double RK_SAFETY      = 0.9;          // "chicken" factor
+      
+      double nextStepSize         = DT_DEFAULT;   // next step size
+      
+      // Runge-Kutta-Fehlberg
+      RKConstants RKF = 
+         {
+                1 / 4,      // t2
+                3 / 8,      // t3
+               12 / 13,     // t4
+                1,          // t5
+                1 / 2,      // t6
+                1 / 4,      // k21
+                3 / 32,     // k31
+                9 / 32,     // k32
+             1932 / 2197,   // k41
+            -7200 / 2197,   // k42
+             7296 / 2197,   // k43
+              439 / 216,    // k51
+               -8,          // k52
+             3680 / 513,    // k53
+             -845 / 4104,   // k54
+               -8 / 27,     // k61
+                2,          // k62
+            -3544 / 2565,   // k63
+             1859 / 4104,   // k64
+              -11 / 40,     // k65
+               25 / 216,    // b11
+                0,          // b12
+             1408 / 2565,   // b13
+             2197 / 4104,   // b14
+               -1 / 5,      // b15
+                0,          // b16
+               16 / 135,    // b21
+                0,          // b22
+             6656 / 12825,  // b23
+            28561 / 56430,  // b24
+               -9 / 50,     // b25
+                2 / 55      // b26
+         };
+      
+      // Runge-Kutta-Cash-Karp
+      RKConstants RKCK =
+         {
+                1 / 5,      // t2
+                3 / 10,     // t3
+                3 / 5,      // t4
+                1,          // t5
+                7 / 8,      // t6
+                1 / 5,      // k21
+                3 / 40,     // k31
+                9 / 40,     // k32
+                3 / 10,     // k41
+               -9 / 10,     // k42
+                6 / 5,      // k43
+              -11 / 54,     // k51
+                5 / 2,      // k52
+              -70 / 27,     // k53
+               35 / 27,     // k54
+             1631 / 55296,  // k61
+              175 / 512,    // k62
+              575 / 13824,  // k63
+            44275 / 110592, // k64
+              253 / 4096,   // k65
+               37 / 378,    // b11
+                0,          // b12
+              250 / 621,    // b13
+              125 / 594,    // b14
+                0,          // b15
+              512 / 1771,   // b16
+             2825 / 27648,  // b21
+                0,          // b22
+            18575 / 48384,  // b23
+            13525 / 55296,  // b24
+              277 / 14336,  // b25
+                1 / 4       // b26
+         };
+      
+      RKConstants &rk = RKCK; // default
+      
+      std::vector<GramRecord> gramData;
+      
+      // FUNCTIONS
+      /************************************************************************
+       * 
+       ***********************************************************************/
+      double linearInterp( const double &x1,
+                           const double &x2,
+                           const double &y1,
+                           const double &y2,
+                           const double &x )
+      {
+         double m     = 0;
+         double num   = y2 - y1;
+         double denom = x2 - x1;
+         if( fabs( denom ) > 1e-8 ) m = num / denom;
+         return y1 + ( x - x1 ) * m;
+      }
+      
+      /************************************************************************
+       * 
+       ***********************************************************************/
+      GramRecord getGramData( const double &alt )
+      {
+         GramRecord r;
+         r.alt = alt;
          
-         if( sArray.size() >= 6 )
+         if( !gramData.empty() )
          {
-            envGramAltitude[numGramPoints]    = atof( sArray[0].c_str() );
-            envGramTemperature[numGramPoints] = atof( sArray[1].c_str() );
-            envGramPressure[numGramPoints]    = atof( sArray[2].c_str() );
-            envGramDensity[numGramPoints]     = atof( sArray[3].c_str() );
-            envGramNorthWind[numGramPoints]   = atof( sArray[4].c_str() );
-            envGramEastWind[numGramPoints]    = atof( sArray[5].c_str() );
-            numGramPoints++;
-         }
-      }
-      
-      getline( in, s );
-   }
-   
-   if( in.is_open() ) in.close();
-   
-   return true;
-}
-      
-/*******************************************************************************
- * 
- ******************************************************************************/
-ObjectState Propagator::propagate3DoF( const double       &time,
-                                       const ObjectState  &state,
-                                       const GravityModel &model )
-{
-   double scale[6];
-   ObjectState newState( state );
-   
-   // convert state to ECI and km
-   newState.pos = CoordConversions::convertECFtoECI( state.pos, state.validityTime ) / 1000.0;
-   newState.vel = CoordConversions::convertECFtoECIVel( state.pos, state.vel, state.validityTime ) / 1000.0;
-   newState.acc = CoordConversions::convertECFtoECIAcc( state.pos, state.vel, state.acc, state.validityTime ) / 1000.0;
-   
-   double integrationTime = 0.0;
-   double intStepSize = INT_RATE_32Hz * ( time < 0.0 ? -1.0 : 1.0 );
-   double newStepSize = 0.0;
-   while( fabs( integrationTime ) <= fabs( time ) ) // loop until we've integrated over enough time
-   {
-      if( fabs( integrationTime + intStepSize ) > fabs( time ) )
-         intStepSize = time - integrationTime;
-      
-      // integrate and check solution is within error tolerance
-      newState = integrateRungeKutta45( newState, intStepSize, model );
-      calculateScaleFactors( newState, scale );
-      newStepSize = calculateStepSize( scale, intStepSize, RKF45_TOL );
-      
-      // increment time counter
-      integrationTime += intStepSize;
-      intStepSize = newStepSize;
-   }
-   
-   // convert ECI state back to ECF and m
-   newState.acc = CoordConversions::convertECItoECFAcc( newState.pos, newState.vel, newState.acc, newState.validityTime ) * 1000.0;
-   newState.vel = CoordConversions::convertECItoECFVel( newState.pos, newState.vel, newState.validityTime ) * 1000.0;
-   newState.pos = CoordConversions::convertECItoECF( newState.pos, newState.validityTime ) * 1000.0;
-   
-   return newState;
-}
-
-
-      
-/*******************************************************************************
- * 
- ******************************************************************************/
-double Propagator::interpolateLinear( const double &x1,
-                                      const double &x2,
-                                      const double &y1,
-                                      const double &y2,
-                                      const double &x )
-{
-   double m = ( fabs( x2 - x1 ) > 1.0e-8 ? ( y2 - y1 ) / ( x2 - x1 ) : 0.0 );
-   return ( y1 + ( x - x1 ) * m );
-}
-
-/*******************************************************************************
- * 
- ******************************************************************************/
-void Propagator::getGramData( const double &alt,
-                               double &pressure,   // OUTPUT
-                               double &density,    // OUTPUT
-                               double &northWind,  // OUTPUT
-                               double &eastWind )  // OUTPUT
-{
-   if( numGramPoints > 0 )
-   {
-      if( alt <= envGramAltitude[0] )
-      {
-         pressure  = envGramPressure[0];
-         density   = envGramDensity[0];
-         northWind = envGramNorthWind[0];
-         eastWind  = envGramEastWind[0];
-      }
-      else if( alt > envGramAltitude[numGramPoints-1] )
-      {
-         pressure  = envGramPressure[numGramPoints-1];
-         density   = envGramDensity[numGramPoints-1];
-         northWind = envGramNorthWind[numGramPoints-1];
-         eastWind  = envGramEastWind[numGramPoints-1];
-      }
-      else
-      {
-         for( int i = 0; i < ( numGramPoints - 2 ); i++ )
-         {
-            if( alt > envGramAltitude[i] && alt <= envGramAltitude[i+1] )
+            if( alt <= gramData.front().alt )
             {
-               // use linear interpolation for this alt
-               pressure  = interpolateLinear( envGramAltitude[i], envGramAltitude[i+1], envGramPressure[i], envGramPressure[i+1], alt );
-               density   = interpolateLinear( envGramAltitude[i], envGramAltitude[i+1], envGramDensity[i], envGramDensity[i+1], alt );
-               northWind = interpolateLinear( envGramAltitude[i], envGramAltitude[i+1], envGramNorthWind[i], envGramNorthWind[i+1], alt );
-               eastWind  = interpolateLinear( envGramAltitude[i], envGramAltitude[i+1], envGramEastWind[i], envGramEastWind[i+1], alt );
+               r = gramData.front();
+            }
+            else if( alt > gramData.back().alt )
+            {
+               r = gramData.back();
+            }
+            else
+            {
+               // interpolate
+               for( unsigned int i = 0; i < ( gramData.size() - 1 ); i++ )
+               {
+                  if( alt > gramData[i].alt && alt <= gramData[i+1].alt )
+                  {
+                     r.pressure  = linearInterp( gramData[i].alt, gramData[i+1].alt, gramData[i].pressure, gramData[i+1].pressure, alt );
+                     r.density   = linearInterp( gramData[i].alt, gramData[i+1].alt, gramData[i].density, gramData[i+1].density, alt );
+                     r.northWind = linearInterp( gramData[i].alt, gramData[i+1].alt, gramData[i].northWind, gramData[i+1].northWind, alt );
+                     r.eastWind  = linearInterp( gramData[i].alt, gramData[i+1].alt, gramData[i].eastWind, gramData[i+1].eastWind, alt );
+                     break;
+                  }
+               }
             }
          }
+         
+         return r;
       }
-   }
-   return;
-}
-
-/*******************************************************************************
- * 
- ******************************************************************************/
-Vector3D Propagator::calculateGravitationalForces( const ObjectState &state, const GravityModel &model )
-{
-   double r, r2, r3, r4, sind, sind2, dterm1, dterm2, dterm3;
-   double c1, c2, c3;
-   double f1, f2, f3;
-   
-   r = state.pos.magnitude();
-   r2 = r * r;
-   r3 = r2 * r;
-   r4 = r3 * r;
-   
-   sind  = state.pos.Z() / r;
-   sind2 = sind * sind;
-   
-   switch( model )
-   {
-      case GRAVITY_SPHERICAL:
-         dterm1 = dterm2 = dterm3 = 0.0;
-         break;
-      case GRAVITY_J2:
-         dterm1 = 1.5 * J2 * A_EARTH_2 / r2;
-         dterm2 = dterm3 = 0.0;
-         break;
-      case GRAVITY_J4:
-         dterm1 = 0.0;
-         dterm2 = 2.5 * J3 * A_EARTH_3 / r3;
-         dterm3 = 0.625 * J4 * A_EARTH_4 / r4;
-         break;
-   }
-   
-   c1 = 1.0 - 5.0 * sind2;
-   c2 = ( 3.0 - 7.0 * sind2 ) * sind;
-   c3 = 3.0 - 42.0 * sind2 + 63.0 * sind2 * sind2;
-   
-   f1 = -1.0 * ( ( GRAV * state.pos.X() ) / r3 ) * ( 1.0 + dterm1 * c1 + dterm2 * c2 - dterm3 * c3 );
-   f2 = state.pos.Y() * ( 1.0 / state.pos.X() * f1 );
-   
-   c1 = 3.0 - 5.0 * sind2;
-   c2 = ( 6.0 - 7.0 * sind2 ) * sind;
-   c3 = 15.0 - 70.0 * sind2 + 63.0 * sind2 * sind2;
-   
-   f3 = -1.0 * ( ( GRAV * state.pos.Z() ) / r3 ) * ( 1.0 + dterm1 * c1 + dterm2 * c2 - dterm3 * c3 );
-   
-   return Vector3D( f1, f2, f3 );
-}
-
-/*******************************************************************************
- * 
- ******************************************************************************/
-Vector3D Propagator::calculateDragForces( const ObjectState &state )
-{
-   double pressure, density, northWind, eastWind, speedOfSound, mach, beta, q, cd;
-   
-   // ECI -> ECF -> LLA
-   Vector3D posLLA = CoordConversions::convertECFtoLLA( CoordConversions::convertECItoECF( state.pos, state.validityTime ) );
-   
-   // save ECF vel
-   Vector3D velECF = CoordConversions::convertECItoECFVel( state.pos, state.vel, state.validityTime );
-   
-   // get GRAM data for this altitude
-   getGramData( posLLA.Z(), pressure, density, northWind, eastWind );
-   
-   // adjust wind
-   Vector3D windENU( eastWind, northWind, 0.0 );
-   Vector3D windECF = CoordConversions::convertENUtoECF( windENU, state.pos );
-   velECF -= windECF;
-   
-   // compute speed of sound
-   speedOfSound = sqrt( COEFF_PRESSURE * pressure / density );
-   
-   // compute mach
-   mach = velECF.magnitude() / speedOfSound;
-   
-   // use beta or sbeta?
-   if( mach <= MACH_1 )                       beta = state.beta;
-   else if( mach > MACH_1 && mach <= MACH_2 ) beta = interpolateLinear( MACH_1, MACH_2, state.beta, state.sbeta, mach );
-   else                                       beta = state.sbeta;
-   
-   // dynamic pressure
-   q = 0.5 * density * velECF.magnitude() * velECF.magnitude();
-   
-   // coeff of drag
-   cd = -0.5 * density * velECF.magnitude() / beta;
-   
-   // drag force
-   return Vector3D( cd * velECF.X(), cd * velECF.Y(), cd * velECF.Z() );
-}
-
-/*******************************************************************************
- * 
- ******************************************************************************/
-void Propagator::calculateDerivatives( const ObjectState  &state,
-                                       const GravityModel &model,
-                                             double       *derivs ) // OUTPUT
-{
-   Vector3D drag;
-   
-   // velocity
-   derivs[0] = state.vel.X();
-   derivs[1] = state.vel.Y();
-   derivs[2] = state.vel.Z();
-   
-   // accel due to gravity
-   Vector3D g = calculateGravitationalForces( state, model );
-   
-   // accel due to drag
-   if( state.beta > 1.0e-6 ) drag = calculateDragForces( state );
-   
-   derivs[3] = g.X() + drag.X();
-   derivs[4] = g.Y() + drag.Y();
-   derivs[5] = g.Z() + drag.Z();
-   
-   return;
-}
-
-/*******************************************************************************
- * 
- ******************************************************************************/
-ObjectState Propagator::integrateRungeKutta45( const ObjectState  &state,
-                                               const double       &dt,
-                                               const GravityModel &model )
-{
-   static const double a2  = 0.2;
-   static const double a3  = 0.3;
-   static const double a4  = 0.6;
-   static const double a5  = 1.0;
-   static const double a6  = 0.875;
-   static const double b21 = 0.2;
-   static const double b31 = 3.0 / 40.0;
-   static const double b32 = 9.0 / 40.0;
-   static const double b41 = 0.3;
-   static const double b42 = -0.9;
-   static const double b43 = 1.2;
-   static const double b51 = -11.0 / 54.0;
-   static const double b52 = 2.5;
-   static const double b53 = -70.0 / 27.0;
-   static const double b54 = 35.0 / 27.0;
-   static const double b61 = 1631.0 / 55296.0;
-   static const double b62 = 175.0 / 512.0;
-   static const double b63 = 575.0 / 13824.0;
-   static const double b64 = 44275.0 / 110592.0;
-   static const double b65 = 253.0 / 4096.0;
-   static const double c1  = 37.0 / 378.0;
-   static const double c3  = 250.0 / 621.0;
-   static const double c4  = 125.0 / 594.0;
-   static const double c6  = 512.0 / 1771.0;
-   static const double dc1 = c1 - 2825.0 / 27648.0;
-   static const double dc3 = c3 - 18575.0 / 48384.0;
-   static const double dc4 = c4 - 13525.0 / 55296.0;
-   static const double dc5 = -277.0 / 14336.0;
-   static const double dc6 = c6 - 0.25;
-   
-   double dxdt1[6];
-   double dxdt2[6];
-   double dxdt3[6];
-   double dxdt4[6];
-   double dxdt5[6];
-   double dxdt6[6];
-   double dxdtNew[6];
-   
-   ObjectState newState( state );
-   
-   calculateDerivatives( newState, model, dxdt1 );
-   newState.pos = state.pos + Vector3D( b21 * dt * dxdt1[0], b21 * dt * dxdt1[1], b21 * dt * dxdt1[2] );
-   newState.vel = state.vel + Vector3D( b21 * dt * dxdt1[3], b21 * dt * dxdt1[4], b21 * dt * dxdt1[5] );
-   newState.validityTime = state.validityTime + a2 * dt;
-   
-   calculateDerivatives( newState, model, dxdt2 );
-   newState.pos = state.pos + Vector3D( dt * ( b31 * dxdt1[0] + b32 * dxdt2[0] ), dt * ( b31 * dxdt1[1] + b32 * dxdt2[1] ), dt * ( b31 * dxdt1[2] + b32 * dxdt2[2] ) );
-   newState.vel = state.vel + Vector3D( dt * ( b31 * dxdt1[3] + b32 * dxdt2[3] ), dt * ( b31 * dxdt1[4] + b32 * dxdt2[4] ), dt * ( b31 * dxdt1[5] + b32 * dxdt2[5] ) );
-   newState.validityTime = state.validityTime + a3 * dt;
-   
-   calculateDerivatives( newState, model, dxdt3 );
-   newState.pos = state.pos + Vector3D( dt * ( b41 * dxdt1[0] + b42 * dxdt2[0] + b43 * dxdt3[0] ), dt * ( b41 * dxdt1[1] + b42 * dxdt2[1] + b43 * dxdt3[1] ), dt * ( b41 * dxdt1[2] + b42 * dxdt2[2] + b43 * dxdt3[2] ) );
-   newState.vel = state.vel + Vector3D( dt * ( b41 * dxdt1[3] + b42 * dxdt2[3] + b43 * dxdt3[3] ), dt * ( b41 * dxdt1[4] + b42 * dxdt2[4] + b43 * dxdt3[4] ), dt * ( b41 * dxdt1[5] + b42 * dxdt2[5] + b43 * dxdt3[5] ) );
-   newState.validityTime = state.validityTime + a4 * dt;
-   
-   calculateDerivatives( newState, model, dxdt4 );
-   newState.pos = state.pos + Vector3D( dt * ( b51 * dxdt1[0] + b52 * dxdt2[0] + b53 * dxdt3[0] + b54 * dxdt4[0] ), dt * ( b51 * dxdt1[1] + b52 * dxdt2[1] + b53 * dxdt3[1] + b54 * dxdt4[1] ), dt * ( b51 * dxdt1[2] + b52 * dxdt2[2] + b53 * dxdt3[2] + b54 * dxdt4[2] ) );
-   newState.vel = state.vel + Vector3D( dt * ( b51 * dxdt1[3] + b52 * dxdt2[3] + b53 * dxdt3[3] + b54 * dxdt4[3] ), dt * ( b51 * dxdt1[4] + b52 * dxdt2[4] + b53 * dxdt3[4] + b54 * dxdt4[4] ), dt * ( b51 * dxdt1[5] + b52 * dxdt2[5] + b53 * dxdt3[5] + b54 * dxdt4[5] ) );
-   newState.validityTime = state.validityTime + a5 * dt;
-   
-   calculateDerivatives( newState, model, dxdt5 );
-   newState.pos = state.pos + Vector3D( dt * ( b61 * dxdt1[0] + b62 * dxdt2[0] + b63 * dxdt3[0] + b64 * dxdt4[0] + b65 * dxdt5[0] ), dt * ( b61 * dxdt1[1] + b62 * dxdt2[1] + b63 * dxdt3[1] + b64 * dxdt4[1] + b65 * dxdt5[1] ), dt * ( b61 * dxdt1[2] + b62 * dxdt2[2] + b63 * dxdt3[2] + b64 * dxdt4[2] + b65 * dxdt5[2] ) );
-   newState.vel = state.vel + Vector3D( dt * ( b61 * dxdt1[3] + b62 * dxdt2[3] + b63 * dxdt3[3] + b64 * dxdt4[3] + b65 * dxdt5[3] ), dt * ( b61 * dxdt1[4] + b62 * dxdt2[4] + b63 * dxdt3[4] + b64 * dxdt4[4] + b65 * dxdt5[4] ), dt * ( b61 * dxdt1[5] + b62 * dxdt2[5] + b63 * dxdt3[5] + b64 * dxdt4[5] + b65 * dxdt5[5] ) );
-   newState.validityTime = state.validityTime + a6 * dt;
-   
-   calculateDerivatives( newState, model, dxdt6 );
-   newState.pos = state.pos + Vector3D( dt * ( c1 * dxdt1[0] + c3 * dxdt3[0] + c4 * dxdt4[0] + c6 * dxdt6[0] ), dt * ( c1 * dxdt1[1] + c3 * dxdt3[1] + c4 * dxdt4[1] + c6 * dxdt6[1] ), dt * ( c1 * dxdt1[2] + c3 * dxdt3[2] + c4 * dxdt4[2] + c6 * dxdt6[2] ) );
-   newState.vel = state.vel + Vector3D( dt * ( c1 * dxdt1[3] + c3 * dxdt3[3] + c4 * dxdt4[3] + c6 * dxdt6[3] ), dt * ( c1 * dxdt1[4] + c3 * dxdt3[4] + c4 * dxdt4[4] + c6 * dxdt6[4] ), dt * ( c1 * dxdt1[5] + c3 * dxdt3[5] + c4 * dxdt4[5] + c6 * dxdt6[5] ) );
-   for( int i = 0; i < 6; i++ )
-   {
-      X_ERR[i] = dt * ( dc1 * dxdt1[i] + dc3 * dxdt3[i] + dc4 * dxdt4[i] + dc5 * dxdt5[i] + dc6 * dxdt6[i] );
-   }
-   
-   // evaluate derivatives at new state
-   newState.validityTime = state.validityTime + dt;
-   calculateDerivatives( newState, model, dxdtNew );
-   newState.acc = Vector3D( dxdtNew[3], dxdtNew[4], dxdtNew[5] );
-   
-   return newState;
-}
-
-/*******************************************************************************
- * 
- ******************************************************************************/
-void Propagator::calculateScaleFactors( const ObjectState &state,
-                                              double      *scaleFactors ) // OUTPUT
-{
-   scaleFactors[0] = fabs( state.pos.X() );
-   scaleFactors[1] = fabs( state.pos.Y() );
-   scaleFactors[2] = fabs( state.pos.Z() );
-   scaleFactors[3] = std::max( 0.01, fabs( state.vel.X() ) );
-   scaleFactors[4] = std::max( 0.01, fabs( state.vel.Y() ) );
-   scaleFactors[5] = std::max( 0.01, fabs( state.vel.Z() ) );
-}
-
-/*******************************************************************************
- * 
- ******************************************************************************/
-double Propagator::calculateStepSize( double *scaleFactors, const double &dt, const double &tolerance )
-{
-   double err;
-   double errMax = 0.0;
-   double rval;
-   
-   for( int i = 0; i < 6; i++ )
-   {
-      err = fabs( X_ERR[i] / scaleFactors[i] );
-      if( err > errMax ) errMax = err;
-   }
-   
-   errMax /= tolerance;
-   if( errMax <= 1.0 )
-   {
-      if( errMax > ERR_CON )
-         rval = SAFETY * dt * pow( errMax, P_GROW );
-      else
-         rval = 5.0 * dt;
       
-      if( fabs( rval ) > DT_MAX )
-         rval = ( rval < 0.0 ? -1.0 : 1.0 ) * DT_MAX;
-   }
-   else
-   {
-      if( errMax < 2.7 ) errMax = 2.7;
-      rval = SAFETY * dt * pow( errMax, P_SHRINK );
-      if( dt >= 0.0 )
+      /************************************************************************
+       * 
+       ***********************************************************************/
+      Vector3D calculateGravitationalAccel( const ObjectState &state, const GravityModel &model )
       {
-         if( rval < 0.1 * dt ) rval = 0.1 * dt;
-         if( rval < DT_MIN )   rval = DT_MIN;
+         double r, r2, r3, r4, s, s2, d1, d2, d3, c1, c2, c3;
+         Vector3D rval;
+         
+         r = state.pos.magnitude();
+         r2 = r * r;
+         r3 = r2 * r;
+         r4 = r3 * r;
+         
+         s = state.pos.Z() / r;
+         s2 = s * s;
+         
+         switch( model )
+         {
+            case GRAVITY_J2:
+               d1 = 1.5 * J2 * A2 / r2;
+               d2 = d3 = 0.0;
+               break;
+            case GRAVITY_J4:
+               d1 = 0.0;
+               d2 = 2.5 * J3 * A3 / r3;
+               d3 = 0.625 * J4 * A4 / r4;
+               break;
+            case GRAVITY_SPHERICAL:
+            default:
+               d1 = d2 = d3 = 0.0;
+               break;
+         }
+         
+         c1 = 1.0 - 5.0 * s2;
+         c2 = ( 3.0 - 7.0 * s2 ) * s;
+         c3 = 3.0 - 42.0 * s2 + 63.0 * s2 * s2;
+         
+         rval.setX( -1.0 * ( ( GE * state.pos.X() ) / r3 ) * ( 1.0 + d1 * c1 + d2 * c2 - d3 * c3 ) );
+         rval.setY( state.pos.Y() * ( 1.0 / state.pos.X() * rval.X() ) );
+         
+         c1 = 3.0 - 5.0 * s2;
+         c2 = ( 6.0 - 7.0 * s2 ) * s;
+         c3 = 15.0 - 70.0 * s2 + 63.0 * s2 * s2;
+         
+         rval.setZ( -1.0 * ( ( GE * state.pos.Z() ) / r3 ) * ( 1.0 + d1 * c1 + d2 * c2 - d3 * c3 ) );
+         
+         return rval;
       }
-      else
+      
+      /************************************************************************
+       * 
+       ***********************************************************************/
+      Vector3D calculateDragAccel( const ObjectState &state )
       {
-         if( rval > 0.1 * dt ) rval = 0.1 * dt;
-         if( rval > DT_MIN )   rval = -1.0 * DT_MIN;
+         Vector3D posECF = CoordConversions::convertECItoECF( state.pos, state.validityTime );
+         Vector3D velECF = CoordConversions::convertECItoECFVel( state.pos, state.vel, state.validityTime );
+         Vector3D velENU = CoordConversions::convertECFtoENU( velECF, posECF );
+         Vector3D posLLA = CoordConversions::convertECFtoLLA( posECF );
+         GramRecord gram = getGramData( posLLA.Z() );
+         
+         // adjust velocity by wind
+         velENU -= Vector3D( gram.eastWind, gram.northWind, 0.0 );
+         
+         // -> ECF
+         velECF = CoordConversions::convertENUtoECF( velENU, posECF );
+         
+         double speedOfSound = sqrt( PRESSURE_COEFF * gram.pressure / gram.density );
+         double mach = velECF.magnitude() / speedOfSound;
+         double beta;
+         
+         if( mach <= MACH_FACTOR_1 || state.sbeta < 1e-6 )
+            beta = state.beta;
+         else if( mach > MACH_FACTOR_1 && mach >= MACH_FACTOR_2 )
+            beta = linearInterp( MACH_FACTOR_1, MACH_FACTOR_2, state.beta, state.sbeta, mach );
+         else
+            beta = state.sbeta;
+         
+         double dragScaleFactor = -1e-3 * ( gram.density * velECF.magnitude() * velECF.magnitude() ) / ( 2.0 * beta );
+         
+         Vector3D dragECF = velECF.normalized() * dragScaleFactor;
+         
+         return CoordConversions::convertECFtoECI( dragECF, state.validityTime );
+      }
+      
+      /************************************************************************
+       * 
+       ***********************************************************************/
+      Vector3D deriveVel( const ObjectState &state )
+      {
+         return state.vel;
+      }
+      
+      /************************************************************************
+       * 
+       ***********************************************************************/
+      Vector3D deriveAcc( const ObjectState &state, const GravityModel &model )
+      {
+         Vector3D g = calculateGravitationalAccel( state, model );
+         
+         if( state.beta > 1e-6 )
+            g += calculateDragAccel( state );
+         
+         return g;
+      }
+      
+      /************************************************************************
+       * NOTE: dt will be modified as needed based on error calculations.
+       ***********************************************************************/
+      ObjectState integrateState( const ObjectState &state, const GravityModel &model, double &dt )
+      {
+         ObjectState k1( state );
+         ObjectState k2( state );
+         ObjectState k3( state );
+         ObjectState k4( state );
+         ObjectState k5( state );
+         ObjectState k6( state );
+         ObjectState b1( state );
+         ObjectState b2( state );
+         Vector3D v1, v2, v3, v4, v5, v6;
+         Vector3D a1, a2, a3, a4, a5, a6;
+         double pErr, vErr, err;
+         
+         ObjectState newState( state );
+         bool done = false;
+         
+         while( !done )
+         {
+            // TODO: stop if error can't be bounded
+            // K1 = first state
+            // K2
+            v1 = deriveVel( k1 );
+            a1 = deriveAcc( k1, model );
+            k2.pos += v1 * rk.k21 * dt;
+            k2.vel += a1 * rk.k21 * dt;
+            k2.validityTime += rk.t2 * dt;
+            
+            // K3
+            v2 = deriveVel( k2 );
+            a2 = deriveAcc( k2, model );
+            k3.pos += ( v1 * rk.k31 + v2 * rk.k32 ) * dt;
+            k3.vel += ( a1 * rk.k31 + a2 * rk.k32 ) * dt;
+            k3.validityTime += rk.t3 * dt;
+            
+            // K4
+            v3 = deriveVel( k3 );
+            a3 = deriveAcc( k3, model );
+            k4.pos += ( v1 * rk.k41 + v2 * rk.k42 + v3 * rk.k43 ) * dt;
+            k4.vel += ( a1 * rk.k41 + a2 * rk.k42 + a3 * rk.k43 ) * dt;
+            k4.validityTime += rk.t4 * dt;
+            
+            // K5
+            v4 = deriveVel( k4 );
+            a4 = deriveAcc( k4, model );
+            k5.pos += ( v1 * rk.k51 + v2 * rk.k52 + v3 * rk.k53 + v4 * rk.k54 ) * dt;
+            k5.vel += ( a1 * rk.k51 + a2 * rk.k52 + a3 * rk.k53 + a4 * rk.k54 ) * dt;
+            k5.validityTime += rk.t5 * dt;
+            
+            // K6
+            v5 = deriveVel( k5 );
+            a5 = deriveAcc( k5, model );
+            k6.pos += ( v1 * rk.k61 + v2 * rk.k62 + v3 * rk.k63 + v4 * rk.k64 + v5 * rk.k65 ) * dt;
+            k6.vel += ( a1 * rk.k61 + a2 * rk.k62 + a3 * rk.k63 + a4 * rk.k64 + a5 * rk.k65 ) * dt;
+            
+            // take final derivatives
+            v6 = deriveVel( k6 );
+            a6 = deriveAcc( k6, model );
+            
+            // b1 ( 4th order )
+            b1.pos += ( v1 * rk.b11 + v2 * rk.b12 + v3 * rk.b13 + v4 * rk.b14 + v5 * rk.b15 + v6 * rk.b16 ) * dt;
+            b1.vel += ( a1 * rk.b11 + a2 * rk.b12 + a3 * rk.b13 + a4 * rk.b14 + a5 * rk.b15 + a6 * rk.b16 ) * dt;
+            
+            // b2 ( 5th order )
+            b2.pos += ( v1 * rk.b21 + v2 * rk.b22 + v3 * rk.b23 + v4 * rk.b24 + v5 * rk.b25 + v6 * rk.b26 ) * dt;
+            b2.vel += ( a1 * rk.b21 + a2 * rk.b22 + a3 * rk.b23 + a4 * rk.b24 + a5 * rk.b25 + a6 * rk.b26 ) * dt;
+            
+            // calculate error
+            pErr = ( b2.pos - b1.pos ).magnitude();
+            vErr = ( b2.vel - b1.vel ).magnitude();
+            
+            err = ( 1.0 / dt ) * std::max( pErr, vErr );
+            
+            nextStepSize = RK_SAFETY * pow( RK_TOL * dt / err, 0.25 );
+            if( nextStepSize < DT_MIN ) nextStepSize = DT_MIN;
+            if( nextStepSize > DT_MAX ) nextStepSize = DT_MAX;
+            
+            if( err < RK_TOL )
+            {
+               // we're done
+               done = true;
+            }
+            else
+            {
+               // integrate again with new step size
+               dt = nextStepSize;
+            }
+         }
+         
+         // new state
+         newState.validityTime += dt;
+         newState.pos = b1.pos;
+         newState.vel = b1.vel;
+         newState.acc = deriveAcc( newState, model );
+         
+         return newState;
+      }
+      
+   }
+   // end anonymous namespace
+   
+   /***************************************************************************
+    * 
+    **************************************************************************/
+   bool readGramFile( const std::string &filename )
+   {
+      std::ifstream in;
+      in.open( filename.c_str() );
+      if( !in.is_open() ) return false;
+      
+      std::string s;
+      std::vector<std::string> sArray;
+      
+      // clear any old data
+      gramData.clear();
+      
+      while( in.good() )
+      {
+         getline( in, s );
+         StringUtils::trimString( s );
+         
+         // ignore comment lines
+         if( StringUtils::startsWith( s, "c" ) || StringUtils::startsWith( s, "C" ) ) continue;
+         
+         sArray = StringUtils::split( s, true );
+         
+         GramRecord r;
+         if( sArray.size() >= 6 )
+         {
+            r.alt       = atof( sArray[0].c_str() );
+            r.temp      = atof( sArray[1].c_str() );
+            r.pressure  = atof( sArray[2].c_str() );
+            r.density   = atof( sArray[3].c_str() );
+            r.northWind = atof( sArray[4].c_str() );
+            r.eastWind  = atof( sArray[5].c_str() );
+            gramData.push_back( r );
+         }
+      }
+      
+      if( in.is_open() ) in.close();
+      
+      return true;
+   }
+   
+   /***************************************************************************
+    * 
+    **************************************************************************/
+   void setIntegrationMethod( const IntegrationMethod &method )
+   {
+      switch( method )
+      {
+         case CASH_KARP:
+            rk = RKCK;
+            break;
+         case FEHLBERG:
+         default:
+            rk = RKF;
+            break;
       }
    }
    
-   return rval;
+   /***************************************************************************
+    * 
+    **************************************************************************/
+   ObjectState propagate3DoF( const double       &time,
+                              const ObjectState  &state,
+                              const GravityModel &model )
+   {
+      ObjectState newState( state );
+      
+      // state -> ECI
+      newState.pos = CoordConversions::convertECFtoECI( state.pos, state.validityTime );
+      newState.vel = CoordConversions::convertECFtoECIVel( state.pos, state.vel, state.validityTime );
+      newState.acc = CoordConversions::convertECFtoECIAcc( state.pos, state.vel, state.acc, state.validityTime );
+      
+      double integrationTime = 0.0;
+      double intStepSize = DT_DEFAULT * ( time < 0.0 ? -1.0 : 1.0 );
+      while( fabs( integrationTime ) < fabs( time ) )
+      {
+         if( fabs( integrationTime + intStepSize ) > fabs( time ) )
+            intStepSize = time - integrationTime;
+         
+         newState = integrateState( newState, model, intStepSize );
+         
+         integrationTime += intStepSize;
+         intStepSize = nextStepSize;
+      }
+      
+      // new state -> ECF
+      newState.acc = CoordConversions::convertECItoECFAcc( newState.pos, newState.vel, newState.acc, newState.validityTime );
+      newState.vel = CoordConversions::convertECItoECFVel( newState.pos, newState.vel, newState.validityTime );
+      newState.pos = CoordConversions::convertECItoECF( newState.pos, newState.validityTime );
+      
+      return newState;
+   }
+   
 }
