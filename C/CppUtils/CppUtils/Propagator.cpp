@@ -1,4 +1,3 @@
-
 // system includes
 #include <cmath>
 #include <cstdlib>
@@ -253,21 +252,14 @@ namespace Propagator
        ***********************************************************************/
       Vector3D calculateDragAccel( const ObjectState &state )
       {
-         Vector3D posECF = CoordConversions::convertECItoECF( state.pos, state.validityTime );
-         Vector3D velECF = CoordConversions::convertECItoECFVel( state.pos, state.vel, state.validityTime );
-         Vector3D velENU = CoordConversions::convertECFtoENU( velECF, posECF );
-         Vector3D posLLA = CoordConversions::convertECFtoLLA( posECF );
-         GramRecord gram = getGramData( posLLA.Z() );
-         
-         // adjust velocity by wind
-         velENU -= Vector3D( gram.eastWind, gram.northWind, 0.0 );
-         
-         // -> ECF
-         velECF = CoordConversions::convertENUtoECF( velENU, posECF );
-         
-         double speedOfSound = sqrt( PRESSURE_COEFF * gram.pressure / gram.density );
-         double mach = velECF.magnitude() / speedOfSound;
-         double beta;
+         Vector3D   posECF       = CoordConversions::convertECItoECF( state.pos, state.validityTime );
+         double     alt          = CoordConversions::convertECFtoLLA( posECF ).Z();
+         GramRecord gram         = getGramData( alt );
+         Vector3D   windECI      = CoordConversions::convertECFtoECI( 
+                                   CoordConversions::convertENUtoECF( Vector3D( gram.eastWind, gram.northWind, 0.0 ), posECF ), state.validityTime );
+         double     speedOfSound = sqrt( PRESSURE_COEFF * gram.pressure / gram.density );
+         double     mach         = state.vel.magnitude() / speedOfSound;
+         double     beta;
          
          if( mach <= MACH_FACTOR_1 || state.sbeta < 1e-6 )
             beta = state.beta;
@@ -276,11 +268,9 @@ namespace Propagator
          else
             beta = state.sbeta;
          
-         double dragScaleFactor = -1e-3 * ( gram.density * velECF.magnitude() * velECF.magnitude() ) / ( 2.0 * beta );
+         double dragScaleFactor = -1e-3 * ( gram.density * state.vel.magnitude() * state.vel.magnitude() ) / ( 2.0 * beta );
          
-         Vector3D dragECF = velECF.normalized() * dragScaleFactor;
-         
-         return CoordConversions::convertECFtoECI( dragECF, state.validityTime );
+         return state.vel.normalized() * dragScale * -1.0;
       }
       
       /************************************************************************
