@@ -40,6 +40,7 @@ QueuedBinaryLogger::QueuedBinaryLogger( const std::string &filename,
  *****************************************************************************/
 QueuedBinaryLogger::~QueuedBinaryLogger()
 {
+   shutdown();
    queueMutex.lock();
    emptyQueue();
    out.close();

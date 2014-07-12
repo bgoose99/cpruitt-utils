@@ -1,16 +1,8 @@
 
-// system includes
-#ifdef _WIN32
-#include <windows.h>
-#else
-#include <sys/time.h>
-#include <unistd.h>
-#endif
-#include <utility>
-
 // local includes
 #include "EventScheduler.h"
 #include "ScopedLock.h"
+#include "TimingUtils.h"
 
 using namespace std;
 
@@ -34,7 +26,6 @@ EventScheduler::~EventScheduler()
    for( unsigned int i = 0; i < threads.size(); i++ )
    {
       threads[i]->shutdown();
-      threads[i]->join();
       delete threads[i];
    }
    threads.clear();
@@ -47,7 +38,7 @@ EventScheduler::~EventScheduler()
  ******************************************************************************/
 void EventScheduler::addEvent( Delegate *delegate, const long &firstTime )
 {
-   long now = getSystemMillis();
+   long now = TimingUtils::getSystemMillis();
    Event e;
    e.type     = EVENT_SINGLE;
    e.delegate = delegate;
@@ -64,7 +55,7 @@ void EventScheduler::addEvent( Delegate *delegate, const long &firstTime )
  ******************************************************************************/
 void EventScheduler::addInfiniteEvent( Delegate *delegate, const long &firstTime, const long &interval )
 {
-   long now = getSystemMillis();
+   long now = TimingUtils::getSystemMillis( );
    Event e;
    e.type     = EVENT_INFINITE;
    e.delegate = delegate;
@@ -82,7 +73,7 @@ void EventScheduler::addInfiniteEvent( Delegate *delegate, const long &firstTime
  ******************************************************************************/
 void EventScheduler::addRecurringEvent( Delegate *delegate, const long &firstTime, const long &interval, const long &maxTime )
 {
-   long now = getSystemMillis();
+   long now = TimingUtils::getSystemMillis( );
    Event e;
    e.type     = EVENT_RECURRING;
    e.delegate = delegate;
@@ -121,24 +112,6 @@ void EventScheduler::cancelAllEvents()
 /*******************************************************************************
  * 
  ******************************************************************************/
-long EventScheduler::getSystemMillis()
-{
-   #ifdef _WIN32
-   static FILETIME ft;
-   static long long now;
-   GetSystemTimeAsFileTime( &ft );
-   now = (LONGLONG)ft.dwLowDateTime + ((LONGLONG)(ft.dwHighDateTime) << 32LL);
-   return (long)( now / 10000 );
-   #else
-   static struct timeval tv;
-   gettimeofday( &tv, NULL );
-   return ( tv.tv_usec + ( tv.tv_sec * 1000000 ) ) / 1000;
-   #endif
-}
-
-/*******************************************************************************
- * 
- ******************************************************************************/
 EventScheduler::QueueServicer::QueueServicer( EventScheduler &parent ) :
    parent( parent )
 {
@@ -151,7 +124,6 @@ EventScheduler::QueueServicer::QueueServicer( EventScheduler &parent ) :
 EventScheduler::QueueServicer::~QueueServicer()
 {
    shutdown();
-   join();
 }
 
 /*******************************************************************************
@@ -169,7 +141,7 @@ void EventScheduler::QueueServicer::threadFunction()
       iter = parent.events.begin();
       if( iter != parent.events.end() )
       {
-         now = parent.getSystemMillis();
+         now = TimingUtils::getSystemMillis( );
          if( now >= iter->first )
          {
             Event e = iter->second;

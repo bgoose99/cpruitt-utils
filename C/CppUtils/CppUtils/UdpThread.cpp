@@ -22,4 +22,5 @@ UdpThread::UdpThread( const std::string &myIpAddress,
  *****************************************************************************/
 UdpThread::~UdpThread()
 {
+   shutdown();
 }

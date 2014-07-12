@@ -17,5 +17,6 @@ MulticastThread::MulticastThread( const std::string &ipAddress, const int &port,
  *****************************************************************************/
 MulticastThread::~MulticastThread()
 {
+   shutdown();
 }
 

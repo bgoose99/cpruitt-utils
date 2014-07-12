@@ -1,4 +1,5 @@
 // system includes
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <fstream>
@@ -270,7 +271,7 @@ namespace Propagator
          
          double dragScaleFactor = -1e-3 * ( gram.density * state.vel.magnitude() * state.vel.magnitude() ) / ( 2.0 * beta );
          
-         return state.vel.normalized() * dragScale * -1.0;
+         return state.vel.normalized() * dragScaleFactor * -1.0;
       }
       
       /************************************************************************

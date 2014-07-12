@@ -21,5 +21,6 @@ TcpThread::TcpThread( const std::string &ipAddress,
  *****************************************************************************/
 TcpThread::~TcpThread()
 {
+   shutdown();
 }
 

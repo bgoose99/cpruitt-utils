@@ -22,6 +22,7 @@ SocketThread::SocketThread( const std::string &ipAddress, const int &port, Logge
  *****************************************************************************/
 SocketThread::~SocketThread()
 {
+   shutdown();
    if( socket != NULL ) delete socket;
 }
 

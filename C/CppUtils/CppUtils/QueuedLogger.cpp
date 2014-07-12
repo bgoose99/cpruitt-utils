@@ -46,6 +46,7 @@ QueuedLogger::QueuedLogger( const std::string &filename,
  *****************************************************************************/
 QueuedLogger::~QueuedLogger()
 {
+   shutdown();
    queueMutex.lock();
    emptyQueue();
    out.close();

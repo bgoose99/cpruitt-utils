@@ -124,11 +124,6 @@ class EventScheduler
       
       Mutex                      eventMutex;
       std::multimap<long, Event> events;
-      
-      /************************************************************************
-       * Returns the current system time, in milliseconds.
-       ***********************************************************************/
-      long getSystemMillis();
 };
 
 #endif
