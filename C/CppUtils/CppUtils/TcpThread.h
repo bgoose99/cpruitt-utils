@@ -18,14 +18,12 @@ class TcpThread : public SocketThread
        *    ipAddress - tcp ip address
        *    port      - tcp port
        *    isServer  - true if this object is the server, false otherwise
-       *    logger    - optional logger
        *    retry     - true if this object should repeatedly try to connect
        *                the socket, false otherwise
        ***********************************************************************/
       TcpThread( const std::string &ipAddress,
                  const int         &port,
                  const bool        &isServer,
-                 Logger            *logger = 0,
                  const bool        &retry = false );
       
       /************************************************************************

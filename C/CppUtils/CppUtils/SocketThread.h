@@ -7,7 +7,6 @@
 
 // local includes
 #include "AbstractThread.h"
-#include "Logger.h"
 #include "Socket.h"
 
 /******************************************************************************
@@ -22,11 +21,10 @@ class SocketThread : public AbstractThread
        * Constructor
        *    ipAddress - socket ip address
        *    port      - socket port
-       *    logger    - optional logger
        *    retry     - true if this object should repeatedly try to connect
        *                the socket, false otherwise
        ***********************************************************************/
-      SocketThread( const std::string &ipAddress, const int &port, Logger *logger = 0, const bool &retry = false );
+      SocketThread( const std::string &ipAddress, const int &port, const bool &retry = false );
       
       /************************************************************************
        * Destructor
@@ -46,13 +44,12 @@ class SocketThread : public AbstractThread
       /************************************************************************
        * Sends a message.
        ***********************************************************************/
-      virtual void sendMessage( const char *buf, const int &size );
+      virtual int sendMessage( const char *buf, const int &size );
       
    protected:
       
       bool    retry;
       Socket *socket;
-      Logger *logger;
       
 };
 

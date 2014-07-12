@@ -17,9 +17,8 @@ class MulticastThread : public SocketThread
        * Constructor
        *    ipAddress - socket ip address
        *    port      - socket port
-       *    logger    - optional logger
        ***********************************************************************/
-      MulticastThread( const std::string &ipAddress, const int &port, Logger *logger = 0 );
+      MulticastThread( const std::string &ipAddress, const int &port );
       
       /************************************************************************
        * Destructor

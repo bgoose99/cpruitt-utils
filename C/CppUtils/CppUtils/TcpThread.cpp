@@ -9,9 +9,8 @@
 TcpThread::TcpThread( const std::string &ipAddress,
                       const int         &port,
                       const bool        &isServer,
-                      Logger            *logger,
                       const bool        &retry ) :
-   SocketThread( ipAddress, port, logger, retry )
+   SocketThread( ipAddress, port, retry )
 {
    socket = new TcpSocket( ipAddress, port, isServer, retry );
 }

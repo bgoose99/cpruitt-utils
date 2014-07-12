@@ -19,13 +19,11 @@ class UdpThread : public SocketThread
        *    myPort        - sender port
        *    destIpAddress - destination ip address
        *    destPort      - destination port
-       *    logger        - optional logger
        ***********************************************************************/
       UdpThread( const std::string &myIpAddress,
                  const int         &myPort,
                  const std::string &destIpAddress,
-                 const int         &destPort,
-                 Logger            *logger = 0 );
+                 const int         &destPort );
       
       /************************************************************************
        * Destructor

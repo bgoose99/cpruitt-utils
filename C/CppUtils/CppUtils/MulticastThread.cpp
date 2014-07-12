@@ -6,8 +6,8 @@
 /******************************************************************************
  * 
  *****************************************************************************/
-MulticastThread::MulticastThread( const std::string &ipAddress, const int &port, Logger *logger ) :
-   SocketThread( ipAddress, port, logger )
+MulticastThread::MulticastThread( const std::string &ipAddress, const int &port ) :
+   SocketThread( ipAddress, port )
 {
    socket = new MulticastSocket( ipAddress, port, true );
 }

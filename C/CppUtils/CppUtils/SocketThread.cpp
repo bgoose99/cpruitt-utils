@@ -10,10 +10,9 @@ using namespace StringUtils;
 /******************************************************************************
  * 
  *****************************************************************************/
-SocketThread::SocketThread( const std::string &ipAddress, const int &port, Logger *logger, const bool &retry ) :
+SocketThread::SocketThread( const std::string &ipAddress, const int &port, const bool &retry ) :
    retry( retry ),
-   socket( NULL ),
-   logger( logger )
+   socket( NULL )
 {
 }
 
@@ -35,12 +34,6 @@ void SocketThread::threadFunction()
    {
       if( !socket->connect() )
       {
-         if( logger != NULL )
-         {
-            logger->log( "SocketThread", "Unable to connect on ip " + socket->getIpAddress() + ", port " + toString( socket->getPort() ) );
-            logger->log( "SocketThread", "Error from Socket: " + socket->getErrorMessage() );
-         }
-         
          if( retry )
          {
             #ifdef _WIN32
@@ -54,8 +47,6 @@ void SocketThread::threadFunction()
       }
       else
       {
-         if( logger != NULL )
-            logger->log( "SocketThread", "Connected on ip " + socket->getIpAddress() + ", port " + toString( socket->getPort() ) + ", socket " + toString( socket->getSocket() ) );
          break;
       }
    }
@@ -78,26 +69,12 @@ void SocketThread::threadFunction()
 /******************************************************************************
  * 
  *****************************************************************************/
-void SocketThread::sendMessage( const char *buf, const int &size )
+int SocketThread::sendMessage( const char *buf, const int &size )
 {
    if( isRunning )
    {
-      int bytesSent = socket->send( buf, size );
-      if( bytesSent < 0 )
-      {
-         if( logger != NULL )
-            logger->log( "SocketThread", "Unable to send message (" + toString( size ) + " bytes)" );
-      }
-      else if( bytesSent != size )
-      {
-         if( logger != NULL )
-            logger->log( "SocketThread", "Sent " + toString( bytesSent ) + " bytes; should have sent " + toString( size ) + " bytes." );
-      }
-      else
-      {
-         if( logger != NULL )
-            logger->log( "SocketThread", "Sent " + toString( bytesSent ) + " bytes." );
-      }
+      return socket->send( buf, size );
    }
+   return -1;
 }
 
