@@ -57,6 +57,10 @@ class QueuedBinaryLogger : public AbstractThread
       void log( const char *msg, const int &size );
       
    private:
+
+      // no copy or assignment
+      QueuedBinaryLogger( const QueuedBinaryLogger & );
+      QueuedBinaryLogger &operator=( const QueuedBinaryLogger & );
       
       // simple message class to facilitate copying individual messages
       class BinaryMessage
@@ -82,8 +86,6 @@ class QueuedBinaryLogger : public AbstractThread
       const unsigned int          queueThreshold;
       const unsigned int          msgsPerIteration;
       const unsigned int          condWaitMsec;
-      
-      QueuedBinaryLogger( const QueuedBinaryLogger &logger ); // no copying
       
       /************************************************************************
        * Empties the message queue.

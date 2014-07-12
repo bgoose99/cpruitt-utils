@@ -35,6 +35,10 @@ class ScopedLock
       void unlock();
       
    private:
+
+      // no copy or assignment
+      ScopedLock( const ScopedLock & );
+      ScopedLock &operator=( const ScopedLock & );
       
       Mutex &mutex;
       bool   locked;

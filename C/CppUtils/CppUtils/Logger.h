@@ -34,6 +34,10 @@ class Logger
       
    private:
       
+      // no copy or assignment
+      Logger( const Logger & );
+      Logger &operator=( const Logger & );
+      
       const static int TIME_PAD;
       const static int PREF_PAD;
       

@@ -57,6 +57,10 @@ class QueuedLogger : public AbstractThread
       void log( const std::string &msg, const std::string &prefix = "Unknown", const double &timestamp = 0.0 );
       
    private:
+
+      // no copy or assignment
+      QueuedLogger( const QueuedLogger & );
+      QueuedLogger &operator=( const QueuedLogger & );
       
       const static int TIME_PAD;
       const static int PREF_PAD;
@@ -68,8 +72,6 @@ class QueuedLogger : public AbstractThread
       const unsigned int      queueThreshold;
       const unsigned int      msgsPerIteration;
       const unsigned int      condWaitMsec;
-      
-      QueuedLogger( const QueuedLogger &logger ); // no copying
       
       /************************************************************************
        * Empties the message queue.

@@ -33,6 +33,10 @@ class TcpSocket : public Socket
       virtual bool connectSocket();
       
    private:
+
+      // no copy or assignment
+      TcpSocket( const TcpSocket & );
+      TcpSocket &operator=( const TcpSocket & );
       
       bool isServer;
       bool retry;

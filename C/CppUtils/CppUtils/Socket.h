@@ -68,6 +68,10 @@ class Socket
       inline int getSocket() const { return sock; }
       
    protected:
+
+      // no copy or assignment
+      Socket( const Socket & );
+      Socket &operator=( const Socket & );
       
       std::string ipAddress;
       std::string errMsg;

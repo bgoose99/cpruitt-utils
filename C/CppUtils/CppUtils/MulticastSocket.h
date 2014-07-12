@@ -42,6 +42,10 @@ class MulticastSocket : public Socket
       virtual bool connectSocket();
       
    private:
+
+      // no copy or assignment
+      MulticastSocket( const MulticastSocket & );
+      MulticastSocket &operator=( const MulticastSocket & );
       
       #ifdef _WIN32
       #else

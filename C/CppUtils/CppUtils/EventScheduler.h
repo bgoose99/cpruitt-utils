@@ -93,6 +93,10 @@ class EventScheduler
       
    private:
       
+      // no copy or assignment
+      EventScheduler( const EventScheduler & );
+      EventScheduler &operator=( const EventScheduler & );
+      
       enum EventType { EVENT_SINGLE, EVENT_RECURRING, EVENT_INFINITE };
       
       /************************************************************************

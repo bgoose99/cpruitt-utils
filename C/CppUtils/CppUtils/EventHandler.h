@@ -107,6 +107,10 @@ class EventHandler
       
    private:
       
+      // no copy or assignment
+      EventHandler( const EventHandler & );
+      EventHandler &operator=( const EventHandler & );
+
       Mutex                               listenerMutex;
       std::vector<Callback<void, Event> > listeners;
 };

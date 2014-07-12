@@ -30,6 +30,12 @@ class TcpThread : public SocketThread
        * Destructor
        ***********************************************************************/
       virtual ~TcpThread();
+
+   private:
+
+      // no copy or assignment
+      TcpThread( const TcpThread & );
+      TcpThread &operator=( const TcpThread & );
       
 };
 

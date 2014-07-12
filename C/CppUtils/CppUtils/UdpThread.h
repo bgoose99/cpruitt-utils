@@ -29,6 +29,12 @@ class UdpThread : public SocketThread
        * Destructor
        ***********************************************************************/
       virtual ~UdpThread();
+
+   private:
+
+      // no copy or assignment
+      UdpThread( const UdpThread & );
+      UdpThread &operator=( const UdpThread & );
       
 };
 

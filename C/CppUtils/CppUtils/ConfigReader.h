@@ -106,6 +106,10 @@ class ConfigReader
       
    private:
       
+      // no copy or assignment
+      ConfigReader( const ConfigReader & );
+      ConfigReader &operator=( const ConfigReader & );
+      
       Logger                            *log;            // optional log file
       bool                               valid;          // true if all parameters are found, false otherwise
       std::ifstream                      in;             // input file

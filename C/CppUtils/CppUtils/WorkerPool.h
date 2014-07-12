@@ -58,6 +58,10 @@ class WorkerPool
       void addWorker( Worker *worker );
       
    private:
+
+      // no copy or assignment
+      WorkerPool( const WorkerPool & );
+      WorkerPool &operator=( const WorkerPool & );
       
       /************************************************************************
        * Simple worker thread.

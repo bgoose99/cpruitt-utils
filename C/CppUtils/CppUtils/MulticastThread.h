@@ -24,6 +24,12 @@ class MulticastThread : public SocketThread
        * Destructor
        ***********************************************************************/
       virtual ~MulticastThread();
+
+   private:
+
+      // no copy or assignment
+      MulticastThread( const MulticastThread & );
+      MulticastThread &operator=( const MulticastThread & );
       
 };
 

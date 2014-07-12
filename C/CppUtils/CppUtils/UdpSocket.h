@@ -45,6 +45,10 @@ class UdpSocket : public Socket
       virtual bool connectSocket();
    
    private:
+
+      // no copy or assignment
+      UdpSocket( const UdpSocket & );
+      UdpSocket &operator=( const UdpSocket & );
       
       std::string destIpAddress;
       int destPort;

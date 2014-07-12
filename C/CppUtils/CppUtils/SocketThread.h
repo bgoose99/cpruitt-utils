@@ -50,6 +50,12 @@ class SocketThread : public AbstractThread
       
       bool    retry;
       Socket *socket;
+
+   private:
+
+      // no copy or assignment
+      SocketThread( const SocketThread & );
+      SocketThread &operator=( const SocketThread & );
       
 };
 
