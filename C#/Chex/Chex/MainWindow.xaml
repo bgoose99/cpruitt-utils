@@ -1,0 +1,337 @@
+﻿<Window x:Class="Chex.MainWindow"
+        x:Name="mainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:app="clr-namespace:Chex"
+        xmlns:ui="clr-namespace:Chex.UI"
+        ResizeMode="NoResize"
+        Title="Chex"
+        Height="490"
+        Width="800"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style x:Key="RightAlignedColumnHeader" TargetType="DataGridColumnHeader">
+            <Setter Property="HorizontalContentAlignment" Value="Right"/>
+            <Setter Property="FontFamily" Value="Courier New"/>
+        </Style>
+        <Style x:Key="DisabledCommandImage" TargetType="Image">
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.3" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <BitmapImage x:Key="BrickAdd" UriSource="Resources/Images/brick_add.png"/>
+        <BitmapImage x:Key="BrickDelete" UriSource="Resources/Images/brick_delete.png"/>
+        <BitmapImage x:Key="BrickGo" UriSource="Resources/Images/brick_go.png"/>
+        <BitmapImage x:Key="BulletArrowRight" UriSource="Resources/Images/bullet_arrow_right.png"/>
+        <BitmapImage x:Key="Cross" UriSource="Resources/Images/cross.png"/>
+        <BitmapImage x:Key="Disk" UriSource="Resources/Images/disk.png"/>
+        <BitmapImage x:Key="DoorOutImage" UriSource="Resources/Images/door_out.png"/>
+        <BitmapImage x:Key="Find" UriSource="Resources/Images/find.png"/>
+        <BitmapImage x:Key="FolderImage" UriSource="Resources/Images/folder.png"/>
+        <BitmapImage x:Key="Information" UriSource="Resources/Images/information.png"/>
+        <BitmapImage x:Key="KeyA" UriSource="Resources/Images/key_a.png"/>
+        <BitmapImage x:Key="PageAddImage" UriSource="Resources/Images/page_add.png"/>
+        <BitmapImage x:Key="PageDeleteImage" UriSource="Resources/Images/page_delete.png"/>
+        <BitmapImage x:Key="ResultsetNext" UriSource="Resources/Images/resultset_next.png"/>
+        <BitmapImage x:Key="ResultsetPrev" UriSource="Resources/Images/resultset_previous.png"/>
+        <BitmapImage x:Key="SaveAs" UriSource="Resources/Images/save_as.png"/>
+        <BitmapImage x:Key="TableGo" UriSource="Resources/Images/table_go.png"/>
+    </Window.Resources>
+    <Window.CommandBindings>
+        <CommandBinding Command="app:Commands.Exit" CanExecute="CanExecuteExitCommand" Executed="ExecuteExitCommand"/>
+        <CommandBinding Command="app:Commands.Open" CanExecute="CanExecuteOpenCommand" Executed="ExecuteOpenCommand"/>
+        <CommandBinding Command="app:Commands.Close" CanExecute="CanExecuteCloseCommand" Executed="ExecuteCloseCommand"/>
+        <CommandBinding Command="app:Commands.New" CanExecute="CanExecuteNewCommand" Executed="ExecuteNewCommand"/>
+        <CommandBinding Command="app:Commands.GotoBlock" CanExecute="CanExecuteGotoBlockCommand" Executed="ExecuteGotoBlockCommand"/>
+        <CommandBinding Command="app:Commands.PrevBlock" CanExecute="CanExecutePrevBlockCommand" Executed="ExecutePrevBlockCommand"/>
+        <CommandBinding Command="app:Commands.NextBlock" CanExecute="CanExecuteNextBlockCommand" Executed="ExecuteNextBlockCommand"/>
+        <CommandBinding Command="app:Commands.Save" CanExecute="CanExecuteSaveCommand" Executed="ExecuteSaveCommand"/>
+        <CommandBinding Command="app:Commands.SaveAs" CanExecute="CanExecuteSaveAsCommand" Executed="ExecuteSaveAsCommand"/>
+        <CommandBinding Command="app:Commands.GetGotoOffsetInput" CanExecute="CanExecuteGetGotoOffsetInputCommand" Executed="ExecuteGetGotoOffsetInputCommand"/>
+        <CommandBinding Command="app:Commands.GotoOffset" CanExecute="CanExecuteGotoOffsetCommand" Executed="ExecuteGotoOffsetCommand"/>
+        <CommandBinding Command="app:Commands.GetFindInput" CanExecute="CanExecuteGetFindInputCommand" Executed="ExecuteGetFindInputCommand"/>
+        <CommandBinding Command="app:Commands.FindNext" CanExecute="CanExecuteFindNextCommand" Executed="ExecuteFindNextCommand"/>
+        <CommandBinding Command="app:Commands.FindPrev" CanExecute="CanExecuteFindPrevCommand" Executed="ExecuteFindPrevCommand"/>
+        <CommandBinding Command="app:Commands.AddBytes" CanExecute="CanExecuteAddBytesCommand" Executed="ExecuteAddBytesCommand"/>
+        <CommandBinding Command="app:Commands.DeleteBytes" CanExecute="CanExecuteDeleteBytesCommand" Executed="ExecuteDeleteBytesCommand"/>
+        <CommandBinding Command="app:Commands.About" CanExecute="CanExecuteAboutCommand" Executed="ExecuteAboutCommand"/>
+        <CommandBinding Command="app:Commands.Ascii" CanExecute="CanExecuteAsciiCommand" Executed="ExecuteAsciiCommand"/>
+        <CommandBinding Command="app:Commands.Cancel" CanExecute="CanExecuteCancelCommand" Executed="ExecuteCancelCommand"/>
+        <CommandBinding Command="app:Commands.FindByte" CanExecute="CanExecuteFindByteCommand" Executed="ExecuteFindByteCommand"/>
+    </Window.CommandBindings>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Menu Name="mainMenu" Grid.Row="0" IsMainMenu="True">
+            <MenuItem Header="_File">
+                <MenuItem Header="_New" Command="app:Commands.New">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource PageAddImage}" Style="{StaticResource DisabledCommandImage}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Open" Command="app:Commands.Open">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource FolderImage}" Style="{StaticResource DisabledCommandImage}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Close" Command="app:Commands.Close">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource PageDeleteImage}" Style="{StaticResource DisabledCommandImage}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="_Save" Command="app:Commands.Save">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource Disk}" Style="{StaticResource DisabledCommandImage}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Save as..." Command="app:Commands.SaveAs">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource SaveAs}" Style="{StaticResource DisabledCommandImage}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="_Exit" Command="app:Commands.Exit">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource DoorOutImage}" Style="{StaticResource DisabledCommandImage}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem Header="_Goto offset..." Command="app:Commands.GetGotoOffsetInput">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource BrickGo}" Style="{StaticResource DisabledCommandImage}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Find..." Command="app:Commands.GetFindInput">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource Find}" Style="{StaticResource DisabledCommandImage}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Find next" Command="app:Commands.FindNext"/>
+                <MenuItem Header="_Find previous" Command="app:Commands.FindPrev"/>
+                <Separator/>
+                <MenuItem Header="_Add byte(s)" Command="app:Commands.AddBytes">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource BrickAdd}" Style="{StaticResource DisabledCommandImage}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Delete byte(s)" Command="app:Commands.DeleteBytes">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource BrickDelete}" Style="{StaticResource DisabledCommandImage}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_About..." Command="app:Commands.About">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource Information}" Style="{StaticResource DisabledCommandImage}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_ASCII Table..." Command="app:Commands.Ascii">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource KeyA}" Style="{StaticResource DisabledCommandImage}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+        <ToolBarTray Name="toolBarTray" Grid.Row="1" IsLocked="True">
+            <ToolBar>
+                <Button Command="app:Commands.New" ToolTip="New file">
+                    <Image Source="{StaticResource PageAddImage}" Style="{StaticResource DisabledCommandImage}"/>
+                </Button>
+                <Button Command="app:Commands.Open" ToolTip="Open file">
+                    <Image Source="{StaticResource FolderImage}" Style="{StaticResource DisabledCommandImage}"/>
+                </Button>
+                <Button Command="app:Commands.Close" ToolTip="Close current file">
+                    <Image Source="{StaticResource PageDeleteImage}" Style="{StaticResource DisabledCommandImage}"/>
+                </Button>
+                <Separator/>
+                <Button Command="app:Commands.Save" ToolTip="Save current file">
+                    <Image Source="{StaticResource Disk}" Style="{StaticResource DisabledCommandImage}"/>
+                </Button>
+                <Separator/>
+                <Button Command="app:Commands.GetGotoOffsetInput" ToolTip="Go to arbitrary offset">
+                    <Image Source="{StaticResource BrickGo}" Style="{StaticResource DisabledCommandImage}"/>
+                </Button>
+                <Button Command="app:Commands.GetFindInput" ToolTip="Find byte">
+                    <Image Source="{StaticResource Find}" Style="{StaticResource DisabledCommandImage}"/>
+                </Button>
+                <Separator/>
+                <Button Command="app:Commands.AddBytes" ToolTip="Add byte(s)">
+                    <Image Source="{StaticResource BrickAdd}" Style="{StaticResource DisabledCommandImage}"/>
+                </Button>
+                <Button Command="app:Commands.DeleteBytes" ToolTip="Delete byte(s)">
+                    <Image Source="{StaticResource BrickDelete}" Style="{StaticResource DisabledCommandImage}"/>
+                </Button>
+            </ToolBar>
+        </ToolBarTray>
+        <Grid Grid.Row="2">
+            <Border>
+                <Border.Effect>
+                    <BlurEffect Radius="0" KernelType="Gaussian" x:Name="hexDataGridBlurEffect"/>
+                </Border.Effect>
+                <ui:HexDataGrid x:Name="hexDataGrid">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn HeaderStyle="{StaticResource RightAlignedColumnHeader}" Header="0" Width="35" Binding="{Binding x0}"/>
+                        <DataGridTextColumn HeaderStyle="{StaticResource RightAlignedColumnHeader}" Header="1" Width="35" Binding="{Binding x1}"/>
+                        <DataGridTextColumn HeaderStyle="{StaticResource RightAlignedColumnHeader}" Header="2" Width="35" Binding="{Binding x2}"/>
+                        <DataGridTextColumn HeaderStyle="{StaticResource RightAlignedColumnHeader}" Header="3" Width="35" Binding="{Binding x3}"/>
+                        <DataGridTextColumn HeaderStyle="{StaticResource RightAlignedColumnHeader}" Header="4" Width="35" Binding="{Binding x4}"/>
+                        <DataGridTextColumn HeaderStyle="{StaticResource RightAlignedColumnHeader}" Header="5" Width="35" Binding="{Binding x5}"/>
+                        <DataGridTextColumn HeaderStyle="{StaticResource RightAlignedColumnHeader}" Header="6" Width="35" Binding="{Binding x6}"/>
+                        <DataGridTextColumn HeaderStyle="{StaticResource RightAlignedColumnHeader}" Header="7" Width="35" Binding="{Binding x7}"/>
+                        <DataGridTextColumn HeaderStyle="{StaticResource RightAlignedColumnHeader}" Header="8" Width="35" Binding="{Binding x8}"/>
+                        <DataGridTextColumn HeaderStyle="{StaticResource RightAlignedColumnHeader}" Header="9" Width="35" Binding="{Binding x9}"/>
+                        <DataGridTextColumn HeaderStyle="{StaticResource RightAlignedColumnHeader}" Header="a" Width="35" Binding="{Binding xa}"/>
+                        <DataGridTextColumn HeaderStyle="{StaticResource RightAlignedColumnHeader}" Header="b" Width="35" Binding="{Binding xb}"/>
+                        <DataGridTextColumn HeaderStyle="{StaticResource RightAlignedColumnHeader}" Header="c" Width="35" Binding="{Binding xc}"/>
+                        <DataGridTextColumn HeaderStyle="{StaticResource RightAlignedColumnHeader}" Header="d" Width="35" Binding="{Binding xd}"/>
+                        <DataGridTextColumn HeaderStyle="{StaticResource RightAlignedColumnHeader}" Header="e" Width="35" Binding="{Binding xe}"/>
+                        <DataGridTextColumn HeaderStyle="{StaticResource RightAlignedColumnHeader}" Header="f" Width="35" Binding="{Binding xf}"/>
+                        <DataGridTemplateColumn IsReadOnly="True" Header="ASCII" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock FontFamily="Courier New">
+                                        <!--
+                                        No space between Run's because this causes a space to appear in
+                                        the TextBlock.
+                                        -->
+                                        <Run Text="{Binding AsciiPreHighlight, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" /><Run Text="{Binding AsciiHighlight, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Background="Cyan" /><Run Text="{Binding AsciiPostHighlight, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                                    </TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="{x:Type DataGridColumnHeader}">
+                            <Setter Property="FontFamily" Value="Courier New"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+                    <DataGrid.RowHeaderStyle>
+                        <Style TargetType="{x:Type DataGridRowHeader}">
+                            <Setter Property="FontFamily" Value="Courier New"/>
+                        </Style>
+                    </DataGrid.RowHeaderStyle>
+                </ui:HexDataGrid>
+            </Border>
+        </Grid>
+        <Grid Grid.Row="2" Name="findInputBox" Visibility="Collapsed">
+            <Border MinWidth="250" Background="DarkGray" BorderBrush="Gray" BorderThickness="2" CornerRadius="0,0,0,5" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Find: " Margin="5"/>
+                    <TextBox MinWidth="150" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="findByteTextBox"/>
+                    <Button x:Name="findByteButton" Command="app:Commands.FindByte" Height="20" Margin="5">
+                        <Image Source="{StaticResource BulletArrowRight}"/>
+                    </Button>
+                    <Button Command="app:Commands.Cancel" ToolTip="Cancel" Height="20" Margin="5">
+                        <Image Source="{StaticResource Cross}"/>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+        <Grid Grid.Row="2" Name="gotoOffsetInputBox" Visibility="Collapsed">
+            <Border MinWidth="250" Background="DarkGray" BorderBrush="Gray" BorderThickness="2" CornerRadius="0,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Goto: " Margin="5"/>
+                    <TextBox MinWidth="150" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="gotoOffsetTextBox"/>
+                    <Button x:Name="gotoOffsetButton" Command="app:Commands.GotoOffset" Height="20" Margin="5">
+                        <Image Source="{StaticResource BulletArrowRight}"/>
+                    </Button>
+                    <Button Command="app:Commands.Cancel" ToolTip="Cancel" Height="20" Margin="5">
+                        <Image Source="{StaticResource Cross}"/>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+        <StatusBar Name="statusBar1" Grid.Row="3">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="28"></RowDefinition>
+                        </Grid.RowDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            <StatusBarItem Grid.Column="0">
+                <TextBlock Name="filenameTextBlock" Text="untitled.bin"/>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="1">
+                <TextBlock Name="blockNumberTextBlock" Text="Block 0 of 0"/>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="2">
+                <TextBox Name="gotoTextBox" Text="0" Width="90"/>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="3">
+                <Button Name="gotoBlockButton" Command="app:Commands.GotoBlock" ToolTip="Go to the selected block number." IsDefault="True" >
+                    <Image Source="{StaticResource TableGo}" Style="{StaticResource DisabledCommandImage}"/>
+                </Button>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="4">
+                <Button Command="app:Commands.PrevBlock" ToolTip="Go to the previous block." >
+                    <Image Source="{StaticResource ResultsetPrev}" Style="{StaticResource DisabledCommandImage}"/>
+                </Button>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="5">
+                <Button Command="app:Commands.NextBlock" ToolTip="Go to the next block." >
+                    <Image Source="{StaticResource ResultsetNext}" Style="{StaticResource DisabledCommandImage}"/>
+                </Button>
+            </StatusBarItem>
+        </StatusBar>
+        <Separator Grid.Row="4" Background="LightGray"/>
+        <StatusBar Name="statusBar2" Grid.Row="5">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="75"/>
+                            <ColumnDefinition Width="75"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="28"></RowDefinition>
+                        </Grid.RowDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            <StatusBarItem Grid.Column="0">
+                <TextBlock Name="filesizeTextBlock" Text="0 bytes"/>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="1">
+                <TextBlock Name="offsetTextBlock" Text="{Binding ElementName=hexDataGrid, Path=CurrentSelectionOffsetString, UpdateSourceTrigger=PropertyChanged}"/>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="2">
+                <TextBlock Name="binaryTextBlock" Text="{Binding ElementName=hexDataGrid, Path=CurrentSelectionBinary, UpdateSourceTrigger=PropertyChanged}"/>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="3">
+                <TextBlock Name="octalTextBlock" Text="{Binding ElementName=hexDataGrid, Path=CurrentSelectionOctal, UpdateSourceTrigger=PropertyChanged}"/>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="4">
+                <TextBlock Name="decimalTextBlock" Text="{Binding ElementName=hexDataGrid, Path=CurrentSelectionDecimal, UpdateSourceTrigger=PropertyChanged}"/>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="5" HorizontalContentAlignment="Stretch">
+                <ProgressBar Name="fileProgressBar" Height="16" Value="0"/>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>
