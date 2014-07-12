@@ -8,9 +8,9 @@
 Mutex::Mutex()
 {
    #ifdef _WIN32
-   mutex = CreateMutex( NULL, false, NULL );
+   mutex = CreateMutex( 0, false, 0 );
    #else
-   pthread_mutex_init( &mutex, NULL );
+   pthread_mutex_init( &mutex, 0 );
    #endif
 }
 

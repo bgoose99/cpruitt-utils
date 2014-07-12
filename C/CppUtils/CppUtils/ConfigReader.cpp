@@ -260,6 +260,6 @@ void ConfigReader::readSection( const std::string &section )
  *****************************************************************************/
 void ConfigReader::logParameter( const std::string &parameter, const std::string &value )
 {
-   if( log != NULL )
+   if( log != 0 )
       log->log( "ConfigReader", parameter + " = " + value );
 }

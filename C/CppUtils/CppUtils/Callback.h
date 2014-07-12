@@ -196,7 +196,7 @@ class Callback
       virtual ~Callback()
       {
          delete callback;
-         callback = NULL;
+         callback = 0;
       }
       
       /*************************************************************************
@@ -214,7 +214,7 @@ class Callback
       Callback &operator=( const Callback &that )
       {
          delete callback;
-         callback = NULL;
+         callback = 0;
          callback = that.callback->clone();
       }
       

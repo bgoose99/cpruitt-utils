@@ -19,7 +19,7 @@ Condition::Condition( Mutex &mutex ) :
    //InitializeCriticalSection( &criticalSection );
    ExitProcess( 1 );
    #else
-   pthread_cond_init( &condition, NULL );
+   pthread_cond_init( &condition, 0 );
    #endif
 }
 
@@ -61,7 +61,7 @@ void Condition::wait( const int &milliseconds )
    #else
    static struct timespec ts;
    static struct timeval  tv;
-   gettimeofday( &tv, NULL );
+   gettimeofday( &tv, 0 );
    ts.tv_sec = tv.tv_sec;
    ts.tv_nsec = ( tv.tv_usec * 1000 ) + ( milliseconds * 1000000 );
    

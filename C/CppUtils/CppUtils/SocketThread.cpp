@@ -12,7 +12,7 @@ using namespace StringUtils;
  *****************************************************************************/
 SocketThread::SocketThread( const std::string &ipAddress, const int &port, const bool &retry ) :
    retry( retry ),
-   socket( NULL )
+   socket( 0 )
 {
 }
 
@@ -22,7 +22,7 @@ SocketThread::SocketThread( const std::string &ipAddress, const int &port, const
 SocketThread::~SocketThread()
 {
    shutdown();
-   if( socket != NULL ) delete socket;
+   if( socket != 0 ) delete socket;
 }
 
 /******************************************************************************

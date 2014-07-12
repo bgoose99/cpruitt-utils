@@ -81,7 +81,7 @@ int Socket::recv( char *buffer, const int &size, int waitMs )
    return 0;
    #else
    if( poll( &pollIn, 1, waitMs ) > 0 )
-      return recvfrom( sock, buffer, size, recvFlag, NULL, 0 );
+      return recvfrom( sock, buffer, size, recvFlag, 0, 0 );
    #endif
 }
 

@@ -115,10 +115,10 @@ void QueuedBinaryLogger::emptyQueue()
  * 
  *****************************************************************************/
 QueuedBinaryLogger::BinaryMessage::BinaryMessage( const char *message, const int &size ) :
-   msg( NULL ), size( size )
+   msg( 0 ), size( size )
 {
    msg = (char *)malloc( size );
-   if( message != NULL )
+   if( message != 0 )
       memcpy( msg, message, size );
 }
 
@@ -127,10 +127,10 @@ QueuedBinaryLogger::BinaryMessage::BinaryMessage( const char *message, const int
  *****************************************************************************/
 QueuedBinaryLogger::BinaryMessage::~BinaryMessage()
 {
-   if( msg != NULL )
+   if( msg != 0 )
    {
       free( msg );
-      msg = NULL;
+      msg = 0;
    }
 }
 

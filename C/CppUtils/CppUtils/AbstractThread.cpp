@@ -31,9 +31,9 @@ void AbstractThread::start()
       isRunning = true;
 
 #ifdef _WIN32
-      thread = CreateThread( NULL, 0, AbstractThread::threadHelper, this, 0, &threadId );
+      thread = CreateThread( 0, 0, AbstractThread::threadHelper, this, 0, &threadId );
 #else
-      pthread_create( &thread, NULL, AbstractThread::threadHelper, this );
+      pthread_create( &thread, 0, AbstractThread::threadHelper, this );
 #endif
    }
 }
@@ -46,7 +46,7 @@ void AbstractThread::join()
 #ifdef _WIN32
    // TODO: wait for completion
 #else
-   pthread_join( thread, NULL );
+   pthread_join( thread, 0 );
 #endif
    return;
 }
@@ -62,7 +62,7 @@ void AbstractThread::shutdown()
 #ifdef _WIN32
       // TODO: wait for completion
 #else
-      pthread_join( thread, NULL );
+      pthread_join( thread, 0 );
 #endif
    }
 }
@@ -74,7 +74,7 @@ void AbstractThread::shutdown()
 DWORD WINAPI AbstractThread::threadHelper( LPVOID arg )
 {
    AbstractThread *t = reinterpret_cast< AbstractThread * >( arg );
-   if( t != NULL ) t->threadFunction();
+   if( t != 0 ) t->threadFunction();
 
    return 0;
 }

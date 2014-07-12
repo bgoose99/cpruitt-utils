@@ -27,7 +27,7 @@ namespace TimingUtils
       return (long)( now / 10000 );
 #else
       static struct timeval tv;
-      gettimeofday( &tv, NULL );
+      gettimeofday( &tv, 0 );
       return ( tv.tv_usec + ( tv.tv_sec * 1000000 ) ) / 1000;
 #endif
    }
