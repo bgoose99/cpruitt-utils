@@ -10,9 +10,9 @@
 #include "AbstractThread.h"
 #include "Mutex.h"
 
-/*******************************************************************************
+/******************************************************************************
  * Simple delegate interface.
- ******************************************************************************/
+ *****************************************************************************/
 class Delegate
 {
    public:
@@ -22,7 +22,6 @@ class Delegate
    protected:
       
       Delegate() {}
-      
       virtual ~Delegate() {}
       
    private:
@@ -32,11 +31,11 @@ class Delegate
       Delegate &operator=( const Delegate &that ) {}
 };
 
-/*******************************************************************************
+/******************************************************************************
  * This class encapsulates one or more threads that process a queue of events.
  * It is meant to be a fire-and-forget utility class that allows the user to
  * schedule arbitrary events at some point in the future.
- ******************************************************************************/
+ *****************************************************************************/
 class EventScheduler
 {
    public:

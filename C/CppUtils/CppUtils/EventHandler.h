@@ -10,12 +10,12 @@
 #include "Mutex.h"
 #include "ScopedLock.h"
 
-/*******************************************************************************
+/******************************************************************************
  * EventHandler is a templated class that maintains a list of callbacks. These
  * can either be static function or member methods. When an event is signaled,
  * all registered callbacks are notified. Listeners can be added and removed
  * via several overloaded methods.
- ******************************************************************************/
+ *****************************************************************************/
 template <typename Event>
 class EventHandler
 {

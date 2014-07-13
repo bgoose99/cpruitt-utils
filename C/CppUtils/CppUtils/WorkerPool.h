@@ -10,9 +10,9 @@
 #include "AbstractThread.h"
 #include "Mutex.h"
 
-/*******************************************************************************
+/******************************************************************************
  * Simple worker interface.
- ******************************************************************************/
+ *****************************************************************************/
 class Worker
 {
    public:
@@ -23,6 +23,7 @@ class Worker
    protected:
       
       Worker() {}
+
    private:
       
       // no copy or assignment
@@ -30,10 +31,10 @@ class Worker
       Worker &operator=( const Worker &that ) {}
 };
 
-/*******************************************************************************
+/******************************************************************************
  * This class encapsulates one or more threads that execute Workers as needed.
  * IMPORTANT NOTE: This class assumes ownership of all Workers.
- ******************************************************************************/
+ *****************************************************************************/
 class WorkerPool
 {
    public:
@@ -76,6 +77,10 @@ class WorkerPool
             
          private:
             
+            // no copy or assignment
+            WorkerThread( const WorkerThread &);
+            WorkerThread &operator=( const WorkerThread &);
+
             WorkerPool &parent;
       };
       

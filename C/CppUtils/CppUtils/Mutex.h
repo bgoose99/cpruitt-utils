@@ -8,9 +8,9 @@
 #include <pthread.h>
 #endif
 
-/*******************************************************************************
+/******************************************************************************
  * Generic mutex wrapper.
- ******************************************************************************/
+ *****************************************************************************/
 class Mutex
 {
    public:
@@ -37,15 +37,15 @@ class Mutex
       
    private:
       
+      // no copy constructor or assignment
+      Mutex( const Mutex &mutex );
+      Mutex &operator=( const Mutex &mutex );
+      
       #ifdef _WIN32
       HANDLE mutex;
       #else
       pthread_mutex_t mutex;
       #endif
-      
-      // no copy constructor or assignment
-      Mutex( const Mutex &mutex );
-      Mutex &operator=( const Mutex &mutex );
       
       friend class Condition;
 };

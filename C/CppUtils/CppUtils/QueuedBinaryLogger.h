@@ -74,6 +74,10 @@ class QueuedBinaryLogger : public AbstractThread
             
          private:
             
+            // no copy or assignment
+            BinaryMessage( const BinaryMessage & );
+            BinaryMessage &operator=( const BinaryMessage & );
+            
             char *msg;
             int size;
             
