@@ -4,7 +4,7 @@
 #include "MulticastThread.h"
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 MulticastThread::MulticastThread( const std::string &ipAddress, const int &port ) :
    SocketThread( ipAddress, port )
@@ -13,7 +13,7 @@ MulticastThread::MulticastThread( const std::string &ipAddress, const int &port 
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 MulticastThread::~MulticastThread()
 {

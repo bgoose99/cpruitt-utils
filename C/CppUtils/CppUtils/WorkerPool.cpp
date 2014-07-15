@@ -11,7 +11,7 @@
 #include "WorkerPool.h"
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 WorkerPool::WorkerPool( const unsigned int &threadPoolSize )
 {
@@ -23,7 +23,7 @@ WorkerPool::WorkerPool( const unsigned int &threadPoolSize )
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 WorkerPool::~WorkerPool()
 {
@@ -31,7 +31,7 @@ WorkerPool::~WorkerPool()
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void WorkerPool::addWorker( Worker *worker )
 {
@@ -40,7 +40,7 @@ void WorkerPool::addWorker( Worker *worker )
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void WorkerPool::stopWork()
 {
@@ -51,7 +51,7 @@ void WorkerPool::stopWork()
       delete threads[i];
    }
    threads.clear();
-   
+
    ScopedLock lock( workerMutex );
    while( !workers.empty() )
    {
@@ -61,7 +61,7 @@ void WorkerPool::stopWork()
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 WorkerPool::WorkerThread::WorkerThread( WorkerPool &parent ) : parent( parent )
 {
@@ -69,7 +69,7 @@ WorkerPool::WorkerThread::WorkerThread( WorkerPool &parent ) : parent( parent )
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 WorkerPool::WorkerThread::~WorkerThread()
 {
@@ -78,7 +78,7 @@ WorkerPool::WorkerThread::~WorkerThread()
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void WorkerPool::WorkerThread::threadFunction()
 {
@@ -92,7 +92,7 @@ void WorkerPool::WorkerThread::threadFunction()
          worker = parent.workers.front();
          parent.workers.pop();
          lock.unlock();
-         
+
          worker->doWork();
          delete worker;
       }
@@ -100,12 +100,12 @@ void WorkerPool::WorkerThread::threadFunction()
       {
          lock.unlock();
       }
-      
-      #ifdef _WIN32
+
+#ifdef _WIN32
       Sleep( 1 );
-      #else
+#else
       usleep( 1000 );
-      #endif
+#endif
    }
    return;
 }

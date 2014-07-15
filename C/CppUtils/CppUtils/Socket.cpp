@@ -10,7 +10,7 @@
 #include "Socket.h"
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 Socket::Socket( const std::string &ipAddress, const int &port, const bool &blocking ) :
    ipAddress( ipAddress ),
@@ -19,16 +19,16 @@ Socket::Socket( const std::string &ipAddress, const int &port, const bool &block
    sock( -1 ),
    blocking( blocking )
 {
-   #ifdef _WIN32
+#ifdef _WIN32
    errMsg = "Windows sockets not supported yet.";
-   #else
+#else
    pollIn.events = POLLIN;
    recvFlag = ( blocking ? MSG_WAITALL : MSG_DONTWAIT );
-   #endif
+#endif
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 Socket::~Socket()
 {
@@ -36,52 +36,52 @@ Socket::~Socket()
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 bool Socket::connect()
 {
    bool connected = connectSocket();
-   #ifdef _WIN32
+#ifdef _WIN32
    return false;
-   #else
+#else
    if( connected ) pollIn.fd = sock;
-   #endif
+#endif
    return connected;
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void Socket::disconnect()
 {
-   #ifdef _WIN32
-   #else
+#ifdef _WIN32
+#else
    if( sock > 0 ) close( sock );
-   #endif
+#endif
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 int Socket::send( const char *msg, const int &size )
 {
-   #ifdef _WIN32
+#ifdef _WIN32
    return -1;
-   #else
+#else
    return ::send( sock, msg, size, 0 );
-   #endif
+#endif
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 int Socket::recv( char *buffer, const int &size, int waitMs )
 {
-   #ifdef _WIN32
+#ifdef _WIN32
    return 0;
-   #else
+#else
    if( poll( &pollIn, 1, waitMs ) > 0 )
       return recvfrom( sock, buffer, size, recvFlag, 0, 0 );
-   #endif
+#endif
 }
 

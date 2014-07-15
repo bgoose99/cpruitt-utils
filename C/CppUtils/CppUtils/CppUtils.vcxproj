@@ -104,7 +104,6 @@
     <ClCompile Include="CoordConversions.cpp" />
     <ClCompile Include="EventScheduler.cpp" />
     <ClCompile Include="Logger.cpp" />
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="MulticastSocket.cpp" />
     <ClCompile Include="MulticastThread.cpp" />
     <ClCompile Include="Mutex.cpp" />

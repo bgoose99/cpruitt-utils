@@ -7,7 +7,7 @@
 using namespace std;
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 EventScheduler::EventScheduler( const unsigned int &threadPoolSize )
 {
@@ -19,7 +19,7 @@ EventScheduler::EventScheduler( const unsigned int &threadPoolSize )
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 EventScheduler::~EventScheduler()
 {
@@ -29,66 +29,66 @@ EventScheduler::~EventScheduler()
       delete threads[i];
    }
    threads.clear();
-   
+
    cancelAllEvents();
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void EventScheduler::addEvent( Delegate *delegate, const long &firstTime )
 {
    long now = TimingUtils::getSystemMillis();
    Event e;
-   e.type     = EVENT_SINGLE;
+   e.type = EVENT_SINGLE;
    e.delegate = delegate;
    e.nextTime = now + ( firstTime < 0 ? 0 : firstTime );
-   
+
    ScopedLock lock( eventMutex );
    events.insert( make_pair( e.nextTime, e ) );
-   
+
    return;
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void EventScheduler::addInfiniteEvent( Delegate *delegate, const long &firstTime, const long &interval )
 {
-   long now = TimingUtils::getSystemMillis( );
+   long now = TimingUtils::getSystemMillis();
    Event e;
-   e.type     = EVENT_INFINITE;
+   e.type = EVENT_INFINITE;
    e.delegate = delegate;
    e.nextTime = now + ( firstTime < 0 ? 0 : firstTime );
    e.interval = ( interval <= 0 ? 1 : interval );
-   
+
    ScopedLock lock( eventMutex );
    events.insert( make_pair( e.nextTime, e ) );
-   
+
    return;
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void EventScheduler::addRecurringEvent( Delegate *delegate, const long &firstTime, const long &interval, const long &maxTime )
 {
-   long now = TimingUtils::getSystemMillis( );
+   long now = TimingUtils::getSystemMillis();
    Event e;
-   e.type     = EVENT_RECURRING;
+   e.type = EVENT_RECURRING;
    e.delegate = delegate;
    e.nextTime = now + ( firstTime < 0 ? 0 : firstTime );
    e.interval = ( interval <= 0 ? 1 : interval );
-   e.maxTime  = now + maxTime;
-   
+   e.maxTime = now + maxTime;
+
    ScopedLock lock( eventMutex );
    events.insert( make_pair( e.nextTime, e ) );
-   
+
    return;
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void EventScheduler::removeEvent( Delegate *delegate )
 {
@@ -101,7 +101,7 @@ void EventScheduler::removeEvent( Delegate *delegate )
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void EventScheduler::cancelAllEvents()
 {
@@ -110,16 +110,16 @@ void EventScheduler::cancelAllEvents()
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 EventScheduler::QueueServicer::QueueServicer( EventScheduler &parent ) :
-   parent( parent )
+parent( parent )
 {
    start();
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 EventScheduler::QueueServicer::~QueueServicer()
 {
@@ -127,53 +127,53 @@ EventScheduler::QueueServicer::~QueueServicer()
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void EventScheduler::QueueServicer::threadFunction()
 {
    std::multimap<long, Event>::iterator iter;
    long now;
    ScopedLock lock( parent.eventMutex, false );
-   
+
    while( isRunning )
    {
       lock.lock();
       iter = parent.events.begin();
       if( iter != parent.events.end() )
       {
-         now = TimingUtils::getSystemMillis( );
+         now = TimingUtils::getSystemMillis();
          if( now >= iter->first )
          {
             Event e = iter->second;
             parent.events.erase( iter );
-            
+
             switch( e.type )
             {
                case EVENT_RECURRING:
-                  {
-                     e.nextTime += e.interval;
-                     if( e.nextTime < e.maxTime ) parent.events.insert( make_pair( e.nextTime, e ) );
-                  }
+               {
+                                      e.nextTime += e.interval;
+                                      if( e.nextTime < e.maxTime ) parent.events.insert( make_pair( e.nextTime, e ) );
+               }
                   break;
                case EVENT_INFINITE:
-                  {
-                     e.nextTime += e.interval;
-                     parent.events.insert( make_pair( e.nextTime, e ) );
-                  }
+               {
+                                     e.nextTime += e.interval;
+                                     parent.events.insert( make_pair( e.nextTime, e ) );
+               }
                   break;
             }
             lock.unlock();
-            
+
             e.delegate->invoke();
          }
       }
       lock.unlock();
-      
-      #ifdef _WIN32
+
+#ifdef _WIN32
       Sleep( 1 );
-      #else
+#else
       usleep( 1000 );
-      #endif
+#endif
    }
 }
 

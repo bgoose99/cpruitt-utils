@@ -11,32 +11,32 @@
  *****************************************************************************/
 class TcpThread : public SocketThread
 {
-   public:
-      
-      /************************************************************************
-       * Constructor
-       *    ipAddress - tcp ip address
-       *    port      - tcp port
-       *    isServer  - true if this object is the server, false otherwise
-       *    retry     - true if this object should repeatedly try to connect
-       *                the socket, false otherwise
-       ***********************************************************************/
-      TcpThread( const std::string &ipAddress,
-                 const int         &port,
-                 const bool        &isServer,
-                 const bool        &retry = false );
-      
-      /************************************************************************
-       * Destructor
-       ***********************************************************************/
-      virtual ~TcpThread();
+public:
 
-   private:
+   /***************************************************************************
+    * Constructor
+    *    ipAddress - tcp ip address
+    *    port      - tcp port
+    *    isServer  - true if this object is the server, false otherwise
+    *    retry     - true if this object should repeatedly try to connect
+    *                the socket, false otherwise
+    **************************************************************************/
+   TcpThread( const std::string &ipAddress,
+              const int         &port,
+              const bool        &isServer,
+              const bool        &retry = false );
 
-      // no copy or assignment
-      TcpThread( const TcpThread & );
-      TcpThread &operator=( const TcpThread & );
-      
+   /***************************************************************************
+    * Destructor
+    **************************************************************************/
+   virtual ~TcpThread();
+
+private:
+
+   // no copy or assignment
+   TcpThread( const TcpThread & );
+   TcpThread &operator=( const TcpThread & );
+
 };
 
 #endif

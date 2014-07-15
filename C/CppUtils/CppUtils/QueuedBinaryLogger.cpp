@@ -10,7 +10,7 @@
 using namespace std;
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 QueuedBinaryLogger::QueuedBinaryLogger( const std::string &filename,
                                         const unsigned int &queueThreshold,
@@ -27,16 +27,16 @@ QueuedBinaryLogger::QueuedBinaryLogger( const std::string &filename,
       throw runtime_error( "QueuedBinaryLogger: Messages to process per iteration must be greater than zero." );
    if( condWaitMsec < 1 )
       throw runtime_error( "QueuedBinaryLogger: Conditioned wait must be greater than 0 milliseconds." );
-   
+
    out.open( filename.c_str(), ios::binary );
    if( !out.is_open() )
       throw runtime_error( string( "QueuedBinaryLogger: Unable to open output file: " ).append( filename ) );
-   
+
    start();
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 QueuedBinaryLogger::~QueuedBinaryLogger()
 {
@@ -47,14 +47,14 @@ QueuedBinaryLogger::~QueuedBinaryLogger()
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void QueuedBinaryLogger::threadFunction()
 {
    while( isRunning )
    {
       queueMutex.lock();
-      
+
       condition.wait( condWaitMsec );
       if( condition.isMet() )
       {
@@ -62,13 +62,13 @@ void QueuedBinaryLogger::threadFunction()
          if( msgQueue.size() >= queueThreshold )
             emptyQueue();
       }
-      
+
       queueMutex.unlock();
    }
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void QueuedBinaryLogger::log( const char *msg, const int &size )
 {
@@ -82,7 +82,7 @@ void QueuedBinaryLogger::log( const char *msg, const int &size )
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void QueuedBinaryLogger::emptyQueue()
 {
@@ -91,31 +91,31 @@ void QueuedBinaryLogger::emptyQueue()
    while( !msgQueue.empty() )
    {
       size = msgQueue.size();
-      
+
       for( unsigned int i = 0; i < ( min( size, msgsPerIteration ) ); i++ )
       {
          msgs.push( msgQueue.front() );
          msgQueue.pop();
       }
-      
+
       queueMutex.unlock(); // allow other threads to add to queue while we write to disk
-      
+
       while( !msgs.empty() )
       {
          out.write( msgs.front()->getMessage(), msgs.front()->getSize() );
          delete msgs.front();
          msgs.pop();
       }
-      
+
       queueMutex.lock();
    }
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 QueuedBinaryLogger::BinaryMessage::BinaryMessage( const char *message, const int &size ) :
-   msg( 0 ), size( size )
+msg( 0 ), size( size )
 {
    msg = (char *)malloc( size );
    if( message != 0 && msg != 0 )
@@ -123,7 +123,7 @@ QueuedBinaryLogger::BinaryMessage::BinaryMessage( const char *message, const int
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 QueuedBinaryLogger::BinaryMessage::~BinaryMessage()
 {
@@ -135,7 +135,7 @@ QueuedBinaryLogger::BinaryMessage::~BinaryMessage()
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 const char *QueuedBinaryLogger::BinaryMessage::getMessage() const
 {
@@ -143,7 +143,7 @@ const char *QueuedBinaryLogger::BinaryMessage::getMessage() const
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 const int QueuedBinaryLogger::BinaryMessage::getSize() const
 {

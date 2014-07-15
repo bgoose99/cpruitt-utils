@@ -9,7 +9,7 @@
 #include "ObjectState.h"
 
 /******************************************************************************
- * Ballistic propagation namespace. 
+ * Ballistic propagation namespace.
  *****************************************************************************/
 namespace Propagator
 {
@@ -19,13 +19,13 @@ namespace Propagator
       GRAVITY_J2,
       GRAVITY_J4
    };
-      
+
    enum IntegrationMethod
    {
       FEHLBERG,
       CASH_KARP
    };
-      
+
    /***************************************************************************
     * Reads a GRAM input atmospheric file with the following format:
     *   # denotes a comment line
@@ -37,12 +37,12 @@ namespace Propagator
     *   Column 6 = east wind (m/s)
     **************************************************************************/
    bool readGramFile( const std::string &filename );
-      
+
    /***************************************************************************
     * Set the integration method used during propagation.
     **************************************************************************/
    void setIntegrationMethod( const IntegrationMethod &method );
-      
+
    /***************************************************************************
     * Simple 3-DoF propagator function.
     *    time  : time to propagate (s)
@@ -52,7 +52,7 @@ namespace Propagator
    ObjectState propagate3DoF( const double       &time,
                               const ObjectState  &state,
                               const GravityModel &model );
-   
+
 
 }
 

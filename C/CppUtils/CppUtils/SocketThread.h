@@ -15,48 +15,48 @@
  *****************************************************************************/
 class SocketThread : public AbstractThread
 {
-   public:
-      
-      /************************************************************************
-       * Constructor
-       *    ipAddress - socket ip address
-       *    port      - socket port
-       *    retry     - true if this object should repeatedly try to connect
-       *                the socket, false otherwise
-       ***********************************************************************/
-      SocketThread( const std::string &ipAddress, const int &port, const bool &retry = false );
-      
-      /************************************************************************
-       * Destructor
-       ***********************************************************************/
-      virtual ~SocketThread();
-      
-      /************************************************************************
-       * Thread function.
-       ***********************************************************************/
-      virtual void threadFunction();
-      
-      /************************************************************************
-       * Abstract message receive.
-       ***********************************************************************/
-      virtual void recvMessage( const char *buf, const int &size ) = 0;
-      
-      /************************************************************************
-       * Sends a message.
-       ***********************************************************************/
-      virtual int sendMessage( const char *buf, const int &size );
-      
-   protected:
-      
-      bool    retry;
-      Socket *socket;
+public:
 
-   private:
+   /***************************************************************************
+    * Constructor
+    *    ipAddress - socket ip address
+    *    port      - socket port
+    *    retry     - true if this object should repeatedly try to connect
+    *                the socket, false otherwise
+    **************************************************************************/
+   SocketThread( const std::string &ipAddress, const int &port, const bool &retry = false );
 
-      // no copy or assignment
-      SocketThread( const SocketThread & );
-      SocketThread &operator=( const SocketThread & );
-      
+   /***************************************************************************
+    * Destructor
+    **************************************************************************/
+   virtual ~SocketThread();
+
+   /***************************************************************************
+    * Thread function.
+    **************************************************************************/
+   virtual void threadFunction();
+
+   /***************************************************************************
+    * Abstract message receive.
+    **************************************************************************/
+   virtual void recvMessage( const char *buf, const int &size ) = 0;
+
+   /***************************************************************************
+    * Sends a message.
+    **************************************************************************/
+   virtual int sendMessage( const char *buf, const int &size );
+
+protected:
+
+   bool    retry;
+   Socket *socket;
+
+private:
+
+   // no copy or assignment
+   SocketThread( const SocketThread & );
+   SocketThread &operator=( const SocketThread & );
+
 };
 
 #endif

@@ -2,12 +2,10 @@
 // local includes
 #include "ObjectState.h"
 
-const int ObjectState::SIZEOF =
-   sizeof( double ) * 3 +
-   Vector3D::SIZEOF * 5;
+const int ObjectState::SIZEOF = sizeof(double)* 3 + Vector3D::SIZEOF * 5;
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 ObjectState::ObjectState() :
    validityTime( 0.0 ),
@@ -17,14 +15,14 @@ ObjectState::ObjectState() :
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 ObjectState::~ObjectState()
 {
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 ObjectState::ObjectState( const ObjectState &that ) :
    validityTime( that.validityTime ),
@@ -39,27 +37,27 @@ ObjectState::ObjectState( const ObjectState &that ) :
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 ObjectState &ObjectState::operator=( const ObjectState &that )
 {
    if( this != &that )
    {
       validityTime = that.validityTime;
-      pos          = that.pos;
-      vel          = that.vel;
-      acc          = that.acc;
-      euler        = that.euler;
-      eulerRate    = that.eulerRate;
-      beta         = that.beta;
-      sbeta        = that.sbeta;
+      pos = that.pos;
+      vel = that.vel;
+      acc = that.acc;
+      euler = that.euler;
+      eulerRate = that.eulerRate;
+      beta = that.beta;
+      sbeta = that.sbeta;
    }
-   
+
    return *this;
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void ObjectState::toBytes( char *buf ) const
 {
@@ -75,7 +73,7 @@ void ObjectState::toBytes( char *buf ) const
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 ObjectState &ObjectState::fromBytes( const char *buf )
 {
@@ -92,7 +90,7 @@ ObjectState &ObjectState::fromBytes( const char *buf )
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 int ObjectState::binarySize() const
 {
@@ -100,7 +98,7 @@ int ObjectState::binarySize() const
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void ObjectState::toBinaryStream( std::ostream &out ) const
 {
@@ -115,7 +113,7 @@ void ObjectState::toBinaryStream( std::ostream &out ) const
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 ObjectState &ObjectState::fromBinaryStream( std::istream &in )
 {

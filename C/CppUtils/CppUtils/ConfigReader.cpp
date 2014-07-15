@@ -17,10 +17,12 @@ using namespace std;
 using namespace StringUtils;
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 ConfigReader::ConfigReader( const std::string &filename, Logger *log ) :
-   currentSection( "" ), valid( true ), log( log )
+   currentSection( "" ),
+   valid( true ),
+   log( log )
 {
    in.open( filename.c_str() );
    if( !in.is_open() )
@@ -28,7 +30,7 @@ ConfigReader::ConfigReader( const std::string &filename, Logger *log ) :
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 ConfigReader::~ConfigReader()
 {
@@ -37,7 +39,7 @@ ConfigReader::~ConfigReader()
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void ConfigReader::get( const std::string &section, const std::string &name, bool &value, const bool &defaultValue )
 {
@@ -51,7 +53,7 @@ void ConfigReader::get( const std::string &section, const std::string &name, boo
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void ConfigReader::get( const std::string &section, const std::string &name, uint16_t &value, const uint16_t &defaultValue )
 {
@@ -62,7 +64,7 @@ void ConfigReader::get( const std::string &section, const std::string &name, uin
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void ConfigReader::get( const std::string &section, const std::string &name, int16_t &value, const int16_t &defaultValue )
 {
@@ -73,7 +75,7 @@ void ConfigReader::get( const std::string &section, const std::string &name, int
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void ConfigReader::get( const std::string &section, const std::string &name, uint32_t &value, const uint32_t &defaultValue )
 {
@@ -84,7 +86,7 @@ void ConfigReader::get( const std::string &section, const std::string &name, uin
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void ConfigReader::get( const std::string &section, const std::string &name, int32_t &value, const int32_t &defaultValue )
 {
@@ -95,7 +97,7 @@ void ConfigReader::get( const std::string &section, const std::string &name, int
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void ConfigReader::get( const std::string &section, const std::string &name, uint64_t &value, const uint64_t &defaultValue )
 {
@@ -106,7 +108,7 @@ void ConfigReader::get( const std::string &section, const std::string &name, uin
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void ConfigReader::get( const std::string &section, const std::string &name, int64_t &value, const int64_t &defaultValue )
 {
@@ -117,7 +119,7 @@ void ConfigReader::get( const std::string &section, const std::string &name, int
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void ConfigReader::get( const std::string &section, const std::string &name, float &value, const float &defaultValue )
 {
@@ -128,7 +130,7 @@ void ConfigReader::get( const std::string &section, const std::string &name, flo
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void ConfigReader::get( const std::string &section, const std::string &name, double &value, const double &defaultValue )
 {
@@ -139,7 +141,7 @@ void ConfigReader::get( const std::string &section, const std::string &name, dou
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void ConfigReader::get( const std::string &section, const std::string &name, std::string &value, const std::string &defaultValue )
 {
@@ -150,28 +152,28 @@ void ConfigReader::get( const std::string &section, const std::string &name, std
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void ConfigReader::get( const std::string &section, const std::string &name, char *value, const int &len, const char *defaultValue )
 {
-   #ifdef _WIN32
+#ifdef _WIN32
    _snprintf_s( value, len, _TRUNCATE, defaultValue );
-   #else
+#else
    snprintf( value, len, defaultValue );
-   #endif
+#endif
    string s;
    if( findValue( section, name, s ) )
    {
-      #ifdef _WIN32
+#ifdef _WIN32
       _snprintf_s( value, len, _TRUNCATE, defaultValue );
-      #else
+#else
       snprintf( value, len, s.c_str() );
-      #endif
+#endif
    }
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 bool ConfigReader::good() const
 {
@@ -179,7 +181,7 @@ bool ConfigReader::good() const
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 const std::vector<std::string> ConfigReader::getErrorList() const
 {
@@ -187,13 +189,13 @@ const std::vector<std::string> ConfigReader::getErrorList() const
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 bool ConfigReader::findValue( const std::string &section, const std::string &name, std::string &value )
 {
    if( currentSection.compare( section ) != 0 )
       readSection( section );
-      
+
    map<string, string>::const_iterator iter = sectionMap.find( name );
    if( iter != sectionMap.end() )
    {
@@ -210,7 +212,7 @@ bool ConfigReader::findValue( const std::string &section, const std::string &nam
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void ConfigReader::readSection( const std::string &section )
 {
@@ -219,9 +221,9 @@ void ConfigReader::readSection( const std::string &section )
    string line;
    string search( "[" + section + "]" );
    vector<string> strings;
-   
+
    ScopedLock lock( mutex );
-   
+
    // go to the appropriate section in the file
    in.clear();
    in.seekg( 0, ios::beg );
@@ -231,19 +233,19 @@ void ConfigReader::readSection( const std::string &section )
       if( startsWith( line, search ) )
          break;
    }
-   
+
    // read each line in the section
    while( in.good() )
    {
       getline( in, line );
       if( startsWith( line, "[" ) ) // beginning of new section
          break;
-      
+
       // this is potentially a parameter
       int pos = line.find( "#" );
       if( pos >= 0 )
          line.erase( pos ); // chop off comments
-      
+
       strings.clear();
       strings = split( line, "=" );
       if( strings.size() == 2 )
@@ -256,7 +258,7 @@ void ConfigReader::readSection( const std::string &section )
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void ConfigReader::logParameter( const std::string &parameter, const std::string &value )
 {

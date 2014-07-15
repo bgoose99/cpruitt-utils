@@ -11,31 +11,31 @@
  *****************************************************************************/
 class UdpThread : public SocketThread
 {
-   public:
-      
-      /************************************************************************
-       * Constructor
-       *    myIpAddress   - sender ip address
-       *    myPort        - sender port
-       *    destIpAddress - destination ip address
-       *    destPort      - destination port
-       ***********************************************************************/
-      UdpThread( const std::string &myIpAddress,
-                 const int         &myPort,
-                 const std::string &destIpAddress,
-                 const int         &destPort );
-      
-      /************************************************************************
-       * Destructor
-       ***********************************************************************/
-      virtual ~UdpThread();
+public:
 
-   private:
+   /***************************************************************************
+    * Constructor
+    *    myIpAddress   - sender ip address
+    *    myPort        - sender port
+    *    destIpAddress - destination ip address
+    *    destPort      - destination port
+    **************************************************************************/
+   UdpThread( const std::string &myIpAddress,
+              const int         &myPort,
+              const std::string &destIpAddress,
+              const int         &destPort );
 
-      // no copy or assignment
-      UdpThread( const UdpThread & );
-      UdpThread &operator=( const UdpThread & );
-      
+   /***************************************************************************
+    * Destructor
+    **************************************************************************/
+   virtual ~UdpThread();
+
+private:
+
+   // no copy or assignment
+   UdpThread( const UdpThread & );
+   UdpThread &operator=( const UdpThread & );
+
 };
 
 #endif

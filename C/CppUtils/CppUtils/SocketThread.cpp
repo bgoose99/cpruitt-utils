@@ -14,8 +14,8 @@ using namespace StringUtils;
  *
  *****************************************************************************/
 SocketThread::SocketThread( const std::string &ipAddress, const int &port, const bool &retry ) :
-retry( retry ),
-socket( 0 )
+   retry( retry ),
+   socket( 0 )
 {
 }
 

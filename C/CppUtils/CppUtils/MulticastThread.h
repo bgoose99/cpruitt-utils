@@ -11,26 +11,26 @@
  *****************************************************************************/
 class MulticastThread : public SocketThread
 {
-   public:
-      
-      /************************************************************************
-       * Constructor
-       *    ipAddress - socket ip address
-       *    port      - socket port
-       ***********************************************************************/
-      MulticastThread( const std::string &ipAddress, const int &port );
-      
-      /************************************************************************
-       * Destructor
-       ***********************************************************************/
-      virtual ~MulticastThread();
+public:
 
-   private:
+   /***************************************************************************
+    * Constructor
+    *    ipAddress - socket ip address
+    *    port      - socket port
+    **************************************************************************/
+   MulticastThread( const std::string &ipAddress, const int &port );
 
-      // no copy or assignment
-      MulticastThread( const MulticastThread & );
-      MulticastThread &operator=( const MulticastThread & );
-      
+   /***************************************************************************
+    * Destructor
+    **************************************************************************/
+   virtual ~MulticastThread();
+
+private:
+
+   // no copy or assignment
+   MulticastThread( const MulticastThread & );
+   MulticastThread &operator=( const MulticastThread & );
+
 };
 
 #endif

@@ -15,21 +15,21 @@
 #include "TimingUtils.h"
 
 /******************************************************************************
-* This class encapsulates one or more threads that service a queue of
-* Callbacks. It is meant to be a simple fire-and-forget utility class that
-* allows a user to schedule function calls at an arbitrary future time.
-* NOTE: Because there is no way to return meaningful information back to the
-*       caller, all callbacks are assumed to return void. However, they can
-*       take any number of arguments.
-******************************************************************************/
+ * This class encapsulates one or more threads that service a queue of
+ * Callbacks. It is meant to be a simple fire-and-forget utility class that
+ * allows a user to schedule function calls at an arbitrary future time.
+ * NOTE: Because there is no way to return meaningful information back to the
+ *       caller, all callbacks are assumed to return void. However, they can
+ *       take any number of arguments.
+ *****************************************************************************/
 template <typename... TaskArgs>
 class TaskScheduler
 {
 public:
 
    /***************************************************************************
-   *
-   ***************************************************************************/
+    *
+    **************************************************************************/
    TaskScheduler( const unsigned int &threadPoolSize = 1 )
    {
       for( unsigned int i = 0; i < ( threadPoolSize < 1 ? 1 : threadPoolSize ); ++i )
@@ -40,8 +40,8 @@ public:
    }
 
    /***************************************************************************
-   *
-   ***************************************************************************/
+    *
+    **************************************************************************/
    virtual ~TaskScheduler()
    {
       cancelAllTasks();
@@ -54,12 +54,12 @@ public:
    }
 
    /***************************************************************************
-   * Add a single-shot task.
-   *  - task      : the callback function to be called
-   *  - taskArgs  : the argument(s) to be passed to the callback
-   *  - firstTime : the time from now (in milliseconds) at which the
-   *                callback will be called
-   ***************************************************************************/
+    * Add a single-shot task.
+    *  - task      : the callback function to be called
+    *  - taskArgs  : the argument(s) to be passed to the callback
+    *  - firstTime : the time from now (in milliseconds) at which the
+    *                callback will be called
+    **************************************************************************/
    void addTask( Callback<void, TaskArgs...> task, const TaskArgs&... taskArgs, const long &firstTime )
    {
       long now = TimingUtils::getSystemMicros();
@@ -71,16 +71,16 @@ public:
    }
 
    /***************************************************************************
-   * Convenience overload for regular functions.
-   ***************************************************************************/
+    * Convenience overload for regular functions.
+    **************************************************************************/
    void addTask( void( *function )( const TaskArgs&... taskArgs ), const long &firstTime )
    {
       addTask( Callback<void, TaskArgs...>( function ), taskArgs..., firstTime );
    }
 
    /***************************************************************************
-   * Convenience overload for class member methods.
-   ***************************************************************************/
+    * Convenience overload for class member methods.
+    **************************************************************************/
    template <typename ClassType, typename Method>
    void addTask( ClassType *object, Method method, const TaskArgs&... taskArgs, const long &firstTime )
    {
@@ -88,14 +88,14 @@ public:
    }
 
    /***************************************************************************
-   * Add a task that is repeated indefinitely.
-   *  - task      : the callback function to be called
-   *  - taskArgs  : the argument(s) to be passed to the callback
-   *  - firstTime : the time from now (in milliseconds) at which the
-   *                callback will be called
-   *  - interval  : the interval (in milliseconds) at which the callback
-   *                will be called
-   ***************************************************************************/
+    * Add a task that is repeated indefinitely.
+    *  - task      : the callback function to be called
+    *  - taskArgs  : the argument(s) to be passed to the callback
+    *  - firstTime : the time from now (in milliseconds) at which the
+    *                callback will be called
+    *  - interval  : the interval (in milliseconds) at which the callback
+    *                will be called
+    **************************************************************************/
    void addInfiniteTask( Callback<void, TaskArgs...> task, const TaskArgs&... taskArgs, const long &firstTime, const long &interval )
    {
       long now = TimingUtils::getSystemMicros();
@@ -107,16 +107,16 @@ public:
    }
 
    /***************************************************************************
-   * Convenience overload for regular functions.
-   ***************************************************************************/
+    * Convenience overload for regular functions.
+    **************************************************************************/
    void addInfiniteTask( void( *function )( const TaskArgs&... taskArgs ), const long &firstTime, const long &interval )
    {
       addTask( Callback<void, TaskArgs...>( function ), taskArgs..., firstTime, interval );
    }
 
    /***************************************************************************
-   * Convenience overload for class member methods.
-   ***************************************************************************/
+    * Convenience overload for class member methods.
+    **************************************************************************/
    template <typename ClassType, typename Method>
    void addInfiniteTask( ClassType *object, Method method, const TaskArgs&... taskArgs, const long &firstTime, const long &interval )
    {
@@ -124,17 +124,17 @@ public:
    }
 
    /***************************************************************************
-   * Add a recurring task that stops being called at a specified interval
-   * until a certain amount of time has elapsed.
-   *  - task      : the callback function to be called
-   *  - taskArgs  : the argument(s) to be passed to the callback
-   *  - firstTime : the time from now (in milliseconds) at which the
-   *                callback will be called
-   *  - interval  : the interval (in milliseconds) at which the callback
-   *                will be called
-   *  - maxTime   : maximum time from now (in milliseconds) at which the
-   *                callback will be called
-   ***************************************************************************/
+    * Add a recurring task that stops being called at a specified interval
+    * until a certain amount of time has elapsed.
+    *  - task      : the callback function to be called
+    *  - taskArgs  : the argument(s) to be passed to the callback
+    *  - firstTime : the time from now (in milliseconds) at which the
+    *                callback will be called
+    *  - interval  : the interval (in milliseconds) at which the callback
+    *                will be called
+    *  - maxTime   : maximum time from now (in milliseconds) at which the
+    *                callback will be called
+    **************************************************************************/
    void addRecurringTask( Callback<void, TaskArgs...> task, const TaskArgs&... taskArgs, const long &firstTime, const long &interval, const long &maxTime )
    {
       long now = TimingUtils::getSystemMicros();
@@ -145,16 +145,16 @@ public:
       tasks.insert( std::make_pair( t.nextTime, t ) );
    }
    /***************************************************************************
-   * Convenience overload for regular functions.
-   ***************************************************************************/
+    * Convenience overload for regular functions.
+    **************************************************************************/
    void addRecurringTask( void( *function )( const TaskArgs&... taskArgs ), const long &firstTime, const long &interval, const long &maxTime )
    {
       addTask( Callback<void, TaskArgs...>( function ), taskArgs..., firstTime, interval, maxTime );
    }
 
    /***************************************************************************
-   * Convenience overload for class member methods.
-   ***************************************************************************/
+    * Convenience overload for class member methods.
+    **************************************************************************/
    template <typename ClassType, typename Method>
    void addRecurringTask( ClassType *object, Method method, const TaskArgs&... taskArgs, const long &firstTime, const long &interval, const long &maxTime )
    {
@@ -162,8 +162,8 @@ public:
    }
 
    /***************************************************************************
-   * Cancels all tasks.
-   ***************************************************************************/
+    * Cancels all tasks.
+    **************************************************************************/
    void cancelAllTasks()
    {
       ScopedLock lock( taskMutex );
@@ -204,11 +204,11 @@ private:
       long interval;
 
       explicit Task( Callback<void, TaskArgs...> callback,
-         const TaskArgs&...          taskArgs,
-         const TaskType             &type,
-         const long                 &nextTime,
-         const long                 &maxTime,
-         const long                 &interval ) :
+                     const TaskArgs&...          taskArgs,
+                     const TaskType             &type,
+                     const long                 &nextTime,
+                     const long                 &maxTime,
+                     const long                 &interval ) :
          callback( callback ),
          taskArgs( taskArgs... ),
          type( type ),

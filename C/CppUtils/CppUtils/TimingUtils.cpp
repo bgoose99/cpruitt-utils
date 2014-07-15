@@ -13,7 +13,7 @@
 
 namespace TimingUtils
 {
-   
+
    /***************************************************************************
     *
     **************************************************************************/
@@ -31,15 +31,15 @@ namespace TimingUtils
       return ( tv.tv_usec + ( tv.tv_sec * 1000000 ) );
 #endif
    }
-   
+
    /***************************************************************************
     *
     **************************************************************************/
-   long getSystemMillis( )
+   long getSystemMillis()
    {
       return getSystemMicros() / 1000;
    }
-   
+
    /***************************************************************************
     *
     **************************************************************************/
@@ -48,7 +48,7 @@ namespace TimingUtils
       long now = getSystemMicros();
       long later = now + microseconds;
       long maxSleep = later - now;
-      
+
       while( now < later )
       {
          now = getSystemMicros();
