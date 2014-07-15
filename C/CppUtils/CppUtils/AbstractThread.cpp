@@ -1,11 +1,13 @@
-#include <stdio.h>
+
 // local includes
 #include "AbstractThread.h"
 
 /******************************************************************************
  *
  *****************************************************************************/
-AbstractThread::AbstractThread() : isRunning( false )
+AbstractThread::AbstractThread() :
+   isRunning( false ),
+   thread( 0 )
 {
 }
 
@@ -17,7 +19,11 @@ AbstractThread::~AbstractThread()
    shutdown();
 
 #ifdef _WIN32
-   CloseHandle( thread );
+   if( thread != 0 )
+   {
+      delete thread;
+      thread = 0;
+   }
 #endif
 }
 
@@ -31,7 +37,7 @@ void AbstractThread::start()
       isRunning = true;
 
 #ifdef _WIN32
-      thread = CreateThread( 0, 0, AbstractThread::threadHelper, this, 0, &threadId );
+      thread = new std::thread( &AbstractThread::threadFunction, this );
 #else
       pthread_create( &thread, 0, AbstractThread::threadHelper, this );
 #endif
@@ -43,11 +49,14 @@ void AbstractThread::start()
  *****************************************************************************/
 void AbstractThread::join()
 {
+   if( isRunning )
+   {
 #ifdef _WIN32
-   // TODO: wait for completion
+      if( thread != 0 ) thread->join();
 #else
-   pthread_join( thread, 0 );
+      pthread_join( thread, 0 );
 #endif
+   }
    return;
 }
 
@@ -60,25 +69,14 @@ void AbstractThread::shutdown()
    {
       isRunning = false;
 #ifdef _WIN32
-      // TODO: wait for completion
+      if( thread != 0 ) thread->join();
 #else
       pthread_join( thread, 0 );
 #endif
    }
 }
 
-#ifdef _WIN32
-/******************************************************************************
- *
- *****************************************************************************/
-DWORD WINAPI AbstractThread::threadHelper( LPVOID arg )
-{
-   AbstractThread *t = reinterpret_cast< AbstractThread * >( arg );
-   if( t != 0 ) t->threadFunction();
-
-   return 0;
-}
-#else
+#ifndef _WIN32
 /******************************************************************************
  *
  *****************************************************************************/

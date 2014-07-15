@@ -99,6 +99,9 @@
     <ClInclude Include="TimingUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TaskScheduler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ConfigReader.cpp">

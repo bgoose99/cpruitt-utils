@@ -87,6 +87,7 @@
     <ClInclude Include="Socket.h" />
     <ClInclude Include="SocketThread.h" />
     <ClInclude Include="StringUtils.h" />
+    <ClInclude Include="TaskScheduler.h" />
     <ClInclude Include="TcpSocket.h" />
     <ClInclude Include="TcpThread.h" />
     <ClInclude Include="TimingUtils.h" />

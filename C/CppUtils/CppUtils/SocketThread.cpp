@@ -1,5 +1,8 @@
 
 // system includes
+#ifdef _WIN32
+#include <Windows.h>
+#endif
 
 // local includes
 #include "SocketThread.h"
@@ -8,16 +11,16 @@
 using namespace StringUtils;
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 SocketThread::SocketThread( const std::string &ipAddress, const int &port, const bool &retry ) :
-   retry( retry ),
-   socket( 0 )
+retry( retry ),
+socket( 0 )
 {
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 SocketThread::~SocketThread()
 {
@@ -26,7 +29,7 @@ SocketThread::~SocketThread()
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 void SocketThread::threadFunction()
 {
@@ -36,11 +39,11 @@ void SocketThread::threadFunction()
       {
          if( retry )
          {
-            #ifdef _WIN32
+#ifdef _WIN32
             Sleep( 1000 );
-            #else
+#else
             sleep( 1 );
-            #endif
+#endif
             continue;
          }
          else shutdown();
@@ -50,14 +53,14 @@ void SocketThread::threadFunction()
          break;
       }
    }
-   
+
    // message loop
    int bytesReceived;
-   #ifdef _WIN32
+#ifdef _WIN32
    char buffer[1];
-   #else
+#else
    char buffer[IP_MAXPACKET];
-   #endif
+#endif
    while( isRunning )
    {
       bytesReceived = socket->recv( buffer, sizeof( buffer ), 1 );
@@ -67,7 +70,7 @@ void SocketThread::threadFunction()
 }
 
 /******************************************************************************
- * 
+ *
  *****************************************************************************/
 int SocketThread::sendMessage( const char *buf, const int &size )
 {

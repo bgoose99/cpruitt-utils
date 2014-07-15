@@ -118,7 +118,7 @@ QueuedBinaryLogger::BinaryMessage::BinaryMessage( const char *message, const int
    msg( 0 ), size( size )
 {
    msg = (char *)malloc( size );
-   if( message != 0 )
+   if( message != 0 && msg != 0 )
       memcpy( msg, message, size );
 }
 
