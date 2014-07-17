@@ -181,7 +181,9 @@ private:
    // This crafty bit of templating madness courtesy of the fine folks
    // on StackOverflow:
    // http://stackoverflow.com/questions/7858817/unpacking-a-tuple-to-call-a-matching-function-pointer/7858971#7858971
-   // Basically, it's a recursive unfolding of the args present in the tuple
+   // Basically, it's a recursive unfolding of the argument indexes present in the tuple:
+   // gens<5> -> gens<4,4> -> gens<3,3,4> -> gens<2,2,3,4> -> gens<1,1,2,3,4> -> gens<0,0,1,2,3,4> which
+   // is specialized, creating gens<0,1,2,3,4>
    template<int...>
    struct seq { };
 
