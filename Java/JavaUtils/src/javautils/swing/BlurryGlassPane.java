@@ -9,6 +9,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
 
@@ -24,6 +25,8 @@ import javax.swing.SwingUtilities;
 public class BlurryGlassPane extends JComponent
 {
     private Component underPane;
+    private BufferedImage offScreenImage;
+    private BufferedImageOp imageOp;
 
     /***************************************************************************
      * Constructor
@@ -35,6 +38,8 @@ public class BlurryGlassPane extends JComponent
     {
         this.underPane = underPane;
         setOpaque( false );
+        float[] f = { 0.1f, 0.1f, 0.1f, 0.1f, 0.2f, 0.1f, 0.1f, 0.1f, 0.1f };
+        imageOp = new ConvolveOp( new Kernel( 3, 3, f ) );
     }
 
     /*
@@ -47,14 +52,14 @@ public class BlurryGlassPane extends JComponent
     {
         super.paintComponent( g );
 
-        float[] f = { 0.1f, 0.1f, 0.1f, 0.1f, 0.2f, 0.1f, 0.1f, 0.1f, 0.1f };
-        ConvolveOp op = new ConvolveOp( new Kernel( 3, 3, f ) );
-        BufferedImage bi = new BufferedImage( underPane.getWidth(),
+        offScreenImage = new BufferedImage( underPane.getWidth(),
                 underPane.getHeight(), BufferedImage.TYPE_INT_ARGB );
-        Graphics2D g2d = (Graphics2D)bi.getGraphics();
-        underPane.paint( g2d );
-        BufferedImage img = op.filter( bi, null );
-        g.drawImage( img, underPane.getX(), underPane.getY(), null );
+        Graphics2D tempGraphics = offScreenImage.createGraphics();
+        underPane.paint( tempGraphics );
+        tempGraphics.dispose();
+
+        Graphics2D g2d = (Graphics2D)g;
+        g2d.drawImage( offScreenImage, imageOp, 0, 0 );
     }
 
     /***************************************************************************
