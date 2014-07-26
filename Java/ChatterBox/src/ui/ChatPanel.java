@@ -112,6 +112,8 @@ public class ChatPanel extends JPanel implements IMessageDisplay
                 StyleConstants.setItalic( attr, true );
                 StyleConstants.setUnderline( attr, true );
                 break;
+            default:
+                break;
             }
 
             textPane.append(
