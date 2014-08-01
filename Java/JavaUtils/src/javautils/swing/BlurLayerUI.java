@@ -25,16 +25,17 @@ public class BlurLayerUI extends LayerUI<JComponent>
 {
     private BufferedImage offScreenImage;
     private BufferedImageOp imageOp;
-    private boolean isBlurry;
+    private boolean blur;
 
     /***************************************************************************
      * Constructor
      **************************************************************************/
     public BlurLayerUI()
     {
-        isBlurry = false;
+        blur = false;
         float[] f = { 0.1f, 0.1f, 0.1f, 0.1f, 0.2f, 0.1f, 0.1f, 0.1f, 0.1f };
-        imageOp = new ConvolveOp( new Kernel( 3, 3, f ) );
+        imageOp = new ConvolveOp( new Kernel( 3, 3, f ), ConvolveOp.EDGE_NO_OP,
+                null );
     }
 
     /*
@@ -46,7 +47,7 @@ public class BlurLayerUI extends LayerUI<JComponent>
     @Override
     public void paint( Graphics g, JComponent component )
     {
-        if( isBlurry )
+        if( blur )
         {
             int width = component.getWidth();
             int height = component.getHeight();
@@ -77,9 +78,9 @@ public class BlurLayerUI extends LayerUI<JComponent>
     /***************************************************************************
      * Toggles the blurry.
      **************************************************************************/
-    public void toggleBlurry()
+    public void toggleBlur()
     {
-        isBlurry = !isBlurry;
+        blur = !blur;
     }
 
     /***************************************************************************
@@ -115,7 +116,7 @@ public class BlurLayerUI extends LayerUI<JComponent>
                     @Override
                     public void actionPerformed( ActionEvent arg0 )
                     {
-                        layerUI.toggleBlurry();
+                        layerUI.toggleBlur();
                         layer.repaint();
                     }
                 } );
