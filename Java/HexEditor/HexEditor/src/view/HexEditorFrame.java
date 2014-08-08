@@ -16,6 +16,7 @@ import java.util.prefs.Preferences;
 
 import javautils.IconManager;
 import javautils.IconManager.IconSize;
+import javautils.hex.HexUtils;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -29,6 +30,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
+/*******************************************************************************
+ * Main frame for the HexEditor application.
+ ******************************************************************************/
 public class HexEditorFrame extends JFrame
 {
     private final static String FRAME_TITLE = "HexEditor";
@@ -69,6 +73,9 @@ public class HexEditorFrame extends JFrame
 
     private boolean unsavedEdits;
 
+    /***************************************************************************
+     * Constructor
+     **************************************************************************/
     public HexEditorFrame()
     {
         preferences = Preferences.userRoot().node( this.getClass().getName() );
@@ -114,6 +121,11 @@ public class HexEditorFrame extends JFrame
         setupFrame();
     }
 
+    /***************************************************************************
+     * Updates the user interface. This function is used any time there is a
+     * block or selection change, so that current information is displayed to
+     * the user.
+     **************************************************************************/
     private void updateUI()
     {
         setDisplayInfo();
@@ -122,6 +134,9 @@ public class HexEditorFrame extends JFrame
         hexTable.repaint();
     }
 
+    /***************************************************************************
+     * Sets the display information (selection, offset, etc.).
+     **************************************************************************/
     private void setDisplayInfo()
     {
         if( selectedFile == null )
@@ -139,6 +154,9 @@ public class HexEditorFrame extends JFrame
         setTitle( ( unsavedEdits ? "*" : "" ) + FRAME_TITLE );
     }
 
+    /***************************************************************************
+     * Enables or disables all actions depending on current status.
+     **************************************************************************/
     private void setActionStatus()
     {
         boolean b = ( selectedFile != null );
@@ -158,6 +176,9 @@ public class HexEditorFrame extends JFrame
                 .hasPrevious() );
     }
 
+    /***************************************************************************
+     * Initializes all actions.
+     **************************************************************************/
     private void setupActions()
     {
         newAction = new NewAction();
@@ -179,6 +200,9 @@ public class HexEditorFrame extends JFrame
         aboutDialogAction = new AboutDialogAction();
     }
 
+    /***************************************************************************
+     * Sets up the main application menu.
+     **************************************************************************/
     private void setupMenu()
     {
         JMenuBar menuBar = new JMenuBar();
@@ -212,6 +236,9 @@ public class HexEditorFrame extends JFrame
         this.setJMenuBar( menuBar );
     }
 
+    /***************************************************************************
+     * Sets up the toolbar.
+     **************************************************************************/
     private void setupToolbar()
     {
         toolbar = new JToolBar();
@@ -230,6 +257,9 @@ public class HexEditorFrame extends JFrame
         toolbar.add( removeBytesAction ).setFocusable( false );
     }
 
+    /***************************************************************************
+     * Sets up this frame.
+     **************************************************************************/
     private void setupFrame()
     {
         setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE );
@@ -268,6 +298,12 @@ public class HexEditorFrame extends JFrame
         updateUI();
     }
 
+    /***************************************************************************
+     * Returns true if there are unsaved edits the user wishes to discard. If
+     * there are no unsaved edits, returns true.
+     * 
+     * @return
+     **************************************************************************/
     private boolean confirmAction()
     {
         if( unsavedEdits )
@@ -284,6 +320,11 @@ public class HexEditorFrame extends JFrame
         return true;
     }
 
+    /***************************************************************************
+     * Returns true if the current file has been closed, false otherwise.
+     * 
+     * @return
+     **************************************************************************/
     private boolean closeFile()
     {
         if( selectedFile != null )
@@ -302,6 +343,7 @@ public class HexEditorFrame extends JFrame
         return true;
     }
 
+    /**************************************************************************/
     private class NewAction extends AbstractAction
     {
         public NewAction()
@@ -333,6 +375,7 @@ public class HexEditorFrame extends JFrame
         }
     }
 
+    /**************************************************************************/
     private class OpenAction extends AbstractAction
     {
 
@@ -386,6 +429,7 @@ public class HexEditorFrame extends JFrame
         }
     }
 
+    /**************************************************************************/
     private class CloseAction extends AbstractAction
     {
         public CloseAction()
@@ -405,6 +449,7 @@ public class HexEditorFrame extends JFrame
         }
     }
 
+    /**************************************************************************/
     private class SaveAction extends AbstractAction
     {
         public SaveAction()
@@ -445,6 +490,7 @@ public class HexEditorFrame extends JFrame
         }
     }
 
+    /**************************************************************************/
     private class SaveAsAction extends AbstractAction
     {
         public SaveAsAction()
@@ -475,6 +521,7 @@ public class HexEditorFrame extends JFrame
         }
     }
 
+    /**************************************************************************/
     private class ExitAction extends AbstractAction
     {
         public ExitAction()
@@ -494,6 +541,7 @@ public class HexEditorFrame extends JFrame
         }
     }
 
+    /**************************************************************************/
     private class GotoOffsetAction extends AbstractAction
     {
         public GotoOffsetAction()
@@ -506,12 +554,45 @@ public class HexEditorFrame extends JFrame
         @Override
         public void actionPerformed( ActionEvent arg0 )
         {
-            // TODO: pick offset (would be nice here to blur the panel and show
-            // a neat dialog like we did with Chex
-            hexTable.getHexTableModel().gotoOffset( 0 );
+            if( confirmAction() )
+            {
+                String input = JOptionPane.showInputDialog(
+                        HexEditorFrame.this, "Input offset:", "Go to offset",
+                        JOptionPane.QUESTION_MESSAGE );
+                if( input.isEmpty() )
+                    return;
+
+                int offset = 0;
+                try
+                {
+                    offset = HexUtils.parseHexString( input );
+                } catch( Exception e )
+                {
+                    JOptionPane.showMessageDialog( HexEditorFrame.this,
+                            "Could not parse input; please try again.",
+                            "Invalid input", JOptionPane.ERROR_MESSAGE );
+                    return;
+                }
+
+                if( offset < 0
+                        || offset >= hexTable.getHexTableModel()
+                                .getTotalBytes() )
+                {
+                    JOptionPane.showMessageDialog( HexEditorFrame.this,
+                            "Offset is not valid.", "Invalid input",
+                            JOptionPane.ERROR_MESSAGE );
+                    return;
+                }
+
+                int offsetInBlock = hexTable.getHexTableModel().gotoOffset(
+                        offset );
+                hexTable.setSelection( offsetInBlock );
+                updateUI();
+            }
         }
     }
 
+    /**************************************************************************/
     private class FindAction extends AbstractAction
     {
         public FindAction()
@@ -526,10 +607,41 @@ public class HexEditorFrame extends JFrame
         @Override
         public void actionPerformed( ActionEvent arg0 )
         {
-            // TODO: cool little dialog
+            String input = JOptionPane.showInputDialog( HexEditorFrame.this,
+                    "Find:", "Find", JOptionPane.QUESTION_MESSAGE );
+            if( input.isEmpty() )
+                return;
+
+            int offset = 0;
+            try
+            {
+                offset = HexUtils.parseHexString( input );
+                if( offset < 0 || offset > 0xFF )
+                {
+                    throw new Exception();
+                }
+                searchByte = (byte)offset;
+            } catch( Exception e )
+            {
+                JOptionPane.showMessageDialog( HexEditorFrame.this,
+                        "Could not parse input; please try again.",
+                        "Invalid input", JOptionPane.ERROR_MESSAGE );
+                return;
+            }
+
+            offset = hexTable.find( 0, searchByte );
+            if( offset >= 0 )
+            {
+                searchIndex = offset;
+                updateUI();
+            } else
+            {
+                Toolkit.getDefaultToolkit().beep();
+            }
         }
     }
 
+    /**************************************************************************/
     private class FindNextAction extends AbstractAction
     {
         public FindNextAction()
@@ -556,6 +668,7 @@ public class HexEditorFrame extends JFrame
         }
     }
 
+    /**************************************************************************/
     private class FindPrevAction extends AbstractAction
     {
         public FindPrevAction()
@@ -583,6 +696,7 @@ public class HexEditorFrame extends JFrame
         }
     }
 
+    /**************************************************************************/
     private class AddBytesAction extends AbstractAction
     {
         public AddBytesAction()
@@ -606,6 +720,7 @@ public class HexEditorFrame extends JFrame
         }
     }
 
+    /**************************************************************************/
     private class RemoveBytesAction extends AbstractAction
     {
         public RemoveBytesAction()
@@ -630,6 +745,7 @@ public class HexEditorFrame extends JFrame
         }
     }
 
+    /**************************************************************************/
     private class GotoBlockAction extends AbstractAction
     {
         public GotoBlockAction()
@@ -653,6 +769,7 @@ public class HexEditorFrame extends JFrame
         }
     }
 
+    /**************************************************************************/
     private class GotoPrevBlockAction extends AbstractAction
     {
         public GotoPrevBlockAction()
@@ -678,6 +795,7 @@ public class HexEditorFrame extends JFrame
         }
     }
 
+    /**************************************************************************/
     private class GotoNextBlockAction extends AbstractAction
     {
         public GotoNextBlockAction()
@@ -704,6 +822,7 @@ public class HexEditorFrame extends JFrame
         }
     }
 
+    /**************************************************************************/
     private class AsciiDialogAction extends AbstractAction
     {
         public AsciiDialogAction()
@@ -722,6 +841,7 @@ public class HexEditorFrame extends JFrame
         }
     }
 
+    /**************************************************************************/
     private class AboutDialogAction extends AbstractAction
     {
         public AboutDialogAction()

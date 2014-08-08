@@ -36,7 +36,7 @@ public class HexEditorTableModel extends AbstractTableModel implements
     {
         int len = Long.toHexString( getTotalBytes() ).length();
         String s = Integer.toHexString(
-                0xFF & ( data.getCurrentBlockIndex() - 1 )
+                ( data.getCurrentBlockIndex() - 1 )
                         * HexEditorTableData.BLOCK_SIZE + row
                         * HexEditorTableData.ROW_SIZE ).toUpperCase();
         return "0x" + Utils.getPaddedString( s, len, '0', true );

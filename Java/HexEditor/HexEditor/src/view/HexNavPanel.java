@@ -18,6 +18,10 @@ import javax.swing.JProgressBar;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
+/*******************************************************************************
+ * Concrete {@link NavPanel} for displaying information about current file,
+ * selection, etc.
+ ******************************************************************************/
 public class HexNavPanel extends JPanel implements NavPanel
 {
     private JLabel filenameLabel;
@@ -34,6 +38,9 @@ public class HexNavPanel extends JPanel implements NavPanel
     private JLabel decLabel;
     private JProgressBar progressBar;
 
+    /***************************************************************************
+     * Constructor
+     **************************************************************************/
     public HexNavPanel()
     {
         super();
@@ -41,6 +48,9 @@ public class HexNavPanel extends JPanel implements NavPanel
         setupPanel();
     }
 
+    /***************************************************************************
+     * Sets up this panel.
+     **************************************************************************/
     private void setupPanel()
     {
         filenameLabel = new JLabel( "untitled.bin" );

@@ -3,6 +3,7 @@ package javautils.swing;
 import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -15,7 +16,18 @@ import java.util.List;
 import javautils.IconManager;
 import javautils.IconManager.IconSize;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 /*******************************************************************************
  * This class manages a group of {@link JPanel}s. This class provides methods
@@ -27,6 +39,7 @@ public class JFadePanel extends JPanel
     private CardLayout layout;
     private Timer fadeTimer;
     private float alpha;
+    private BufferedImage offScreenImage;
 
     protected List<? extends JPanel> panels;
 
@@ -49,6 +62,8 @@ public class JFadePanel extends JPanel
      **************************************************************************/
     public JFadePanel( List<? extends JPanel> components )
     {
+        int prefWidth = 200;
+        int prefHeight = 200;
         panels = new ArrayList<JPanel>( components );
         layout = new CardLayout();
 
@@ -57,9 +72,13 @@ public class JFadePanel extends JPanel
         for( JComponent comp : this.panels )
         {
             add( comp, comp.toString() );
+            prefWidth = Math.max( prefWidth, comp.getWidth() );
+            prefHeight = Math.max( prefHeight, comp.getHeight() );
         }
 
-        fadeTimer = new Timer( 50, new FadeListener() );
+        setPreferredSize( new Dimension( prefWidth, prefHeight ) );
+
+        fadeTimer = new Timer( 75, new FadeListener() );
 
         alpha = 1.0f;
     }
@@ -120,25 +139,36 @@ public class JFadePanel extends JPanel
         fadeTimer.start();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.swing.JComponent#paint(java.awt.Graphics)
-     */
     @Override
-    public void paint( Graphics g )
+    public void paintComponent( Graphics g )
     {
+        System.out.println( "Huh?" );
+        super.paintComponent( g );
         if( fading )
         {
-            BufferedImage bi = new BufferedImage( getWidth(), getHeight(),
-                    BufferedImage.TYPE_INT_ARGB );
-            super.paint( bi.getGraphics() );
-            ( (Graphics2D)g ).setComposite( AlphaComposite.SrcOver
-                    .derive( alpha ) );
-            ( (Graphics2D)g ).drawImage( bi, 0, 0, null );
+            System.out.println( "Painting faded panel, alpha = " + alpha );
+            int width = this.getWidth();
+            int height = this.getHeight();
+
+            if( width == 0 || height == 0 )
+                return;
+
+            if( offScreenImage == null || offScreenImage.getWidth() != width
+                    || offScreenImage.getHeight() != height )
+            {
+                offScreenImage = new BufferedImage( width, height,
+                        BufferedImage.TYPE_INT_RGB );
+            }
+
+            super.paintComponent( offScreenImage.getGraphics() );
+            Graphics2D g2d = (Graphics2D)g;
+            g2d.setComposite( AlphaComposite.SrcOver.derive( alpha ) );
+            g2d.drawImage( offScreenImage, null, 0, 0 );
+            g2d.dispose();
         } else
         {
-            super.paint( g );
+            System.out.println( "Painting stock panel" );
+            super.paintComponent( g );
         }
     }
 
@@ -176,6 +206,7 @@ public class JFadePanel extends JPanel
             protected JFrame createFrame()
             {
                 JFrame frame = new JFrame();
+                frame.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
                 JPanel panel1 = new JPanel();
                 panel1.add( new JButton( "A button" ) );
                 panel1.add( new JTextField( "a text field" ) );

@@ -1,14 +1,15 @@
 package model;
 
 /*******************************************************************************
- * Hex table interface.
+ * Provides all the necessary functionality to navigate and edit a block of
+ * data.
  ******************************************************************************/
 public interface HexTable
 {
     /***************************************************************************
      * Searches for the supplied key, starting at the given offset. NOTE: This
-     * function will switch blocks if the search key is found in a block after
-     * the current block.
+     * function will not switch blocks if the search key is found in a block
+     * after the current block.
      * 
      * @param offset
      *            Offset from whence to start the search.
@@ -22,8 +23,8 @@ public interface HexTable
 
     /***************************************************************************
      * Searches backwards for the supplied key, starting at the given offset.
-     * NOTE: This function will switch blocks if the search key is found in a
-     * block before the current block.
+     * NOTE: This function will not switch blocks if the search key is found in
+     * a block before the current block.
      * 
      * @param offset
      *            Offset from whence to start the search.

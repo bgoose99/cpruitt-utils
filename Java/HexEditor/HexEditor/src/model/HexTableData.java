@@ -4,7 +4,9 @@ import java.io.File;
 import java.util.List;
 
 /*******************************************************************************
- * Generic hex table data interface.
+ * Represents an arbitrary {@link java.io.File} used as a source of binary data.
+ * Provides all necessary navigation and editing capability to the underlying
+ * source.
  ******************************************************************************/
 public interface HexTableData
 {

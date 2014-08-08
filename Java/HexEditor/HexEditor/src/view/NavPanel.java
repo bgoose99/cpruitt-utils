@@ -1,5 +1,10 @@
 package view;
 
+/*******************************************************************************
+ * A <code>NavPanel</code> is used to display pertinent information to the user
+ * regarding current file and selection details, as well as provide navigation
+ * tools so the user can quickly change the current block.
+ **************************************************************************/
 public interface NavPanel
 {
     /***************************************************************************

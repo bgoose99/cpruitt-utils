@@ -20,6 +20,9 @@ import model.HexEditorTableModel;
 import model.HexTable;
 import model.HexTableModel;
 
+/*******************************************************************************
+ * Main {@link HexTable} of the application.
+ ******************************************************************************/
 public class HexEditorTable extends JTable implements HexTable
 {
     public final String EDIT = "tableEdit";
@@ -32,6 +35,9 @@ public class HexEditorTable extends JTable implements HexTable
     private int selectStart;
     private int selectEnd;
 
+    /***************************************************************************
+     * Constructor
+     **************************************************************************/
     public HexEditorTable()
     {
         super();
@@ -327,6 +333,26 @@ public class HexEditorTable extends JTable implements HexTable
         }
     }
 
+    @Override
+    public byte getFirstSelectedByte()
+    {
+        byte b = 0;
+        try
+        {
+            b = tableModel.getByteAt( selectStart );
+        } catch( Exception e )
+        {
+        }
+        return b;
+    }
+
+    @Override
+    public int getFirstSelectedOffset()
+    {
+        return ( ( tableModel.getCurrentBlockIndex() - 1 ) * tableModel
+                .getCurrentBlockSize() ) + selectStart;
+    }
+
     /***************************************************************************
      * Generic table listener to update the UI when a table change is made.
      **************************************************************************/
@@ -391,25 +417,5 @@ public class HexEditorTable extends JTable implements HexTable
                 break;
             }
         }
-    }
-
-    @Override
-    public byte getFirstSelectedByte()
-    {
-        byte b = 0;
-        try
-        {
-            b = tableModel.getByteAt( selectStart );
-        } catch( Exception e )
-        {
-        }
-        return b;
-    }
-
-    @Override
-    public int getFirstSelectedOffset()
-    {
-        return ( ( tableModel.getCurrentBlockIndex() - 1 ) * tableModel
-                .getCurrentBlockSize() ) + selectStart;
     }
 }
