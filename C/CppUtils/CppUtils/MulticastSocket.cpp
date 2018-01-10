@@ -16,6 +16,7 @@
 MulticastSocket::MulticastSocket( const std::string &ipAddress, const int &port, const bool &blocking ) :
    Socket( ipAddress, port, blocking )
 {
+   myAddrLen = sizeof( myAddr );
 }
 
 /******************************************************************************
@@ -46,6 +47,19 @@ int MulticastSocket::send( const char *msg, const int &size )
    }
 #endif
    return bytesSent;
+}
+
+/******************************************************************************
+ *
+ *****************************************************************************/
+int MulticastSocket::recv( char *buffer, const int &size, int waitMs )
+{
+#ifdef _WIN32
+#else
+   if( poll( &pollIn, 1, waitMs ) > 0 )
+      return recvfrom( sock, buffer, size, recvFlag, (struct sockaddr *)&myAddr, myAddrLen );
+#endif
+   return 0;
 }
 
 /******************************************************************************
