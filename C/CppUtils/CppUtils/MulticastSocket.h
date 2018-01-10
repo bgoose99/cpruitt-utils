@@ -34,6 +34,11 @@ public:
     **************************************************************************/
    virtual int send( const char *msg, const int &size );
 
+   /***************************************************************************
+    *
+    **************************************************************************/
+   virtual int recv( char *buffer, const int &size, int waitMs = 0 );
+
 protected:
 
    /***************************************************************************
@@ -50,6 +55,7 @@ private:
 #ifdef _WIN32
 #else
    struct sockaddr_in myAddr;
+   socklen_t          myAddrLen;
    struct sockaddr_in groupAddr;
 #endif
 };
