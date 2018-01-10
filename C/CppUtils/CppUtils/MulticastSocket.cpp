@@ -16,7 +16,10 @@
 MulticastSocket::MulticastSocket( const std::string &ipAddress, const int &port, const bool &blocking ) :
    Socket( ipAddress, port, blocking )
 {
+#ifdef _WIN32
+#else
    myAddrLen = sizeof( myAddr );
+#endif
 }
 
 /******************************************************************************
